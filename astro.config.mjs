@@ -8,6 +8,12 @@ export default defineConfig({
     format: 'directory',
   },
   image: {
-    // Allow local raster images from the assets pipeline to be optimized via Astro's built-in image service.
+    // Project images live as plain files in public/ (not src/-imported
+    // modules) so the CMS can upload new ones without a code change —
+    // Astro treats any string `src` passed to <Image>/getImage() as a
+    // "remote" image regardless of whether it's actually local, so an
+    // explicit allow-pattern is required before it will run them through
+    // its (sharp-based) optimizer instead of passing the URL through as-is.
+    remotePatterns: [{ pathname: '/images/curated/**' }],
   },
 });

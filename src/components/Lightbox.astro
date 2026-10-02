@@ -1,23 +1,42 @@
 ---
+import { getPublicImageSize, toWebpPath } from '../lib/image-size';
+
 interface Props {
   images: string[];
   altPrefix: string;
 }
 
 const { images, altPrefix } = Astro.props;
+
+// The compressed .webp sibling (scripts/compress-images.mjs, capped at
+// 2000px wide) is already small enough to use for both the grid thumbnail
+// and the lightbox's zoomed-in view — no need for two separately-sized
+// variants. Real dimensions are still read for the thumbnail's width/height
+// attributes, to avoid layout shift while the grid loads.
+const gallery = await Promise.all(
+  images.map(async (src) => {
+    const { width, height } = await getPublicImageSize(src);
+    return { src, webp: toWebpPath(src), width, height };
+  })
+);
 ---
 
 <div class="lightbox-gallery" data-lightbox-root>
   <div class="gallery-grid">
-    {images.map((src, i) => (
+    {gallery.map(({ src, webp, width, height }, i) => (
       <button
         type="button"
         class="gallery-trigger"
         data-lightbox-open
         data-index={i}
+        data-full-src={webp}
+        data-full-alt={`${altPrefix}, image ${i + 1} of ${images.length}`}
         aria-label={`Open image ${i + 1} of ${images.length} full size`}
       >
-        <img src={src} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" />
+        <picture>
+          <source srcset={webp} type="image/webp" />
+          <img src={src} width={width} height={height} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" />
+        </picture>
       </button>
     ))}
   </div>
@@ -84,10 +103,11 @@ const { images, altPrefix } = Astro.props;
 
     function loadImage(index: number) {
       const trigger = triggers[index];
-      const srcImg = trigger.querySelector('img');
-      if (!srcImg || !imgEl) return;
-      imgEl.src = srcImg.src;
-      imgEl.alt = srcImg.alt;
+      const fullSrc = trigger.dataset.fullSrc;
+      const fullAlt = trigger.dataset.fullAlt;
+      if (!fullSrc || !imgEl) return;
+      imgEl.src = fullSrc;
+      imgEl.alt = fullAlt ?? '';
     }
 
     function show(index: number, direction: 1 | -1 | 0 = 0) {

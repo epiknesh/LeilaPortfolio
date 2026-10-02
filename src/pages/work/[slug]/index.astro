@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Lightbox from '../../../components/Lightbox.astro';
+import { getPublicImageSize, toWebpPath } from '../../../lib/image-size';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -22,6 +23,7 @@ const { data } = project;
 const { Content } = await render(project);
 
 const accent = data.palette[0]?.hex ?? '#B32E22';
+const heroSize = await getPublicImageSize(data.hero);
 ---
 
 <BaseLayout
@@ -32,14 +34,19 @@ const accent = data.palette[0]?.hex ?? '#B32E22';
     <!-- ============ HERO IMAGE (now first, above the title/details) ============ -->
     <section class="section no-reveal hero-image-section grain">
       <div class="sheet">
-        <img
-          src={data.hero}
-          alt={`${data.title}, primary deliverable`}
-          class="hero-image"
-          loading="eager"
-          decoding="async"
-          transition:name={`project-image-${project.id}`}
-        />
+        <picture>
+          <source srcset={toWebpPath(data.hero)} type="image/webp" />
+          <img
+            src={data.hero}
+            alt={`${data.title}, primary deliverable`}
+            width={heroSize.width}
+            height={heroSize.height}
+            class="hero-image"
+            loading="eager"
+            decoding="async"
+            transition:name={`project-image-${project.id}`}
+          />
+        </picture>
       </div>
     </section>
 

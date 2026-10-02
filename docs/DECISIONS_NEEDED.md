@@ -4,18 +4,13 @@ Running list, most recent first. Checked items were resolved; unchecked items ar
 
 ---
 
-## ⚠️ URGENT — NOT A DESIGN DECISION
-
-### 0. C: drive is almost completely full (~92MB free out of 476GB)
-**Not caused by this project** — the LeilaPortfolio folder is only ~410MB total, and I did not download/install anything large enough to cause this. Discovered when an `npx playwright` install failed with `ENOSPC` (no space left on device).
-**Action I took:** stopped all further large installs/downloads immediately, ran a safe `npm cache verify` (reclaimed ~113MB of npm's own cache garbage, no user files touched), and told the background asset-curation agent to write conservatively and stop immediately if it hits disk-full errors rather than retry in a loop. I have **not** deleted any files outside what this project itself generated, and would not without asking first.
-**What I need from you:** This is a machine-wide issue outside this project's scope — you'll likely want to free up space yourself (check Downloads, OneDrive sync status/local cache, old installers, etc.) before doing much more heavy work on this or any other project on this machine. I can help investigate further if you'd like, but didn't want to start deleting things unsupervised while you were away.
-**Update:** C: actually hit **0 bytes free** at one point after an `astro build` run — the build copies everything from `public/` into `dist/`, which duplicated the ~97MB of curated project images (junctioned in from E:) onto C:. I caught it, deleted the regenerable `dist/` folder (safe — it's build output, not source), and recovered to ~80MB free. I've since stopped running `astro build` on this machine entirely and switched to using only `astro dev` (which serves files in place without copying) until either disk space is freed or the site is built on a proper deploy host instead. Noted as a standing constraint in PROJECT_CONTEXT.md §14.
-**Current status:** Holding around ~80MB free. Still very little margin — please free up space on C: when you're back.
-
----
-
 ## OPEN
+
+### 7. GitHub OAuth App registered, but Leila needs her own GitHub account + collaborator access
+**Where:** `/admin` (Sveltia CMS), GitHub repo settings.
+**What's happening:** a GitHub OAuth App ("Leila Portfolio") is registered, pointed at the live Netlify URL with callback `https://api.netlify.com/auth/done`, so `/admin` can authenticate via "Sign In with GitHub." That login proves identity but does not by itself grant edit access — GitHub's own collaborator permissions on the repo gate whether a signed-in user can actually read/write content through the CMS.
+**What I need from you:** have Leila create her own free GitHub account (not share yours), then add her as a collaborator at `github.com/epiknesh/LeilaPortfolio/settings/access` → Add people. She accepts the emailed invite, then signs into `/admin` with her own GitHub login.
+**Separately flagged, deferred by owner:** the repo is currently public (anyone can view code/content on GitHub, though write access stays collaborator-gated). Owner wants to think about public vs. private separately — not blocking.
 
 ### 6. Homepage "about [me]" / "software" / "information" assets pending from Leila
 **Where:** homepage, top of the About intro section (`src/pages/index.astro`).
@@ -45,12 +40,6 @@ Running list, most recent first. Checked items were resolved; unchecked items ar
 **Default action taken:** Included as-is, treated the same as any other case study — this is normal portfolio practice.
 **What I need from you:** Just a sanity check — let me know if Leila wants these two projects held back or treated differently.
 
-### 4. No git repository initialized yet
-**Where:** project root.
-**Issue:** This folder isn't a git repo (confirmed via `git status` → "not a git repository"). All work this session exists only as files on disk, with no version history/commits.
-**Default action taken:** None — didn't run `git init` since starting version control is a structural decision worth confirming (e.g. whether you want it connected to a GitHub remote from the start, what the initial commit should include given the asset-portability issue in item 0/known issues).
-**What I need from you:** Let me know if/when you'd like me to initialize git and make a first commit. Given the curated images currently live outside the repo (junctioned from E:, see known issues), I'd suggest resolving that first so the initial commit doesn't silently exclude 121 image assets.
-
 ### 3. Final production typography
 **Where:** Site-wide.
 **Issue:** The approved design proposal used Playfair Display / Jost / IBM Plex Mono as Google Fonts stand-ins to pitch the *direction* (stamp serif / body sans / mono caption). The PDF's actual "PORTFOLIO" wordmark and "about [me]" script are hand-worked, not set in an existing font — no Google Font will match them exactly.
@@ -61,4 +50,8 @@ Running list, most recent first. Checked items were resolved; unchecked items ar
 
 ## RESOLVED
 
-*(none yet — first pass)*
+### C: drive critically full
+Was a blocking, machine-wide issue (hit 0 bytes free once). As of 2026-10-02, holding ~3GB free — enough headroom to work normally, though `rm -rf dist` after a local build remains good practice. See PROJECT_CONTEXT.md §14.
+
+### No git repository initialized
+Resolved 2026-10-02: `git init`'d, curated images/PDFs copied for real into the repo (junctions removed), pushed to `github.com/epiknesh/LeilaPortfolio`, connected to Netlify for auto-deploy-on-push. See PROJECT_CONTEXT.md §11l.

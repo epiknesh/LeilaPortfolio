@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { brandAssets } from '../../data/project-assets';
 import { software } from '../../data/software';
 import SoftwareIcon from '../../components/SoftwareIcon.astro';
+import { toWebpPath } from '../../lib/image-size';
 
 const primaryTools = software.filter((t) => t.tier === 'primary');
 const secondaryTools = software.filter((t) => t.tier === 'secondary');
@@ -19,11 +20,14 @@ const { Content } = about ? await render(about) : { Content: null };
   <section class="section no-reveal about-hero grain">
     <div class="sheet about-hero-grid">
       <div class="portrait-frame">
-        <img
-          src={brandAssets.aboutIllustration}
-          alt="Illustrated self-portrait of Leila, hand-drawn in ink with red spiral and star accents"
-          class="portrait-image"
-        />
+        <picture>
+          <source srcset={toWebpPath(brandAssets.aboutIllustration)} type="image/webp" />
+          <img
+            src={brandAssets.aboutIllustration}
+            alt="Illustrated self-portrait of Leila, hand-drawn in ink with red spiral and star accents"
+            class="portrait-image"
+          />
+        </picture>
       </div>
       <div>
         <p class="label">about [me]</p>
@@ -84,6 +88,11 @@ const { Content } = about ? await render(about) : { Content: null };
     background: var(--bg-alt);
     border: 1px solid var(--line);
     overflow: hidden;
+  }
+  .portrait-frame picture {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
   .portrait-image {
     width: 100%;

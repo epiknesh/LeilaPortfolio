@@ -19,7 +19,17 @@ const projects = defineCollection({
     process: z.string().optional(),
     cardImage: z.string(),
     hero: z.string(),
-    gallery: z.array(z.string()),
+    // Each gallery image carries its own display size rather than always
+    // rendering in a fixed-column grid — lets Leila art-direct the gallery
+    // rhythm per project (e.g. a single dramatic full-width shot, a square
+    // detail crop, a tall portrait) instead of forcing every image into the
+    // same tile, regardless of its actual subject/composition.
+    gallery: z.array(
+      z.object({
+        image: z.string(),
+        size: z.enum(['standard', 'wide', 'portrait', 'full']).default('standard'),
+      })
+    ),
   }),
 });
 

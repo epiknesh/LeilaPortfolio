@@ -19,11 +19,16 @@ palette:
 cardImage: "/images/curated/casa-colina/mockup-apparel-tshirt-hero.png"
 hero: "/images/curated/casa-colina/logomark-primary.png"
 gallery:
-  - "/images/curated/casa-colina/wordmark-lockup-variants.png"
-  - "/images/curated/casa-colina/mockup-apparel-tshirt-hero.png"
-  - "/images/curated/casa-colina/mockup-tote-bag.png"
-  - "/images/curated/casa-colina/mockup-caps.png"
-  - "/images/curated/casa-colina/logomark-alt-colorway.png"
+  - image: "/images/curated/casa-colina/wordmark-lockup-variants.png"
+    size: "wide"
+  - image: "/images/curated/casa-colina/mockup-apparel-tshirt-hero.png"
+    size: "standard"
+  - image: "/images/curated/casa-colina/mockup-tote-bag.png"
+    size: "standard"
+  - image: "/images/curated/casa-colina/mockup-caps.png"
+    size: "standard"
+  - image: "/images/curated/casa-colina/logomark-alt-colorway.png"
+    size: "standard"
 ---
 
 Casa Colina is a modern A-frame AirBNB in Anilao, Batangas. Casa Colina balances modern built structure and natural landscapes for connection, comfort, and escape.

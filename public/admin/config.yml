@@ -47,7 +47,18 @@ collections:
       - label: "Gallery Images"
         name: gallery
         widget: list
-        field: { label: "Image", name: item, widget: image }
+        summary: "{{fields.image}} ({{fields.size}})"
+        fields:
+          - { label: "Image", name: image, widget: image }
+          - label: "Display Size"
+            name: size
+            widget: select
+            default: "standard"
+            options:
+              - { label: "Standard (half width)", value: "standard" }
+              - { label: "Wide (two-thirds width)", value: "wide" }
+              - { label: "Portrait (narrower, taller crop)", value: "portrait" }
+              - { label: "Full width", value: "full" }
       - { label: "Description", name: body, widget: markdown, hint: "The project write-up paragraphs." }
 
   - name: categories

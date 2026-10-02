@@ -1,8 +1,10 @@
 ---
 import { getPublicImageSize, toWebpPath } from '../lib/image-size';
 
+type GalleryImage = { image: string; size: 'standard' | 'wide' | 'portrait' | 'full' };
+
 interface Props {
-  images: string[];
+  images: GalleryImage[];
   altPrefix: string;
 }
 
@@ -14,19 +16,19 @@ const { images, altPrefix } = Astro.props;
 // variants. Real dimensions are still read for the thumbnail's width/height
 // attributes, to avoid layout shift while the grid loads.
 const gallery = await Promise.all(
-  images.map(async (src) => {
+  images.map(async ({ image: src, size }) => {
     const { width, height } = await getPublicImageSize(src);
-    return { src, webp: toWebpPath(src), width, height };
+    return { src, webp: toWebpPath(src), width, height, size };
   })
 );
 ---
 
 <div class="lightbox-gallery" data-lightbox-root>
   <div class="gallery-grid">
-    {gallery.map(({ src, webp, width, height }, i) => (
+    {gallery.map(({ src, webp, width, height, size }, i) => (
       <button
         type="button"
-        class="gallery-trigger"
+        class={`gallery-trigger size-${size}`}
         data-lightbox-open
         data-index={i}
         data-full-src={webp}
@@ -207,9 +209,19 @@ const gallery = await Promise.all(
 </script>
 
 <style>
+  /*
+    A project's gallery mixes images of genuinely different shapes (a single
+    dramatic wide render, a tall portrait crop, a square detail shot) — an
+    explicit 12-column grid lets each image's own `size` (set per-image in
+    the CMS, see src/content/config.ts) claim the right amount of width
+    instead of forcing every image into the same tile regardless of its
+    actual composition. `standard`/`portrait` both sit in a 6-column (half-
+    width) slot on desktop since the difference between them is aspect
+    ratio, not width; `wide` takes 8 columns; `full` takes all 12.
+  */
   .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(12, 1fr);
     gap: clamp(16px, 2.5vw, 28px);
   }
 
@@ -222,7 +234,12 @@ const gallery = await Promise.all(
     cursor: zoom-in;
     font: inherit;
     color: inherit;
+    grid-column: span 6;
   }
+  .gallery-trigger.size-wide { grid-column: span 8; }
+  .gallery-trigger.size-full { grid-column: span 12; }
+  .gallery-trigger.size-portrait { grid-column: span 4; }
+
   .gallery-trigger:focus-visible {
     outline: 2px solid var(--red);
     outline-offset: 3px;
@@ -232,6 +249,24 @@ const gallery = await Promise.all(
     width: 100%;
     height: auto;
     display: block;
+  }
+  .gallery-trigger.size-portrait .gallery-image {
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 3 / 4;
+  }
+
+  @media (max-width: 760px) {
+    .gallery-trigger,
+    .gallery-trigger.size-wide,
+    .gallery-trigger.size-portrait,
+    .gallery-trigger.size-full {
+      grid-column: span 12;
+    }
+    .gallery-trigger.size-portrait .gallery-image {
+      aspect-ratio: auto;
+      height: auto;
+    }
   }
 
   /* ---------- overlay shell ----------

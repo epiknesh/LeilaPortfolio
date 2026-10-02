@@ -17,10 +17,14 @@ palette:
 cardImage: "/images/curated/strawberry-season/cover-front-back.png"
 hero: "/images/curated/strawberry-season/mockup-booklets-fanned.png"
 gallery:
-  - "/images/curated/strawberry-season/cover-front-back.png"
-  - "/images/curated/strawberry-season/spread-strawberry-berry-sweet.png"
-  - "/images/curated/strawberry-season/spread-nutrition-red-alert.png"
-  - "/images/curated/strawberry-season/spread-wanted-ephemera.png"
+  - image: "/images/curated/strawberry-season/cover-front-back.png"
+    size: "standard"
+  - image: "/images/curated/strawberry-season/spread-strawberry-berry-sweet.png"
+    size: "standard"
+  - image: "/images/curated/strawberry-season/spread-nutrition-red-alert.png"
+    size: "standard"
+  - image: "/images/curated/strawberry-season/spread-wanted-ephemera.png"
+    size: "standard"
 ---
 
 Strawberry Season is an editorial art zine developed as part of the California Institute of the Arts Graphic Design Specialization, exploring the strawberry as a subject through original illustrations, artwork, and imagery. The project experiments with composition, image-making, and editorial sequencing to build a cohesive visual narrative around a single subject.

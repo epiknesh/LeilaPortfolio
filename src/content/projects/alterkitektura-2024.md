@@ -18,12 +18,18 @@ palette:
 cardImage: "/images/curated/alterkitektura/social-net-zero-infographic.png"
 hero: "/images/curated/alterkitektura/social-meet-the-speakers.png"
 gallery:
-  - "/images/curated/alterkitektura/social-net-zero-infographic.png"
-  - "/images/curated/alterkitektura/social-congratulations-winners.png"
-  - "/images/curated/alterkitektura/social-awarding-ceremony.png"
-  - "/images/curated/alterkitektura/social-registration-extended.png"
-  - "/images/curated/alterkitektura/social-thank-you-sponsors.png"
-  - "/images/curated/alterkitektura/mockup-facebook-feed-phone.png"
+  - image: "/images/curated/alterkitektura/social-net-zero-infographic.png"
+    size: "standard"
+  - image: "/images/curated/alterkitektura/social-congratulations-winners.png"
+    size: "standard"
+  - image: "/images/curated/alterkitektura/social-awarding-ceremony.png"
+    size: "standard"
+  - image: "/images/curated/alterkitektura/social-registration-extended.png"
+    size: "standard"
+  - image: "/images/curated/alterkitektura/social-thank-you-sponsors.png"
+    size: "standard"
+  - image: "/images/curated/alterkitektura/mockup-facebook-feed-phone.png"
+    size: "portrait"
 ---
 
 Alterkitektura is a design competition by UAPSA-UPD, exploring alternative approaches to architecture through student-led work. Under the theme "Aghimuan: Blueprint to Net-Zero Architecture," the branding combined blue-green gradients, abstract forms, and geometric compositions to represent the intersection of technology, architecture, and sustainability.

@@ -18,12 +18,18 @@ process: "Each half of the project started as its own concept board — \"Place 
 cardImage: "/images/curated/exploration-portraiture/hero-still-life-restless-mind.png"
 hero: "/images/curated/exploration-portraiture/hero-still-life-restless-mind.png"
 gallery:
-  - "/images/curated/exploration-portraiture/detail-restless-mind-seated.png"
-  - "/images/curated/exploration-portraiture/detail-restless-mind-standing.png"
-  - "/images/curated/exploration-portraiture/detail-restless-mind-closeup.png"
-  - "/images/curated/exploration-portraiture/hero-group-patchwork-fashion.png"
-  - "/images/curated/exploration-portraiture/hero-alterego-lookbook-grid.png"
-  - "/images/curated/exploration-portraiture/detail-alterego-triptych.png"
+  - image: "/images/curated/exploration-portraiture/detail-restless-mind-seated.png"
+    size: "standard"
+  - image: "/images/curated/exploration-portraiture/detail-restless-mind-standing.png"
+    size: "standard"
+  - image: "/images/curated/exploration-portraiture/detail-restless-mind-closeup.png"
+    size: "standard"
+  - image: "/images/curated/exploration-portraiture/hero-group-patchwork-fashion.png"
+    size: "standard"
+  - image: "/images/curated/exploration-portraiture/hero-alterego-lookbook-grid.png"
+    size: "standard"
+  - image: "/images/curated/exploration-portraiture/detail-alterego-triptych.png"
+    size: "wide"
 ---
 
 A two-part portraiture project exploring unconventional approaches to representing identity and the subject. Still Life of a Restless Mind uses a chaotic domestic environment to externalize creative tension, while Patchwork Personality uses photo manipulation and fragmented styling to explore identity through fashion, multiplicity, and self-expression.

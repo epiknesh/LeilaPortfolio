@@ -31,32 +31,32 @@ const heroSize = await getPublicImageSize(data.hero);
   description={data.title}
 >
   <article>
-    <!-- ============ HERO IMAGE (now first, above the title/details) ============ -->
-    <section class="section no-reveal hero-image-section grain">
-      <div class="sheet">
-        <picture>
-          <source srcset={toWebpPath(data.hero)} type="image/webp" />
-          <img
-            src={data.hero}
-            alt={`${data.title}, primary deliverable`}
-            width={heroSize.width}
-            height={heroSize.height}
-            class="hero-image"
-            loading="eager"
-            decoding="async"
-            transition:name={`project-image-${project.id}`}
-          />
-        </picture>
+    <!-- ============ HERO IMAGE (full width, title overlaid at the bottom) ============ -->
+    <section class="section no-reveal hero-image-section">
+      <a href="/#work" class="back-link-overlay font-mono">← back to work</a>
+      <picture>
+        <source srcset={toWebpPath(data.hero)} type="image/webp" />
+        <img
+          src={data.hero}
+          alt={`${data.title}, primary deliverable`}
+          width={heroSize.width}
+          height={heroSize.height}
+          class="hero-image"
+          loading="eager"
+          decoding="async"
+          transition:name={`project-image-${project.id}`}
+        />
+      </picture>
+      <div class="hero-fade" aria-hidden="true"></div>
+      <div class="hero-overlay-text">
+        <h1 class="font-stamp project-title">{data.title}</h1>
+        {data.subtitle && <p class="font-body project-subtitle">{data.subtitle}</p>}
       </div>
     </section>
 
-    <!-- ============ PROJECT TITLE + DETAILS ============ -->
+    <!-- ============ PROJECT DETAILS ============ -->
     <section class="section project-hero grain" style={`--accent: ${accent};`}>
       <div class="sheet">
-        <a href="/#work" class="back-link font-mono">← back to work</a>
-        <h1 class="font-stamp project-title">{data.title}</h1>
-        {data.subtitle && <p class="font-body project-subtitle">{data.subtitle}</p>}
-
         <div class="meta-grid font-mono">
           <div>
             <p class="label">project type</p>
@@ -139,23 +139,65 @@ const heroSize = await getPublicImageSize(data.hero);
 </BaseLayout>
 
 <style>
-  .back-link {
-    display: inline-block;
+  .hero-image-section {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .hero-image-section picture {
+    display: block;
+    width: 100%;
+  }
+
+  .back-link-overlay {
+    position: absolute;
+    top: clamp(16px, 3vw, 28px);
+    left: clamp(16px, 3vw, 28px);
+    z-index: 2;
     font-size: var(--fs-caption);
     letter-spacing: 0.06em;
-    color: var(--text-dim);
-    margin-bottom: clamp(28px, 5vw, 56px);
+    color: #EDE8E0;
+    background: rgba(13, 12, 11, 0.4);
+    padding: 8px 14px;
+    border-radius: 2px;
+    backdrop-filter: blur(4px);
+    transition: background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
   }
-  .back-link:hover { color: var(--red); }
+  .back-link-overlay:hover {
+    background: rgba(13, 12, 11, 0.65);
+    color: var(--pink);
+  }
+  .back-link-overlay:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  .hero-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(13, 12, 11, 0.75) 0%, rgba(13, 12, 11, 0) 38%);
+    pointer-events: none;
+  }
+
+  .hero-overlay-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    padding: clamp(24px, 5vw, 48px) clamp(16px, 4vw, 48px);
+  }
 
   .project-title {
     font-size: var(--fs-display);
     line-height: 0.95;
+    color: #EDE8E0;
   }
   .project-subtitle {
     font-size: var(--fs-body-lg);
     font-style: italic;
-    color: var(--text-dim);
+    color: #D8D3CB;
     margin-top: 12px;
   }
 
@@ -163,9 +205,6 @@ const heroSize = await getPublicImageSize(data.hero);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    margin-top: clamp(40px, 7vw, 72px);
-    padding-top: 24px;
-    border-top: 1px solid var(--line);
   }
   .meta-grid p:not(.label) {
     font-size: var(--fs-small);
@@ -189,11 +228,9 @@ const heroSize = await getPublicImageSize(data.hero);
 
   .hero-image {
     display: block;
-    max-width: 100%;
-    max-height: 72vh;
-    width: auto;
-    height: auto;
-    margin-inline: auto;
+    width: 100%;
+    height: clamp(360px, 62vh, 760px);
+    object-fit: cover;
     background: var(--bg-alt);
   }
 

@@ -18,13 +18,20 @@ process: "Location scouting and shot planning were worked out on a contact-sheet
 cardImage: "/images/curated/ruin-and-reverie/hero-arki-sign-park.png"
 hero: "/images/curated/ruin-and-reverie/portrait-sunflower-field.png"
 gallery:
-  - "/images/curated/ruin-and-reverie/portrait-graffiti-wall-sablay.png"
-  - "/images/curated/ruin-and-reverie/portrait-arcade-colonnade.png"
-  - "/images/curated/ruin-and-reverie/hero-tess-store-scene.png"
-  - "/images/curated/ruin-and-reverie/couple-portrait-sunflower-field.png"
-  - "/images/curated/ruin-and-reverie/couple-walking-colonnade.png"
-  - "/images/curated/ruin-and-reverie/couple-portrait-bench-graffiti.png"
-  - "/images/curated/ruin-and-reverie/portrait-graffiti-wall-fullbody.png"
+  - image: "/images/curated/ruin-and-reverie/portrait-graffiti-wall-sablay.png"
+    size: "standard"
+  - image: "/images/curated/ruin-and-reverie/portrait-arcade-colonnade.png"
+    size: "standard"
+  - image: "/images/curated/ruin-and-reverie/hero-tess-store-scene.png"
+    size: "wide"
+  - image: "/images/curated/ruin-and-reverie/couple-portrait-sunflower-field.png"
+    size: "standard"
+  - image: "/images/curated/ruin-and-reverie/couple-walking-colonnade.png"
+    size: "portrait"
+  - image: "/images/curated/ruin-and-reverie/couple-portrait-bench-graffiti.png"
+    size: "portrait"
+  - image: "/images/curated/ruin-and-reverie/portrait-graffiti-wall-fullbody.png"
+    size: "standard"
 ---
 
 A conceptual graduation portrait series that contrasts ethereal imagery with urbex and grunge aesthetics. Shot across UP Diliman and Cubao, the series pairs soft white styling and natural landscapes with weathered architecture and graffiti, using warm muted tones, film grain, and vintage-inspired treatments to create an editorial take on graduation portraiture.

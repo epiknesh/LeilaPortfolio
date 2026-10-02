@@ -5,6 +5,14 @@ import ContactForm from '../../components/ContactForm.astro';
 import { site } from '../../data/site';
 
 const contact = await getEntry('contact', 'contact');
+
+const channels = [
+  { label: 'email', value: site.email, href: `mailto:${site.email}` },
+  { label: 'phone', value: site.phone, href: `tel:${site.phone.replace(/[^+\d]/g, '')}` },
+  { label: 'linkedin', value: 'linkedin ↗', href: site.linkedin, external: true },
+  { label: 'instagram', value: site.instagramHandle, href: site.instagram, external: true },
+  { label: 'location', value: site.location },
+];
 ---
 
 <BaseLayout
@@ -18,7 +26,33 @@ const contact = await getEntry('contact', 'contact');
       <p class="font-body contact-lede">
         {contact?.data.lede} <a href={`mailto:${site.email}`} class="inline-link">{site.email}</a>.
       </p>
-      <ContactForm />
+
+      <div class="contact-layout">
+        <ContactForm />
+
+        <aside class="channels-panel" aria-label="Other ways to reach Leila">
+          <p class="label channels-heading">reach her directly</p>
+          <ul class="channels-list">
+            {channels.map((c) => (
+              <li class="channel-row">
+                <span class="channel-label font-mono">{c.label}</span>
+                {c.href ? (
+                  <a
+                    href={c.href}
+                    class="channel-value font-mono"
+                    target={c.external ? '_blank' : undefined}
+                    rel={c.external ? 'noopener noreferrer' : undefined}
+                  >
+                    {c.value}
+                  </a>
+                ) : (
+                  <span class="channel-value font-mono">{c.value}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </aside>
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -42,4 +76,68 @@ const contact = await getEntry('contact', 'contact');
     transition: border-color var(--dur-fast) var(--ease-standard);
   }
   .inline-link:hover { border-color: var(--red); }
+
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(32px, 6vw, 72px);
+    align-items: start;
+  }
+
+  .channels-panel {
+    border-top: 1px solid var(--line);
+    padding-top: clamp(20px, 3vw, 28px);
+  }
+  .channels-heading {
+    margin-bottom: 18px;
+  }
+
+  .channels-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .channel-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .channel-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .channel-label {
+    font-size: var(--fs-caption);
+    text-transform: lowercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+  }
+  .channel-value {
+    font-size: var(--fs-body-lg);
+    color: var(--text);
+  }
+  a.channel-value {
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+    width: fit-content;
+  }
+  a.channel-value:hover {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  @media (max-width: 820px) {
+    .contact-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-block);
+    }
+    .channels-panel {
+      order: -1;
+    }
+  }
 </style>

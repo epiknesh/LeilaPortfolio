@@ -254,6 +254,17 @@ const gallery = await Promise.all(
   .gallery-trigger.size-full { grid-column: span 12; }
   .gallery-trigger.size-portrait { grid-column: span 4; }
 
+  /* <picture> defaults to display:inline, which sizes it to the <img>'s
+     own intrinsic dimensions instead of stretching to fill the grid cell
+     — without this, each gallery tile shows its image at a tiny, oddly
+     placed size inside a mostly-empty box instead of actually filling the
+     width its `size` class claims. Same root cause/fix as the project-card
+     thumbnail letterboxing bug fixed earlier. */
+  .gallery-trigger picture {
+    display: block;
+    width: 100%;
+  }
+
   .gallery-trigger:focus-visible {
     outline: 2px solid var(--red);
     outline-offset: 3px;

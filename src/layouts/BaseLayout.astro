@@ -111,7 +111,14 @@ const { title, description } = Astro.props;
         const target = pendingScrollTarget;
         pendingScrollTarget = null;
         const el = document.getElementById(target);
-        el?.scrollIntoView({ behavior: 'instant', block: 'start' });
+        if (!el) return;
+        // A specific grid tile (ProjectCard.astro's id="project-<slug>",
+        // used when returning from a project page so the morph lands back
+        // on the exact tile it came from, wherever that sits in the grid)
+        // gets centered in the viewport. The generic "#work" section link
+        // (header/footer nav) scrolls to its top like a normal section jump.
+        const block = target === 'work' ? 'start' : 'center';
+        el.scrollIntoView({ behavior: 'instant', block });
       });
     </script>
   </body>

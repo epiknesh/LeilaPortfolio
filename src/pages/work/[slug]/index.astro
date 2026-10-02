@@ -33,7 +33,7 @@ const heroSize = await getPublicImageSize(data.hero);
   <article>
     <!-- ============ HERO IMAGE (full width, title overlaid at the bottom) ============ -->
     <section class="section no-reveal hero-image-section">
-      <a href="/" data-scroll-to="work" class="back-link-overlay font-mono">← back to work</a>
+      <a href="/" data-scroll-to={`project-${project.id}`} class="back-link-overlay font-mono">← back to work</a>
       <picture>
         <source srcset={toWebpPath(data.hero)} type="image/webp" />
         <img
@@ -126,7 +126,7 @@ const heroSize = await getPublicImageSize(data.hero);
           <span class="dim">← prev</span>
           <span class="filmstrip-title font-stamp">{prev.data.title}</span>
         </a>
-        <a href="/" data-scroll-to="work" class="filmstrip-index font-mono">
+        <a href="/" data-scroll-to={`project-${project.id}`} class="filmstrip-index font-mono">
           {String(idx + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
         </a>
         <a href={`/work/${next.id}/`} class="filmstrip-link font-mono align-right">
@@ -236,6 +236,17 @@ const heroSize = await getPublicImageSize(data.hero);
     height: clamp(360px, 62vh, 760px);
     object-fit: cover;
     background: var(--bg-alt);
+    transition: transform 900ms var(--ease-standard);
+  }
+  .hero-image-section:hover .hero-image {
+    transform: scale(1.025);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-image { transition: none; }
+    .hero-image-section:hover .hero-image { transform: none; }
+  }
+  @media (hover: none) {
+    .hero-image-section:hover .hero-image { transform: none; }
   }
 
   .description-grid {

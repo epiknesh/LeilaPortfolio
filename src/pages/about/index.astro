@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { brandAssets } from '../../data/project-assets';
+import { software } from '../../data/software';
+import SoftwareIcon from '../../components/SoftwareIcon.astro';
+
+const primaryTools = software.filter((t) => t.tier === 'primary');
+const secondaryTools = software.filter((t) => t.tier === 'secondary');
+---
+
+<BaseLayout
+  title="About"
+  description="About Leila Karlene Banta, graphic designer, illustrator, and architecture graduate based in Metro Manila, Philippines."
+>
+  <section class="section no-reveal about-hero grain">
+    <div class="sheet about-hero-grid">
+      <div class="portrait-frame">
+        <img
+          src={brandAssets.aboutIllustration}
+          alt="Illustrated self-portrait of Leila, hand-drawn in ink with red spiral and star accents"
+          class="portrait-image"
+        />
+      </div>
+      <div>
+        <p class="label">about [me]</p>
+        <h1 class="font-stamp hero-title">Leila Karlene<br />Banta</h1>
+        <p class="font-body hero-lede">
+          Hi, I'm Leila, a graphic designer, illustrator, and digital/social media creative with an
+          architecture background. I make things for pages, screens, and everywhere in
+          between—designing with unique typography, bold visuals, and ideas that know how to hold
+          your attention.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section narrative-section grain bg-alt">
+    <div class="sheet narrative-grid">
+      <div>
+        <p class="label">architecture → design</p>
+        <h2 class="font-stamp">Two disciplines,<br />one instinct.</h2>
+      </div>
+      <div class="narrative-copy font-body">
+        <p>
+          Leila is finishing her Bachelor of Science in Architecture at the University of the
+          Philippines Diliman, Cum Laude, Class of 2026. That training shows up in her design work:
+          presentation boards taught her how to hold a lot of information on one page without losing
+          the hierarchy, and studio critique taught her to defend a composition, not just make one.
+        </p>
+        <p>
+          Outside coursework, she's designed logos, visual identities, and merchandise for small
+          businesses and personal clients since 2022, led publicity and visual communications for
+          UAPSA-UPD's Academics Committee, and contributed advocacy design work for Gabriela Youth–UPD.
+          She also builds 3D models and interior visualizations for commercial and residential spaces,
+          work that most graphic designers never get asked to do.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section software-section grain">
+    <div class="sheet">
+      <p class="label">software</p>
+
+      <h3 class="font-stamp tier-title">Primary</h3>
+      <div class="tool-grid">
+        {primaryTools.map((tool) => (
+          <div class="tool-tile">
+            <SoftwareIcon icon={tool.icon} class="tool-icon" />
+            <p class="font-mono tool-name">{tool.name}{tool.note && <span class="dim"> [{tool.note}]</span>}</p>
+          </div>
+        ))}
+      </div>
+
+      <h3 class="font-stamp tier-title" style="margin-top: 44px;">Secondary / Basic</h3>
+      <div class="tool-grid">
+        {secondaryTools.map((tool) => (
+          <div class="tool-tile">
+            <SoftwareIcon icon={tool.icon} class="tool-icon" />
+            <p class="font-mono tool-name">{tool.name}{tool.note && <span class="dim"> [{tool.note}]</span>}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-hero-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.3fr;
+    gap: clamp(32px, 6vw, 72px);
+    align-items: center;
+  }
+  .portrait-frame {
+    aspect-ratio: 3 / 4;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .portrait-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+  .hero-title {
+    font-size: var(--fs-display);
+    line-height: 0.95;
+    margin-block: 14px 24px;
+  }
+  .hero-lede {
+    font-size: var(--fs-body-lg);
+    max-width: 52ch;
+    opacity: 0.9;
+  }
+
+  .narrative-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: clamp(24px, 5vw, 64px);
+  }
+  .narrative-copy p {
+    max-width: 62ch;
+    margin-bottom: 20px;
+    opacity: 0.88;
+  }
+  .narrative-copy p:last-child { margin-bottom: 0; }
+
+  .tier-title {
+    font-size: 1.1rem;
+    text-transform: none;
+    letter-spacing: 0;
+    margin: 20px 0 16px;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 20px;
+    max-width: 640px;
+  }
+  .tool-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+  .tool-icon {
+    width: 32px;
+    height: 32px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .tool-name {
+    font-size: var(--fs-caption);
+    line-height: 1.4;
+  }
+  .tool-name .dim { color: var(--text-dim); }
+
+  @media (max-width: 720px) {
+    .about-hero-grid,
+    .narrative-grid {
+      grid-template-columns: 1fr;
+    }
+    .tool-grid {
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 16px;
+    }
+  }
+</style>

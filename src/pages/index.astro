@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import SoftwareIcon from '../components/SoftwareIcon.astro';
+import { categories, site } from '../data/site';
+import { software } from '../data/software';
+---
+
+<BaseLayout
+  title="Portfolio"
+  description="Graphic design portfolio of Leila Karlene Banta: branding, digital & social media, editorial, presentation design, creative direction, and 3D/architectural visualization."
+>
+  <!-- ============ ABOUT INTRO (now the opening section) ============ -->
+  <section class="section no-reveal about-intro grain" id="about-intro">
+    <div class="sheet about-grid">
+      <div>
+        <!--
+          PLACEHOLDER: Leila is making two real assets to replace this —
+          a logo (swaps out the "about [me]" heading) and a typescript/
+          wordmark treatment of her name (swaps out "software" / "information").
+          Replace the two placeholder boxes below with real <img> tags once
+          those files exist. See docs/DECISIONS_NEEDED.md.
+        -->
+        <h1 class="about-heading-placeholder font-mono" aria-label="About me">
+          [ logo placeholder — about [me] ]
+        </h1>
+        <div class="about-sub-placeholder font-mono" aria-label="Software, information">
+          [ typescript placeholder — software / information ]
+        </div>
+      </div>
+      <div class="about-copy">
+        <p class="font-body intro-line">
+          Hi, I'm Leila, a graphic designer, illustrator, and digital/social media creative with an
+          architecture background. I make things for pages, screens, and everywhere in
+          between—designing with unique typography, bold visuals, and ideas that know how to hold
+          your attention.
+        </p>
+        <ul class="software-list">
+          {software.map((tool) => (
+            <li class="software-item" tabindex="0" aria-label={tool.name}>
+              <span class="software-icon-wrap">
+                <SoftwareIcon icon={tool.icon} class="software-icon" />
+              </span>
+              <span class="software-name font-mono" aria-hidden="true">{tool.name}</span>
+            </li>
+          ))}
+        </ul>
+        <a href="/about/" class="more-link font-mono">more about leila →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORK: FILTERABLE GRID ============ -->
+  <section class="section work-section grain" id="work">
+    <div class="sheet">
+      <p class="label" style="margin-bottom: 20px;">selected work</p>
+      <ProjectGrid categories={categories} />
+    </div>
+  </section>
+
+  <!-- ============ CONTACT TEASER ============ -->
+  <section class="section contact-section grain" id="contact">
+    <div class="sheet contact-inner">
+      <div>
+        <p class="label">let's work together</p>
+        <h2 class="font-stamp contact-heading">Have a project<br />in mind?</h2>
+        <p class="font-body contact-lede">
+          {site.email}
+        </p>
+      </div>
+      <a href="/contact/" class="contact-link font-mono">send a message →</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---- about intro ---- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(24px, 6vw, 80px);
+    align-items: start;
+  }
+  /* Placeholders for two real assets Leila is producing (a logo and a
+     typescript/wordmark of her name) — see the HTML comment above these
+     in the markup. Sized roughly to where the final images will sit so
+     the layout doesn't jump once they're swapped in. */
+  .about-heading-placeholder,
+  .about-sub-placeholder {
+    display: flex;
+    align-items: center;
+    border: 1px dashed var(--line);
+    background: var(--bg-alt);
+    color: var(--text-dim);
+    font-size: var(--fs-caption);
+    letter-spacing: 0.04em;
+    text-align: center;
+    padding: 20px;
+  }
+  .about-heading-placeholder {
+    min-height: 120px;
+    margin-bottom: 16px;
+  }
+  .about-sub-placeholder {
+    min-height: 72px;
+  }
+  .intro-line {
+    font-size: var(--fs-body-lg);
+    max-width: 56ch;
+    opacity: 0.92;
+  }
+  .software-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 28px 0 0;
+    padding: 0;
+  }
+  .software-item {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: default;
+  }
+  .software-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  .software-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--red);
+  }
+  .software-name {
+    display: block;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: var(--fs-caption);
+    letter-spacing: 0.04em;
+    color: var(--text);
+    transition: max-width var(--dur-standard) var(--ease-standard), padding-left var(--dur-standard) var(--ease-standard);
+  }
+  .software-item:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+  .software-item:hover .software-name,
+  .software-item:focus .software-name {
+    max-width: 160px;
+    padding-left: 10px;
+  }
+
+  /* Touch devices: hover doesn't apply meaningfully, so keep names visible. */
+  @media (hover: none) {
+    .software-item { padding-left: 10px; }
+    .software-name { max-width: 160px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .software-name, .software-item, .software-icon { transition: none; }
+  }
+  .more-link {
+    display: inline-block;
+    margin-top: 32px;
+    font-size: var(--fs-small);
+    color: var(--red);
+    letter-spacing: 0.06em;
+  }
+  .more-link:hover { color: var(--text); }
+
+  @media (max-width: 640px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---- contact teaser ---- */
+  .contact-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .contact-heading {
+    font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+    line-height: 0.95;
+    margin-block: 10px 10px;
+    font-style: italic;
+    color: var(--text);
+  }
+  .contact-lede {
+    font-size: var(--fs-small);
+    color: var(--text-dim);
+  }
+  .contact-link {
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    color: var(--red);
+    white-space: nowrap;
+  }
+  .contact-link:hover { color: var(--text); }
+
+  @media (max-width: 560px) {
+    .contact-inner { align-items: flex-start; }
+  }
+</style>

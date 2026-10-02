@@ -1,0 +1,18 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  icon: string;
+  class?: string;
+}
+
+const { icon, class: className } = Astro.props;
+
+const svgPath = path.resolve('src/icons/software', `${icon}.svg`);
+const raw = fs.readFileSync(svgPath, 'utf-8');
+// Strip any explicit width/height so the icon scales via CSS instead.
+const svg = raw.replace(/<svg /, `<svg class="${className ?? ''}" `);
+---
+
+<Fragment set:html={svg} />

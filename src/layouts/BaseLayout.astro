@@ -1,0 +1,89 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | Leila Karlene Banta</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Fonts: stamp/display serif, script/signature italic, body + mono
+         (both IBM Plex Mono as of 2026-10-02 — see tokens.css). Jost was
+         dropped from this load since nothing in the design system
+         references it anymore. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600&family=Petit+Formal+Script&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta property="og:title" content={`${title} | Leila Karlene Banta`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <!-- Smooths navigation between pages (notably grid -> project page) via
+         the browser's native View Transitions API — no JS framework/router
+         needed, works on a static multi-page site. See ProjectCard.astro
+         and work/[slug]/index.astro for the shared view-transition-name
+         pairing that makes the clicked tile's image morph into the
+         destination page's hero image. -->
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <SiteHeader transition:persist />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter transition:persist />
+
+    <script>
+      // Runs on first load AND after every View Transitions navigation
+      // (astro:page-load fires both times — see MDN/Astro docs) so the
+      // scroll-reveal still works on a page reached via client-side
+      // routing, not just a hard page load.
+      function initSectionReveal() {
+        document.documentElement.classList.add('js-reveal-ready');
+
+        const sections = document.querySelectorAll<HTMLElement>('.section:not(.no-reveal):not(.is-revealed)');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion || sections.length === 0) {
+          sections.forEach((s) => s.classList.add('is-revealed'));
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-revealed');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+        );
+        sections.forEach((s) => observer.observe(s));
+      }
+
+      document.addEventListener('astro:page-load', initSectionReveal);
+    </script>
+  </body>
+</html>

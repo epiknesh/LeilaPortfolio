@@ -1,0 +1,64 @@
+# Decisions Needed From Owner
+
+Running list, most recent first. Checked items were resolved; unchecked items are still open. This file is bundled up for review whenever the owner returns — nothing here blocks continued unattended work, since a reasonable default is always chosen and recorded, but these are the calls worth a human double-check.
+
+---
+
+## ⚠️ URGENT — NOT A DESIGN DECISION
+
+### 0. C: drive is almost completely full (~92MB free out of 476GB)
+**Not caused by this project** — the LeilaPortfolio folder is only ~410MB total, and I did not download/install anything large enough to cause this. Discovered when an `npx playwright` install failed with `ENOSPC` (no space left on device).
+**Action I took:** stopped all further large installs/downloads immediately, ran a safe `npm cache verify` (reclaimed ~113MB of npm's own cache garbage, no user files touched), and told the background asset-curation agent to write conservatively and stop immediately if it hits disk-full errors rather than retry in a loop. I have **not** deleted any files outside what this project itself generated, and would not without asking first.
+**What I need from you:** This is a machine-wide issue outside this project's scope — you'll likely want to free up space yourself (check Downloads, OneDrive sync status/local cache, old installers, etc.) before doing much more heavy work on this or any other project on this machine. I can help investigate further if you'd like, but didn't want to start deleting things unsupervised while you were away.
+**Update:** C: actually hit **0 bytes free** at one point after an `astro build` run — the build copies everything from `public/` into `dist/`, which duplicated the ~97MB of curated project images (junctioned in from E:) onto C:. I caught it, deleted the regenerable `dist/` folder (safe — it's build output, not source), and recovered to ~80MB free. I've since stopped running `astro build` on this machine entirely and switched to using only `astro dev` (which serves files in place without copying) until either disk space is freed or the site is built on a proper deploy host instead. Noted as a standing constraint in PROJECT_CONTEXT.md §14.
+**Current status:** Holding around ~80MB free. Still very little margin — please free up space on C: when you're back.
+
+---
+
+## OPEN
+
+### 6. Homepage "about [me]" / "software" / "information" assets pending from Leila
+**Where:** homepage, top of the About intro section (`src/pages/index.astro`).
+**What's happening:** per direct instruction, the hand-script "about [me]" heading and "software" / "information" sub-labels are now placeholder boxes (dashed border, bracketed placeholder text) instead of live text — Leila is making a real logo (replaces "about [me]") and a typescript/wordmark treatment of her name (replaces "software" / "information").
+**What I need from you:** once those two image files exist, swap the two placeholder elements in `index.astro` for real `<img>` tags. Flagging dimensions aren't finalized either — the placeholder boxes are sized roughly (120px / 72px min-height) to approximate where the real assets will sit, but that's a guess, not a spec from Leila.
+
+### 5. Contact form needs a real Formspree account to actually work
+**Where:** homepage `/#contact` section, `src/components/ContactForm.astro`.
+**What was built:** a real contact form (name/email/message, client-side validation, honeypot spam field, accessible error states, success confirmation) that submits via Formspree — a free third-party form-delivery service, chosen specifically because this is a static site with no backend of its own to receive submissions.
+**Why it's not fully done:** the form currently points at a placeholder Formspree ID (`REPLACE_WITH_REAL_FORMSPREE_ID`). It renders and validates correctly, but submissions will fail until this is replaced with a real one.
+**What I need from you (or Leila):** create a free account at formspree.io, add a new form, and give me the form ID (a short string like `abcdwxyz` from the form's endpoint URL `https://formspree.io/f/abcdwxyz`) — I'll drop it into `ContactForm.astro` and it'll be live. Takes about 2 minutes on their end. Free tier caps at 50 submissions/month, which is almost certainly enough for a personal portfolio; flagging in case that ever needs revisiting.
+
+---
+
+## OPEN
+
+### 1. UP Arki 2026 yearbook spread — real classmates' personal info
+**Where:** Portfolio PDF page 16, bottom two rows (individual student spreads for "Pol", "Eri", "Kity", "Vince" — includes names, photos, and what appears to be birthdate/personal fields).
+**Issue:** These are identifiable third parties (Leila's classmates) who consented to appear in a print yearbook, not necessarily a public website. Publishing their names/photos/personal info on leilabanta.com without confirmed consent is a privacy risk to them, and a reputational risk to Leila if someone objects.
+**Default action taken:** Only using the yearbook **cover** and the **"What is Class 2026 Made Of" infographic spread** (no identifiable individuals) for the website's UP Arki 2026 case study. Individual student bio spreads are excluded from the site by default.
+**Follow-up catch:** during an image-quality review pass, found that the originally-curated cover mockup crop (`up-arki-yearbook/cover-and-open-spread-mockup.png`) still showed a sliver of an *open* spread in the background — first a partially legible bio card, then on closer inspection a fully readable individual's name, photo, and personal facts ("LEANDRO dar juan," hometown, birthday, etc.) that the original crop bounds had cut close to but not fully excluded. Re-cropped from the original source page to show only the closed book cover with no part of any open spread visible. Worth noting as a reminder to double-check crop bounds carefully on any future privacy-sensitive image, not just judge by the intended subject.
+**What I need from you:** Confirm this is the right call, or confirm Leila has consent from those classmates to publish their spreads, in which case I can include them.
+
+### 2. Portraiture project — identifiable real people
+**Where:** Portfolio PDF pages 21–22 ("Exploration with Portraiture," "Ruin and Reverie").
+**Issue:** Real models/friends are clearly identifiable. Standard practice for a photography-inclusive design portfolio (unlike case #1, this isn't a privacy overreach by default), but worth a confirmation since it's going from a PDF she controls distribution of to a public, indexable website.
+**Default action taken:** Included as-is, treated the same as any other case study — this is normal portfolio practice.
+**What I need from you:** Just a sanity check — let me know if Leila wants these two projects held back or treated differently.
+
+### 4. No git repository initialized yet
+**Where:** project root.
+**Issue:** This folder isn't a git repo (confirmed via `git status` → "not a git repository"). All work this session exists only as files on disk, with no version history/commits.
+**Default action taken:** None — didn't run `git init` since starting version control is a structural decision worth confirming (e.g. whether you want it connected to a GitHub remote from the start, what the initial commit should include given the asset-portability issue in item 0/known issues).
+**What I need from you:** Let me know if/when you'd like me to initialize git and make a first commit. Given the curated images currently live outside the repo (junctioned from E:, see known issues), I'd suggest resolving that first so the initial commit doesn't silently exclude 121 image assets.
+
+### 3. Final production typography
+**Where:** Site-wide.
+**Issue:** The approved design proposal used Playfair Display / Jost / IBM Plex Mono as Google Fonts stand-ins to pitch the *direction* (stamp serif / body sans / mono caption). The PDF's actual "PORTFOLIO" wordmark and "about [me]" script are hand-worked, not set in an existing font — no Google Font will match them exactly.
+**Default action taken:** Proceeding with a closer-matching Google Fonts selection for production (documented in PROJECT_CONTEXT.md §7 as decided), and treating the "PORTFOLIO" stamp wordmark itself as a locked image/vector asset traced from the original PDF art rather than trying to recreate it in a live font — this preserves exact fidelity for the one piece of type that most needs it.
+**What I need from you:** Nothing blocking — flagging in case you'd rather commission/license a closer hand-lettered typeface later.
+
+---
+
+## RESOLVED
+
+*(none yet — first pass)*

@@ -1,0 +1,116 @@
+---
+import { nav } from '../data/site';
+---
+
+<header class="site-header">
+  <a href="/" class="brand-link">
+    <!-- PLACEHOLDER: Leila is making a logo mark for this spot — swap for
+         a real <img> once that file exists. See docs/DECISIONS_NEEDED.md. -->
+    <span class="logo-placeholder font-mono" aria-hidden="true">[ logo ]</span>
+    <span class="wordmark font-mono">
+      <span class="wordmark-full">leila karlene banta</span>
+      <span class="wordmark-short">leila banta</span>
+    </span>
+  </a>
+  <nav aria-label="Primary">
+    <ul>
+      {nav.map((item) => (
+        <li><a href={item.href} class="font-mono">{item.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 18px var(--gutter);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .logo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px dashed var(--line);
+    background: var(--bg-alt);
+    color: var(--text-dim);
+    font-size: 0.55rem;
+    letter-spacing: 0;
+    flex-shrink: 0;
+  }
+
+  .wordmark {
+    font-size: var(--fs-caption);
+    text-transform: lowercase;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .wordmark-short { display: none; }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: clamp(10px, 3vw, 32px);
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a {
+    font-size: var(--fs-caption);
+    text-transform: lowercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    transition: color var(--dur-fast) var(--ease-standard);
+    white-space: nowrap;
+  }
+
+  nav a:hover {
+    color: var(--red);
+  }
+
+  @media (max-width: 560px) {
+    .site-header {
+      padding-block: 14px;
+      gap: 10px;
+    }
+    .wordmark-full { display: none; }
+    .wordmark-short { display: inline; }
+    nav ul {
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .site-header {
+      padding-inline: 14px;
+    }
+    .brand-link { gap: 6px; }
+    .logo-placeholder { width: 22px; height: 22px; }
+    nav ul {
+      gap: 7px;
+    }
+    .wordmark, nav a {
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+    }
+  }
+</style>

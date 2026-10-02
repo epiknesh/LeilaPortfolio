@@ -1,0 +1,134 @@
+---
+import { site } from '../data/site';
+---
+
+<footer class="site-footer grain">
+  <div class="sheet footer-inner">
+    <div class="footer-main">
+      <p class="label">get in touch</p>
+      <h2 class="font-stamp contact-title">Let's make<br />something.</h2>
+      <div class="contact-lines">
+        <a href={`mailto:${site.email}`} class="contact-line font-mono">{site.email}</a>
+        <p class="contact-line font-mono dim">{site.phone}</p>
+        <a href={site.linkedin} class="contact-line font-mono" target="_blank" rel="noopener noreferrer">linkedin ↗</a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p class="label">location</p>
+      <p class="font-mono">{site.location}</p>
+      <p class="label" style="margin-top: 28px;">index</p>
+      <ul class="footer-nav">
+        <li><a href="/#work" class="font-mono">work</a></li>
+        <li><a href="/about/" class="font-mono">about</a></li>
+        <li><a href="/resume/" class="font-mono">resume</a></li>
+        <li><a href="/contact/" class="font-mono">contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sheet footer-bottom">
+    <p class="font-mono dim small">leila karlene banta &middot; graphic design portfolio</p>
+    <p class="font-mono dim small">&copy; {new Date().getFullYear()}</p>
+  </div>
+</footer>
+
+<style>
+  /*
+    The footer is the one deliberate dark-background exception on an
+    otherwise flat #f0f0f0 site (direct owner decision, 2026-10-02) — these
+    --footer-* tokens are scoped to this component only, not part of a
+    site-wide register system.
+  */
+  .site-footer {
+    --footer-text: #EDE8E0;
+    --footer-text-dim: #A39D94;
+    --footer-line: rgba(255, 255, 255, 0.15);
+    padding-block: var(--space-section) 32px;
+    background: var(--ink-2);
+    border-top: 1px solid var(--footer-line);
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: var(--space-block);
+    padding-bottom: var(--space-block);
+    border-bottom: 1px solid var(--footer-line);
+  }
+
+  .contact-title {
+    font-size: var(--fs-display);
+    line-height: 0.95;
+    margin-block: 18px 32px;
+    font-style: italic;
+    color: var(--footer-text);
+  }
+
+  .contact-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .contact-line {
+    font-size: var(--fs-body-lg);
+    color: var(--footer-text);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+  }
+  a.contact-line:hover {
+    border-color: var(--red);
+    color: var(--pink);
+  }
+  .contact-line.dim {
+    color: var(--footer-text-dim);
+  }
+
+  .footer-meta {
+    text-align: right;
+  }
+  .site-footer .label {
+    color: var(--footer-text-dim);
+  }
+  .footer-meta p.font-mono {
+    color: var(--footer-text);
+    font-size: var(--fs-small);
+  }
+
+  .footer-nav {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .footer-nav a {
+    color: var(--footer-text-dim);
+    font-size: var(--fs-small);
+    text-transform: lowercase;
+    letter-spacing: 0.06em;
+  }
+  .footer-nav a:hover { color: var(--pink); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 24px;
+  }
+  .footer-bottom .dim { color: var(--footer-text-dim); }
+  .small { font-size: var(--fs-caption); letter-spacing: 0.04em; }
+
+  @media (max-width: 680px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+    }
+    .footer-meta {
+      text-align: left;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      gap: 6px;
+    }
+  }
+</style>

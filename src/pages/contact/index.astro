@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import { site } from '../../data/site';
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch with Leila Karlene Banta, graphic designer and illustrator based in Metro Manila, Philippines."
+>
+  <section class="section no-reveal contact-hero grain">
+    <div class="sheet">
+      <p class="label">get in touch</p>
+      <h1 class="font-stamp contact-heading">Send a message.</h1>
+      <p class="font-body contact-lede">
+        Prefer email? Reach Leila directly at <a href={`mailto:${site.email}`} class="inline-link">{site.email}</a>.
+      </p>
+      <ContactForm />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-heading {
+    font-size: var(--fs-display);
+    line-height: 0.95;
+    margin-block: 14px 20px;
+    font-style: italic;
+  }
+  .contact-lede {
+    font-size: var(--fs-body-lg);
+    color: var(--text-dim);
+    max-width: 60ch;
+    margin-bottom: var(--space-block);
+  }
+  .inline-link {
+    color: var(--red);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-fast) var(--ease-standard);
+  }
+  .inline-link:hover { border-color: var(--red); }
+</style>

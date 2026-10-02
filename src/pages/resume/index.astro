@@ -1,0 +1,263 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+
+const experience = [
+  {
+    title: 'Independent Graphic & Spatial Designer',
+    period: 'Jun 2022 – Present',
+    bullets: [
+      'Designed logos, typefaces, illustrations, merchandise, and branded assets for small businesses and personal clients.',
+      'Created social media graphics and promotional materials for organizations and businesses in hospitality and retail.',
+      'Designed yearbook layouts and publication materials, applying typography, layout, and print design principles.',
+      'Produced 3D models and interior designs for commercial and residential spaces, including offices, workspaces, and entertainment units.',
+    ],
+  },
+  {
+    title: 'Associate Vice President for Communications & Operations, Academics Committee',
+    org: 'UAPSA – UPD, Quezon City',
+    period: 'Aug 2024 – Jun 2025',
+    bullets: [
+      'Co-headed ARKITEKTOK 2.0, coordinating event publicity, promotional materials, and visual communications.',
+      'Developed and coordinated digital publicity materials with internal creative teams for organizational events.',
+      'Managed committee communications, documentation, and project coordination.',
+    ],
+  },
+  {
+    title: 'Associate Vice President for Organizational Relations, Academics Committee',
+    org: 'UAPSA – UPD, Quezon City',
+    period: 'Jan 2024 – Jun 2024',
+    bullets: [
+      'Co-headed ARKITEKTOK 2.0, coordinating event publicity and visual communications with internal creative teams.',
+      'Coordinated speaker communications, event materials, and promotional requirements with external partners.',
+      'Supported creative project planning and execution across the Academics Committee.',
+    ],
+  },
+  {
+    title: 'Creatives Team Contributor, Campaign and Propaganda Committee',
+    org: 'Gabriela Youth – UPD, Quezon City',
+    period: 'Aug 2021 – Jun 2023',
+    bullets: [
+      'Designed social media graphics, posters, banners, and campaign materials for advocacy initiatives.',
+      'Created visual content addressing women’s issues, social justice, and current affairs.',
+      'Developed digital and print layouts while maintaining consistent visual messaging.',
+    ],
+  },
+];
+
+const education = [
+  { degree: 'Bachelor of Science in Architecture', org: 'University of the Philippines Diliman, Quezon City', period: '2021 – 2026', note: 'Graduating Class of 2026 · Cum Laude' },
+  { degree: 'Senior High School Diploma, STEM Strand', org: 'University of Santo Tomas, Sampaloc, Manila', period: '2019 – 2021' },
+];
+
+const skills = ['Graphic Design', 'Layout Design', 'Visual Communication', 'Branding & Visual Identity', 'Presentation Design', 'Art/Creative Direction', '3D Modeling', '3D Rendering and Visualization'];
+
+const courses = [
+  { name: 'Graphic Design Specialization', org: 'California Institute of the Arts | Coursera', year: '2026' },
+  { name: 'Creative Design Tools: Adobe Photoshop, Illustrator, Acrobat Specialization', org: 'Adobe | Coursera', year: '2026' },
+  { name: 'Autodesk Revit BIM 2026 Workshop', org: 'Autodesk | MSTConnect', year: '2026' },
+];
+---
+
+<BaseLayout
+  title="Resume"
+  description="Resume of Leila Karlene Banta, graphic designer, illustrator, and architecture graduate."
+>
+  <section class="section no-reveal resume-hero grain">
+    <div class="sheet resume-head">
+      <div>
+        <p class="label">curriculum vitae</p>
+        <h1 class="font-stamp">Leila Karlene Banta</h1>
+        <p class="font-body role-line">Graphic Designer</p>
+      </div>
+      <a href="/Leila-Banta-Resume.pdf" download class="download-btn font-mono">download pdf ↓</a>
+    </div>
+    <div class="sheet contact-strip font-mono">
+      <span>{site.location}</span>
+      <span>{site.phone}</span>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <a href={site.linkedin} target="_blank" rel="noopener noreferrer">linkedin ↗</a>
+    </div>
+  </section>
+
+  <section class="section grain">
+    <div class="sheet">
+      <p class="label" style="margin-bottom: 20px;">professional overview</p>
+      <p class="font-body overview-text">
+        Creative and detail-oriented architecture graduate with hands-on experience in graphic
+        design, publication design, visual communication, and creative direction through student
+        organizations and freelance projects. Skilled in developing visual concepts, layouts,
+        marketing and promotional materials, and digital content using design principles including
+        typography, composition, visual hierarchy, color, and visual storytelling. Experienced in
+        translating ideas and project requirements into cohesive visual materials, with additional
+        experience in organizational communications, project coordination, and collaborative
+        creative work.
+      </p>
+    </div>
+  </section>
+
+  <section class="section grain bg-alt">
+    <div class="sheet">
+      <p class="label" style="margin-bottom: 32px;">relevant experience</p>
+      <div class="experience-list">
+        {experience.map((job) => (
+          <article class="job">
+            <div class="job-head">
+              <div>
+                <h3 class="font-stamp job-title">{job.title}</h3>
+                {job.org && <p class="font-mono job-org">{job.org}</p>}
+              </div>
+              <p class="font-mono job-period">{job.period}</p>
+            </div>
+            <ul class="job-bullets font-body">
+              {job.bullets.map((b) => <li>{b}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section grain">
+    <div class="sheet edu-skills-grid">
+      <div>
+        <p class="label">education</p>
+        {education.map((e) => (
+          <div class="edu-item">
+            <h3 class="font-stamp edu-degree">{e.degree}</h3>
+            <p class="font-mono edu-org">{e.org}</p>
+            <p class="font-mono edu-period dim">{e.period}{e.note ? ` · ${e.note}` : ''}</p>
+          </div>
+        ))}
+
+        <p class="label" style="margin-top: 40px;">courses &amp; certifications</p>
+        {courses.map((c) => (
+          <div class="edu-item">
+            <h3 class="font-stamp edu-degree">{c.name}</h3>
+            <p class="font-mono edu-org dim">{c.org} · {c.year}</p>
+          </div>
+        ))}
+      </div>
+      <div>
+        <p class="label">skills</p>
+        <ul class="skills-list font-mono">
+          {skills.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .resume-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .role-line {
+    font-size: var(--fs-body-lg);
+    font-style: italic;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+  .download-btn {
+    border: 1px solid var(--ink);
+    padding: 10px 20px;
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    transition: background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+  }
+  .download-btn:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .contact-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: var(--fs-small);
+    color: var(--text-dim);
+  }
+  .contact-strip a:hover { color: var(--red); }
+
+  .overview-text {
+    max-width: 76ch;
+    font-size: var(--fs-body-lg);
+    opacity: 0.88;
+  }
+
+  .experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+  .job-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    margin-bottom: 12px;
+  }
+  .job-title {
+    font-size: 1.2rem;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .job-org {
+    font-size: var(--fs-small);
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .job-period {
+    font-size: var(--fs-caption);
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .job-bullets {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 72ch;
+  }
+  .job-bullets li { opacity: 0.85; }
+
+  .edu-skills-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(32px, 6vw, 72px);
+  }
+  .edu-item { margin-top: 16px; }
+  .edu-degree {
+    font-size: 1.05rem;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .edu-org { font-size: var(--fs-small); margin-top: 4px; }
+  .edu-period { font-size: var(--fs-caption); margin-top: 2px; }
+  .dim { color: var(--text-dim); }
+
+  .skills-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: var(--fs-small);
+  }
+
+  @media (max-width: 720px) {
+    .edu-skills-grid { grid-template-columns: 1fr; }
+  }
+</style>

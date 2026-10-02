@@ -1,0 +1,29 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment
+.env
+.env.production
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# macOS
+.DS_Store
+
+# raw source PDFs and unprocessed extraction scratch (kept locally, not needed in repo history)
+assets/raw-pdf-pages/
+assets/extracted-images/
+assets/extracted-images-deduped/
+# symlink duplicate of the same curated assets already copied into public/ for the live site
+assets/curated/
+assets/processed/

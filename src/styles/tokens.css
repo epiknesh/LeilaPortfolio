@@ -1,0 +1,80 @@
+/*
+  Design tokens — translated directly from the source PDF portfolio.
+  See PROJECT_CONTEXT.md §6-7 for the reasoning behind every value here.
+  Do not add tokens casually; the palette is deliberately small.
+*/
+
+:root {
+  /* ---- single flat background (superseded the earlier paper/ink
+     alternating-register system per direct owner decision, 2026-10-02 —
+     see PROJECT_CONTEXT.md "Decisions Intentionally Rejected" for the
+     earlier reasoning this replaces) ---- */
+  --bg: #F0F0F0;
+  --bg-alt: #E6E6E6;
+  --ink: #181614;
+  --ink-2: #221F1C;
+
+  /* ---- accent chord (site-wide, never project-scoped) ---- */
+  --red: #B32E22;
+  --red-dim: #8f251b;
+  --pink: #EFC2CB;
+  --pink-deep: #D99AAA;
+
+  /* ---- text (single register now: dark text on the flat light background) ---- */
+  --text: #211F1C;
+  --text-dim: #5A564F;
+
+  /* ---- lines / hairlines ---- */
+  --line: rgba(0, 0, 0, 0.15);
+
+  /* ---- type ---- */
+  --font-stamp: 'Fraunces', 'Playfair Display', Georgia, serif;
+  --font-script: 'Petit Formal Script', 'Playfair Display', Georgia, cursive;
+  /* Main body font, site-wide (direct owner decision, 2026-10-02): IBM Plex
+     Mono replaced Jost everywhere .font-body is used. --font-mono below is
+     the same typeface — kept as a separate token because .font-mono and
+     .font-body are still two different *roles* (captions/labels/nav vs.
+     paragraph copy) that happen to share a typeface now, not because
+     they're meant to diverge again later without someone deciding that. */
+  --font-body: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+  /* ---- type scale (fluid) ---- */
+  --fs-display: clamp(2.75rem, 3.5vw + 1.5rem, 6.5rem);
+  --fs-h1: clamp(2.2rem, 2.6vw + 1.2rem, 4rem);
+  --fs-h2: clamp(1.7rem, 1.6vw + 1rem, 2.75rem);
+  --fs-h3: clamp(1.25rem, .8vw + 1rem, 1.6rem);
+  --fs-body-lg: clamp(1.05rem, .3vw + .95rem, 1.25rem);
+  --fs-body: 1rem;
+  --fs-small: .875rem;
+  --fs-caption: .75rem;
+
+  /* ---- spacing ----
+     Tightened across the board (direct owner decision, 2026-10-02): the
+     site was using far more side/vertical whitespace than the content
+     needed. --gutter's max dropped and --content-max widened so wide
+     viewports use more of the available width instead of capping out with
+     large empty margins on both sides; --space-section dropped so sections
+     (now all flat, no longer paced by a dark/light register change) don't
+     leave large dead gaps between them. */
+  --space-section: clamp(40px, 5vw, 72px);
+  --space-block: clamp(24px, 3.5vw, 48px);
+  --gutter: clamp(16px, 2vw, 28px);
+  --content-max: 1760px;
+
+  /* ---- motion ---- */
+  --ease-standard: cubic-bezier(.22, .61, .36, 1);
+  --dur-fast: 180ms;
+  --dur-standard: 420ms;
+  --dur-slow: 700ms;
+
+  color-scheme: light;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-standard: 0ms;
+    --dur-slow: 0ms;
+  }
+}

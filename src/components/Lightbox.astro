@@ -1,0 +1,354 @@
+---
+interface Props {
+  images: string[];
+  altPrefix: string;
+}
+
+const { images, altPrefix } = Astro.props;
+---
+
+<div class="lightbox-gallery" data-lightbox-root>
+  <div class="gallery-grid">
+    {images.map((src, i) => (
+      <button
+        type="button"
+        class="gallery-trigger"
+        data-lightbox-open
+        data-index={i}
+        aria-label={`Open image ${i + 1} of ${images.length} full size`}
+      >
+        <img src={src} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" />
+      </button>
+    ))}
+  </div>
+
+  <div class="lightbox-overlay grain" data-lightbox-overlay hidden>
+    <div class="lightbox-chrome">
+      <span class="lightbox-index font-mono" data-lightbox-caption></span>
+      <button type="button" class="lightbox-close font-mono" data-lightbox-close aria-label="Close">close ✕</button>
+    </div>
+
+    <div class="lightbox-stage">
+      <button type="button" class="lightbox-nav lightbox-prev" data-lightbox-prev aria-label="Previous image">
+        <span aria-hidden="true">←</span>
+      </button>
+
+      <div class="lightbox-frame">
+        <img src="" alt="" data-lightbox-image />
+      </div>
+
+      <button type="button" class="lightbox-nav lightbox-next" data-lightbox-next aria-label="Next image">
+        <span aria-hidden="true">→</span>
+      </button>
+    </div>
+
+    <div class="lightbox-progress" aria-hidden="true">
+      <div class="lightbox-progress-bar" data-lightbox-progress></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initLightbox(root: HTMLElement) {
+    // Astro's View Transitions swap in a fresh DOM for each navigation, but
+    // this script tag (and its top-level `initLightbox` call below) only
+    // runs once per actual document load unless re-bound to astro:page-load
+    // — without the guard+rebind here, a gallery reached via a client-side
+    // navigation (grid tile click, prev/next filmstrip) had no listeners
+    // attached at all until a manual refresh re-ran the script from scratch.
+    if (root.dataset.lightboxInitialized === 'true') return;
+    root.dataset.lightboxInitialized = 'true';
+
+    const overlay = root.querySelector<HTMLElement>('[data-lightbox-overlay]');
+    const frame = root.querySelector<HTMLElement>('.lightbox-frame');
+    const imgEl = root.querySelector<HTMLImageElement>('[data-lightbox-image]');
+    const captionEl = root.querySelector<HTMLElement>('[data-lightbox-caption]');
+    const progressEl = root.querySelector<HTMLElement>('[data-lightbox-progress]');
+    const triggers = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-lightbox-open]'));
+    const closeBtn = root.querySelector<HTMLButtonElement>('[data-lightbox-close]');
+    const prevBtn = root.querySelector<HTMLButtonElement>('[data-lightbox-prev]');
+    const nextBtn = root.querySelector<HTMLButtonElement>('[data-lightbox-next]');
+
+    if (!overlay || !frame || !imgEl || !captionEl || !progressEl || triggers.length === 0) return;
+
+    let currentIndex = 0;
+    let lastFocused: HTMLElement | null = null;
+    let isAnimating = false;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function updateChrome(index: number) {
+      captionEl!.textContent = `${String(index + 1).padStart(2, '0')} / ${String(triggers.length).padStart(2, '0')}`;
+      progressEl!.style.width = `${((index + 1) / triggers.length) * 100}%`;
+    }
+
+    function loadImage(index: number) {
+      const trigger = triggers[index];
+      const srcImg = trigger.querySelector('img');
+      if (!srcImg || !imgEl) return;
+      imgEl.src = srcImg.src;
+      imgEl.alt = srcImg.alt;
+    }
+
+    function show(index: number, direction: 1 | -1 | 0 = 0) {
+      const nextIndex = (index + triggers.length) % triggers.length;
+      if (nextIndex === currentIndex && overlay!.hidden === false && direction === 0) return;
+
+      if (isAnimating || prefersReducedMotion || direction === 0) {
+        currentIndex = nextIndex;
+        loadImage(currentIndex);
+        updateChrome(currentIndex);
+        return;
+      }
+
+      isAnimating = true;
+      frame!.classList.add(direction > 0 ? 'is-leaving-left' : 'is-leaving-right');
+
+      window.setTimeout(() => {
+        currentIndex = nextIndex;
+        loadImage(currentIndex);
+        updateChrome(currentIndex);
+        frame!.classList.remove('is-leaving-left', 'is-leaving-right');
+        frame!.classList.add(direction > 0 ? 'is-entering-from-right' : 'is-entering-from-left');
+        // Force reflow so the entering transition actually runs.
+        void frame!.offsetWidth;
+        frame!.classList.remove('is-entering-from-right', 'is-entering-from-left');
+        isAnimating = false;
+      }, 180);
+    }
+
+    function open(index: number) {
+      lastFocused = document.activeElement as HTMLElement;
+      currentIndex = index;
+      loadImage(currentIndex);
+      updateChrome(currentIndex);
+      overlay!.hidden = false;
+      document.body.style.overflow = 'hidden';
+      closeBtn?.focus();
+    }
+
+    function close() {
+      overlay!.hidden = true;
+      document.body.style.overflow = '';
+      lastFocused?.focus();
+    }
+
+    triggers.forEach((trigger, i) => {
+      trigger.addEventListener('click', () => open(i));
+    });
+
+    closeBtn?.addEventListener('click', close);
+    prevBtn?.addEventListener('click', () => show(currentIndex - 1, -1));
+    nextBtn?.addEventListener('click', () => show(currentIndex + 1, 1));
+
+    // Close on any click that lands outside the image and the prev/next
+    // buttons — not just a click on the overlay's own background. The
+    // stage/chrome/progress-bar areas around the image count as "outside"
+    // too, so clicking anywhere that isn't the photo or a nav control
+    // closes the lightbox, same as clicking the dimmed backdrop already did.
+    overlay.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const clickedImage = target === imgEl;
+      const clickedNav = target.closest('.lightbox-nav') !== null;
+      if (!clickedImage && !clickedNav) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (overlay!.hidden) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(currentIndex - 1, -1);
+      if (e.key === 'ArrowRight') show(currentIndex + 1, 1);
+      if (e.key === 'Tab') trapFocus(e);
+    });
+
+    function trapFocus(e: KeyboardEvent) {
+      const focusable = overlay!.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  function initAllLightboxes() {
+    document.querySelectorAll<HTMLElement>('[data-lightbox-root]').forEach(initLightbox);
+  }
+
+  initAllLightboxes();
+  document.addEventListener('astro:page-load', initAllLightboxes);
+</script>
+
+<style>
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: clamp(16px, 2.5vw, 28px);
+  }
+
+  .gallery-trigger {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+    font: inherit;
+    color: inherit;
+  }
+  .gallery-trigger:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+  }
+
+  .gallery-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ---------- overlay shell ----------
+     Always a dark overlay regardless of the page's own (now flat) background —
+     these --lb-* tokens are scoped to the lightbox only. */
+  .lightbox-overlay {
+    --lb-text-dim: #A39D94;
+    --lb-line: rgba(255, 255, 255, 0.15);
+    --lb-accent: #C6645B;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    animation: lightbox-fade-in 220ms ease-out;
+  }
+  .lightbox-overlay[hidden] { display: none; }
+  @keyframes lightbox-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ---------- top chrome: index + close, fixed position, never moves ---------- */
+  .lightbox-chrome {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px clamp(16px, 4vw, 32px);
+  }
+  .lightbox-index {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.1em;
+    color: var(--lb-text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .lightbox-close {
+    background: none;
+    border: none;
+    color: var(--lb-text-dim);
+    font-size: var(--fs-caption);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    padding: 6px 4px;
+    transition: color var(--dur-fast) var(--ease-standard);
+  }
+  .lightbox-close:hover { color: var(--pink); }
+  .lightbox-close:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  /* ---------- stage: fixed-height flex row, image never shifts layout ---------- */
+  .lightbox-stage {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 2vw, 24px);
+    padding-inline: clamp(8px, 3vw, 24px);
+    padding-bottom: 20px;
+  }
+
+  .lightbox-frame {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .lightbox-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    transition: opacity 180ms var(--ease-standard), transform 180ms var(--ease-standard);
+  }
+  .lightbox-frame.is-leaving-left img { opacity: 0; transform: translateX(-24px); }
+  .lightbox-frame.is-leaving-right img { opacity: 0; transform: translateX(24px); }
+  .lightbox-frame.is-entering-from-right img { opacity: 0; transform: translateX(24px); }
+  .lightbox-frame.is-entering-from-left img { opacity: 0; transform: translateX(-24px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-frame img { transition: none; }
+    .lightbox-overlay { animation: none; }
+  }
+
+  .lightbox-nav {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--lb-line);
+    color: var(--lb-text-dim);
+    width: 44px;
+    height: 44px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+  }
+  .lightbox-nav:hover {
+    color: var(--pink);
+    border-color: var(--pink);
+  }
+  .lightbox-nav:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  /* ---------- progress rule: quiet, doesn't jump, sits at the very bottom ---------- */
+  .lightbox-progress {
+    flex-shrink: 0;
+    height: 1px;
+    background: var(--lb-line);
+  }
+  .lightbox-progress-bar {
+    height: 100%;
+    background: var(--lb-accent);
+    transition: width var(--dur-standard) var(--ease-standard);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-progress-bar { transition: none; }
+  }
+
+  @media (max-width: 640px) {
+    .lightbox-nav {
+      width: 36px;
+      height: 36px;
+      font-size: 0.95rem;
+    }
+    .lightbox-stage { gap: 8px; }
+  }
+</style>

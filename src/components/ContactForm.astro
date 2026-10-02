@@ -1,0 +1,258 @@
+---
+// Contact form, submitted via Formspree (https://formspree.io) — a static site
+// has no backend of its own, so form delivery is handled by a third-party
+// endpoint rather than server code we'd have to host and maintain.
+//
+// FORMSPREE_FORM_ID below is a placeholder. To activate the form:
+//   1. Leila creates a free account at formspree.io and adds a new form.
+//   2. Formspree gives a form ID (e.g. "abcdwxyz").
+//   3. Replace the placeholder below with that real ID.
+// Until that's done, the form renders and validates correctly but submissions
+// will fail — see the docs/DECISIONS_NEEDED.md entry for this.
+const FORMSPREE_FORM_ID = 'REPLACE_WITH_REAL_FORMSPREE_ID';
+const endpoint = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
+---
+
+<div class="contact-form-wrap" data-contact-form>
+  <form
+    action={endpoint}
+    method="POST"
+    class="contact-form"
+    data-form
+    novalidate
+  >
+    <div class="field">
+      <label for="cf-name" class="font-mono">name</label>
+      <input type="text" id="cf-name" name="name" required autocomplete="name" />
+      <p class="field-error font-mono" data-error-for="cf-name" hidden>Please enter your name.</p>
+    </div>
+
+    <div class="field">
+      <label for="cf-email" class="font-mono">email</label>
+      <input type="email" id="cf-email" name="email" required autocomplete="email" />
+      <p class="field-error font-mono" data-error-for="cf-email" hidden>Please enter a valid email address.</p>
+    </div>
+
+    <div class="field">
+      <label for="cf-message" class="font-mono">message</label>
+      <textarea id="cf-message" name="message" rows="5" required></textarea>
+      <p class="field-error font-mono" data-error-for="cf-message" hidden>Please enter a message.</p>
+    </div>
+
+    <!-- Honeypot: hidden from sighted and screen-reader users, catches simple bots. -->
+    <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <div class="form-footer">
+      <button type="submit" class="submit-btn font-mono" data-submit-btn>
+        <span data-btn-label>send message</span>
+      </button>
+      <p class="form-status font-mono" data-form-status role="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div class="form-success font-mono" data-form-success hidden role="status">
+    <p class="success-title font-stamp">Message sent.</p>
+    <p>Thanks for reaching out — I'll get back to you soon.</p>
+  </div>
+</div>
+
+<script>
+  function initContactForm(root: HTMLElement) {
+    // Same astro:page-load re-init requirement as Lightbox.astro — see the
+    // comment there for the full explanation.
+    if (root.dataset.formInitialized === 'true') return;
+    root.dataset.formInitialized = 'true';
+
+    const form = root.querySelector<HTMLFormElement>('[data-form]');
+    const successPanel = root.querySelector<HTMLElement>('[data-form-success]');
+    const submitBtn = root.querySelector<HTMLButtonElement>('[data-submit-btn]');
+    const btnLabel = root.querySelector<HTMLElement>('[data-btn-label]');
+    const statusEl = root.querySelector<HTMLElement>('[data-form-status]');
+    if (!form || !successPanel || !submitBtn || !btnLabel || !statusEl) return;
+
+    const fields = ['cf-name', 'cf-email', 'cf-message'] as const;
+
+    function showError(id: string, show: boolean) {
+      const input = form!.querySelector<HTMLElement>(`#${id}`);
+      const error = form!.querySelector<HTMLElement>(`[data-error-for="${id}"]`);
+      if (!input || !error) return;
+      error.hidden = !show;
+      input.setAttribute('aria-invalid', show ? 'true' : 'false');
+    }
+
+    function validate(): boolean {
+      let valid = true;
+
+      const name = form!.querySelector<HTMLInputElement>('#cf-name')!;
+      const nameOk = name.value.trim().length > 0;
+      showError('cf-name', !nameOk);
+      valid = valid && nameOk;
+
+      const email = form!.querySelector<HTMLInputElement>('#cf-email')!;
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+      showError('cf-email', !emailOk);
+      valid = valid && emailOk;
+
+      const message = form!.querySelector<HTMLTextAreaElement>('#cf-message')!;
+      const messageOk = message.value.trim().length > 0;
+      showError('cf-message', !messageOk);
+      valid = valid && messageOk;
+
+      return valid;
+    }
+
+    fields.forEach((id) => {
+      const input = form!.querySelector<HTMLElement>(`#${id}`);
+      input?.addEventListener('blur', validate);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validate()) {
+        statusEl!.textContent = 'Please fix the highlighted fields.';
+        return;
+      }
+
+      submitBtn!.disabled = true;
+      btnLabel!.textContent = 'sending…';
+      statusEl!.textContent = '';
+
+      try {
+        const response = await fetch(form!.action, {
+          method: 'POST',
+          body: new FormData(form!),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (response.ok) {
+          form!.hidden = true;
+          successPanel!.hidden = false;
+          successPanel!.focus?.();
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch {
+        statusEl!.textContent = "Something went wrong — please email leila.banta@gmail.com directly.";
+        submitBtn!.disabled = false;
+        btnLabel!.textContent = 'send message';
+      }
+    });
+  }
+
+  function initAllContactForms() {
+    document.querySelectorAll<HTMLElement>('[data-contact-form]').forEach(initContactForm);
+  }
+
+  initAllContactForms();
+  document.addEventListener('astro:page-load', initAllContactForms);
+</script>
+
+<style>
+  .contact-form-wrap {
+    max-width: 640px;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field label {
+    font-size: var(--fs-caption);
+    text-transform: lowercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+  }
+
+  .field input,
+  .field textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--fs-body-lg);
+    padding-block: 8px;
+    resize: vertical;
+    transition: border-color var(--dur-fast) var(--ease-standard);
+  }
+  .field input:focus-visible,
+  .field textarea:focus-visible {
+    outline: none;
+    border-color: var(--red);
+  }
+  .field input[aria-invalid="true"],
+  .field textarea[aria-invalid="true"] {
+    border-color: var(--red);
+  }
+
+  .field-error {
+    font-size: var(--fs-caption);
+    color: var(--red);
+  }
+
+  .honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .form-footer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .submit-btn {
+    border: 1px solid var(--text);
+    background: none;
+    color: var(--text);
+    padding: 12px 28px;
+    font-size: var(--fs-small);
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+  }
+  .submit-btn:hover:not(:disabled) {
+    background: var(--text);
+    color: var(--bg);
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .submit-btn:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+  }
+
+  .form-status {
+    font-size: var(--fs-caption);
+    color: var(--red);
+  }
+
+  .form-success {
+    max-width: 52ch;
+  }
+  .success-title {
+    font-size: var(--fs-h3);
+    color: var(--red);
+    margin-bottom: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .form-success p:not(.success-title) {
+    color: var(--text-dim);
+    font-size: var(--fs-body-lg);
+  }
+</style>

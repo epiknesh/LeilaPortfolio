@@ -1,0 +1,396 @@
+---
+// Filterable, uniform-tile project grid. Category "jumpers" act as
+// multi-select filter toggles (not navigation anchors) — all categories
+// start active, so the grid shows everything by default; toggling a
+// category off hides just that category's tiles. Toggling every category
+// off is treated the same as every category on (always show something
+// rather than a confusing empty grid) — same rule as the reference this
+// was adapted from (CasaLuisa's gallery-filters.js).
+//
+// Animation approach (FLIP: First, Last, Invert, Play) adapted from that
+// same reference, simplified because every tile here is the same size —
+// the reference's masonry grid needed to guard against moving tiles
+// visually crossing paths mid-transition; a uniform grid never has that
+// problem, so there's no z-index/shadow-lift step here.
+//
+// Solo-select: right-click (desktop) or a ~500ms long-press (touch) on any
+// pill deselects every other category and activates just that one —
+// faster than clicking five other pills off by hand given how many
+// categories there are. Both gestures funnel into the same soloCategory()
+// function. Long-press is built on Pointer Events (not touchstart/touchend)
+// so the same code path handles touch, pen, and a mouse-button-held-down,
+// uniformly.
+import type { Category } from '../data/site';
+import { projects } from '../data/projects';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  categories: Category[];
+}
+
+const { categories } = Astro.props;
+---
+
+<div class="project-grid-wrap" data-project-grid-root>
+  <div class="filter-bar">
+    <div class="filter-pills">
+      {categories.map((c) => (
+        <button type="button" class="filter-pill is-active font-mono" data-filter-pill data-filter-category={c.slug} aria-pressed="true">
+          {c.title.toLowerCase()}
+        </button>
+      ))}
+    </div>
+    <div class="filter-bar-right">
+      <button type="button" class="filter-reset font-mono" data-filter-reset>show all</button>
+      <p class="filter-hint filter-hint-mouse font-mono">right-click / long-press category to view alone</p>
+      <p class="filter-hint filter-hint-touch font-mono">hold a category to view it alone</p>
+    </div>
+  </div>
+
+  <div class="project-grid" data-grid>
+    {projects.map((project) => (
+      <div class="grid-cell" data-grid-cell data-filter-category={project.category}>
+        <ProjectCard project={project} />
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  function initProjectGrid(root: HTMLElement) {
+    // Same astro:page-load re-init requirement as Lightbox.astro — see the
+    // comment there for the full explanation.
+    if (root.dataset.gridInitialized === 'true') return;
+    root.dataset.gridInitialized = 'true';
+
+    const filterBar = root.querySelector<HTMLElement>('.filter-bar');
+    const grid = root.querySelector<HTMLElement>('[data-grid]');
+    if (!filterBar || !grid) return;
+
+    const pills = Array.from(filterBar.querySelectorAll<HTMLButtonElement>('[data-filter-pill]'));
+    const resetButton = filterBar.querySelector<HTMLButtonElement>('[data-filter-reset]');
+    const cells = Array.from(grid.querySelectorAll<HTMLElement>('[data-grid-cell]'));
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Must match the CSS transition-duration on .grid-cell below.
+    const FILTER_TRANSITION_MS = prefersReducedMotion ? 0 : 420;
+
+    const activeCategories = (): Set<string> | null => {
+      const active = pills.filter((pill) => pill.classList.contains('is-active'));
+      // All-off behaves as all-on, same as all-on — see file header.
+      return active.length === 0 ? null : new Set(active.map((pill) => pill.dataset.filterCategory!));
+    };
+
+    // FLIP: every surviving visible cell glides to its new grid position
+    // instead of teleporting the instant the grid reflows.
+    const runFlip = (mutate: () => void) => {
+      const visibleBefore = cells.filter((cell) => !cell.hidden);
+      const firstRects = new Map(visibleBefore.map((cell) => [cell, cell.getBoundingClientRect()]));
+
+      mutate();
+
+      const visibleAfter = cells.filter((cell) => !cell.hidden);
+      visibleAfter.forEach((cell) => {
+        const first = firstRects.get(cell);
+        if (!first) return; // newly shown cell — no "before" position to FLIP from
+        const last = cell.getBoundingClientRect();
+        const deltaX = first.left - last.left;
+        const deltaY = first.top - last.top;
+        if (deltaX === 0 && deltaY === 0) return;
+
+        cell.style.transition = 'none';
+        cell.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        void cell.offsetWidth; // force layout flush
+        requestAnimationFrame(() => {
+          cell.style.transition = `transform ${FILTER_TRANSITION_MS}ms var(--ease-standard)`;
+          cell.style.transform = '';
+          window.setTimeout(() => {
+            cell.style.transition = '';
+          }, FILTER_TRANSITION_MS);
+        });
+      });
+    };
+
+    const applyFilter = () => {
+      const active = activeCategories();
+      const toShow: HTMLElement[] = [];
+      const toHide: HTMLElement[] = [];
+
+      cells.forEach((cell) => {
+        const category = cell.dataset.filterCategory!;
+        const shouldBeVisible = !active || active.has(category);
+        const isCurrentlyVisible = !cell.hidden;
+
+        if (shouldBeVisible && !isCurrentlyVisible) toShow.push(cell);
+        else if (!shouldBeVisible && isCurrentlyVisible) toHide.push(cell);
+      });
+
+      if (toShow.length) {
+        runFlip(() => {
+          toShow.forEach((cell) => {
+            cell.hidden = false;
+            cell.classList.add('is-filtering-out');
+          });
+        });
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            toShow.forEach((cell) => cell.classList.remove('is-filtering-out'));
+          });
+        });
+      }
+
+      toHide.forEach((cell) => cell.classList.add('is-filtering-out'));
+      if (toHide.length) {
+        window.setTimeout(() => {
+          // Re-check against the CURRENT filter state, not the state captured
+          // when this timeout was scheduled — a later filter click (e.g.
+          // rapid toggling) may have already decided this cell should be
+          // visible again. Trusting the stale `toHide` list here would hide
+          // a cell the user's most recent click says should stay shown.
+          const currentActive = activeCategories();
+          const stillHiding = toHide.filter((cell) => {
+            const category = cell.dataset.filterCategory!;
+            const shouldBeVisible = !currentActive || currentActive.has(category);
+            return !shouldBeVisible && cell.classList.contains('is-filtering-out');
+          });
+          if (stillHiding.length) {
+            runFlip(() => {
+              stillHiding.forEach((cell) => {
+                cell.hidden = true;
+              });
+            });
+          }
+          // Any cell that's no longer supposed to be hidden but still has
+          // the fade-out class (because it got skipped by a later toShow
+          // pass, per the race above) needs that class cleared so it's not
+          // left permanently faded.
+          toHide
+            .filter((cell) => !stillHiding.includes(cell) && cell.classList.contains('is-filtering-out'))
+            .forEach((cell) => cell.classList.remove('is-filtering-out'));
+        }, FILTER_TRANSITION_MS);
+      }
+    };
+
+    const soloCategory = (targetPill: HTMLButtonElement) => {
+      pills.forEach((p) => {
+        const shouldBeActive = p === targetPill;
+        p.classList.toggle('is-active', shouldBeActive);
+        p.setAttribute('aria-pressed', String(shouldBeActive));
+      });
+      applyFilter();
+    };
+
+    const LONG_PRESS_MS = 500;
+    // Long press needs real, deliberate movement to cancel it (a shaky
+    // finger shouldn't abort a hold the user meant to keep) but should
+    // still cancel if the user is clearly scrolling instead of pressing.
+    const LONG_PRESS_MOVE_TOLERANCE_PX = 10;
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', (e) => {
+        // A long-press that just fired soloCategory() also dispatches a
+        // trailing click on release (pointerup -> click is a normal browser
+        // sequence) — suppress that one click so it doesn't immediately
+        // toggle the pill the long-press just set.
+        if (pill.dataset.suppressNextClick === 'true') {
+          delete pill.dataset.suppressNextClick;
+          e.preventDefault();
+          return;
+        }
+        const nowActive = !pill.classList.contains('is-active');
+        pill.classList.toggle('is-active', nowActive);
+        pill.setAttribute('aria-pressed', String(nowActive));
+        applyFilter();
+      });
+
+      // Right-click: solo this one category — everything else gets
+      // deselected in one action, instead of needing to click every other
+      // pill off by hand.
+      pill.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        soloCategory(pill);
+      });
+
+      // Long-press: the touch-device equivalent of right-click, same
+      // soloCategory() behavior. Built on pointer events (not touchstart/
+      // touchend) so it works uniformly whether the input is touch, pen,
+      // or mouse — a mouse user holding the button down for 500ms also
+      // gets solo behavior this way, which is a reasonable bonus, not a
+      // conflict (contextmenu and a 500ms mouse-hold are different enough
+      // gestures that they won't both fire for the same press).
+      let pressTimer: number | null = null;
+      let pressStart: { x: number; y: number } | null = null;
+      let longPressFired = false;
+
+      const cancelPress = () => {
+        if (pressTimer !== null) {
+          window.clearTimeout(pressTimer);
+          pressTimer = null;
+        }
+        pressStart = null;
+      };
+
+      pill.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return; // only primary button
+        longPressFired = false;
+        pressStart = { x: e.clientX, y: e.clientY };
+        pressTimer = window.setTimeout(() => {
+          longPressFired = true;
+          pill.dataset.suppressNextClick = 'true';
+          // A light haptic-feeling confirmation that something happened,
+          // for touch devices that support it — silently does nothing
+          // where it's unavailable (most desktop browsers), which is fine.
+          navigator.vibrate?.(15);
+          soloCategory(pill);
+        }, LONG_PRESS_MS);
+      });
+
+      pill.addEventListener('pointermove', (e) => {
+        if (!pressStart) return;
+        const dx = Math.abs(e.clientX - pressStart.x);
+        const dy = Math.abs(e.clientY - pressStart.y);
+        if (dx > LONG_PRESS_MOVE_TOLERANCE_PX || dy > LONG_PRESS_MOVE_TOLERANCE_PX) {
+          cancelPress();
+        }
+      });
+
+      pill.addEventListener('pointerup', cancelPress);
+      pill.addEventListener('pointercancel', cancelPress);
+      pill.addEventListener('pointerleave', cancelPress);
+    });
+
+    resetButton?.addEventListener('click', () => {
+      pills.forEach((pill) => {
+        pill.classList.add('is-active');
+        pill.setAttribute('aria-pressed', 'true');
+      });
+      applyFilter();
+    });
+  }
+
+  function initAllProjectGrids() {
+    document.querySelectorAll<HTMLElement>('[data-project-grid-root]').forEach(initProjectGrid);
+  }
+
+  initAllProjectGrids();
+  document.addEventListener('astro:page-load', initAllProjectGrids);
+</script>
+
+<style>
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: var(--space-block);
+  }
+
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-pill {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+    padding: 8px 16px;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+    /* Long-press is a real interaction here (solos the category), so the
+       browser's own long-press behaviors — text selection, iOS's copy/
+       lookup callout, Android's magnifier — need to stay out of the way. */
+    user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+    transition: background var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard),
+      border-color var(--dur-fast) var(--ease-standard);
+  }
+  .filter-pill:hover { border-color: var(--text-dim); }
+  .filter-pill.is-active {
+    color: var(--bg);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .filter-pill:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  .filter-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .filter-reset {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+    color: var(--red);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 4px;
+  }
+  .filter-reset:hover { color: var(--ink); }
+  .filter-reset:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  .filter-hint {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+  }
+  /* Show whichever hint actually matches how this device solos a category.
+     (hover: hover) is a real pointer (mouse/trackpad) that can right-click;
+     (hover: none) is touch/stylus-primary, where long-press is the gesture.
+     Defaults to the mouse phrasing or neither, rather than touch, on the
+     (hover: none) media feature's own browser-support edge, since a
+     precise-pointer device is the much more common case to mis-detect into. */
+  .filter-hint-touch { display: none; }
+  @media (hover: none) and (pointer: coarse) {
+    .filter-hint-mouse { display: none; }
+    .filter-hint-touch { display: block; }
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 2vw, 28px);
+  }
+
+  .grid-cell {
+    transition: opacity var(--dur-standard) var(--ease-standard),
+      transform var(--dur-standard) var(--ease-standard);
+  }
+  .grid-cell.is-filtering-out {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+  .grid-cell[hidden] { display: none; }
+
+  @media (max-width: 900px) {
+    .project-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .project-grid { grid-template-columns: 1fr; }
+    .filter-bar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

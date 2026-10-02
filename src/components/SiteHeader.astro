@@ -14,9 +14,20 @@ import { nav } from '../data/site';
   </a>
   <nav aria-label="Primary">
     <ul>
-      {nav.map((item) => (
-        <li><a href={item.href} class="font-mono">{item.label}</a></li>
-      ))}
+      {nav.map((item) => {
+        const isWorkAnchor = item.href === '/#work';
+        return (
+          <li>
+            <a
+              href={isWorkAnchor ? '/' : item.href}
+              data-scroll-to={isWorkAnchor ? 'work' : undefined}
+              class="font-mono"
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })}
     </ul>
   </nav>
 </header>

@@ -85,5 +85,34 @@ const { title, description } = Astro.props;
 
       document.addEventListener('astro:page-load', initSectionReveal);
     </script>
+
+    <script>
+      // Links "back to work" carry data-scroll-to="work" and a plain "/"
+      // href instead of "/#work" — a hash link racing a View Transition
+      // (the shared-element morph from a project's hero image back to its
+      // grid thumbnail) produces an inconsistent result: the browser's
+      // native hash-scroll and the transition's own snapshot/animation
+      // aren't coordinated by Astro, so sometimes the page doesn't scroll
+      // and sometimes it jumps instantly in a way that fights the morph.
+      // astro:after-swap fires once the incoming page's DOM is in place
+      // but before its scripts run — scrolling there, instantly rather
+      // than smoothly, means the page is already in its final position
+      // before the morph animation plays, so the morph is the only thing
+      // actually animating instead of competing with a scroll.
+      let pendingScrollTarget: string | null = null;
+
+      document.addEventListener('click', (e) => {
+        const link = (e.target as HTMLElement)?.closest<HTMLAnchorElement>('[data-scroll-to]');
+        if (link) pendingScrollTarget = link.dataset.scrollTo ?? null;
+      });
+
+      document.addEventListener('astro:after-swap', () => {
+        if (!pendingScrollTarget) return;
+        const target = pendingScrollTarget;
+        pendingScrollTarget = null;
+        const el = document.getElementById(target);
+        el?.scrollIntoView({ behavior: 'instant', block: 'start' });
+      });
+    </script>
   </body>
 </html>

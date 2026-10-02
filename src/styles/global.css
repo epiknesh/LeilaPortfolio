@@ -73,6 +73,17 @@ h1, h2, h3 {
   overflow: clip;
 }
 
+/* Two adjacent sections both using the base --space-section top/bottom
+   padding stack into double that gap between them (144px at desktop
+   width) — correct when there's a real visual break (a background-color
+   change, like .bg-alt), but an oversized, unintentional-looking gap when
+   there isn't. Apply to the section that comes SECOND in a pair that has
+   no visual break between them, to collapse the doubled padding down to
+   roughly one --space-section worth of gap instead of two. */
+.section.tight-top {
+  padding-top: calc(var(--space-section) / 2.5);
+}
+
 /* ---------- grain / texture ---------- */
 
 .grain {

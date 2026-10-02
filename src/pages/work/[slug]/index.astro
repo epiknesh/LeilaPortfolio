@@ -55,7 +55,7 @@ const heroSize = await getPublicImageSize(data.hero);
     </section>
 
     <!-- ============ PROJECT DETAILS ============ -->
-    <section class="section project-hero grain" style={`--accent: ${accent};`}>
+    <section class="section project-hero project-details-section grain" style={`--accent: ${accent};`}>
       <div class="sheet">
         <div class="meta-grid font-mono">
           <div>
@@ -201,6 +201,10 @@ const heroSize = await getPublicImageSize(data.hero);
     margin-top: 12px;
   }
 
+  .project-details-section {
+    padding-top: clamp(20px, 3vw, 32px);
+  }
+
   .meta-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -214,7 +218,7 @@ const heroSize = await getPublicImageSize(data.hero);
 
   .sheet-download {
     display: inline-block;
-    margin-top: clamp(28px, 5vw, 48px);
+    margin-top: clamp(16px, 2.5vw, 24px);
     font-size: var(--fs-caption);
     letter-spacing: 0.06em;
     color: var(--text-dim);
@@ -238,8 +242,8 @@ const heroSize = await getPublicImageSize(data.hero);
     display: grid;
     grid-template-columns: 0.6fr 1.4fr;
     gap: clamp(24px, 5vw, 64px);
-    margin-top: clamp(48px, 8vw, 88px);
-    padding-top: clamp(32px, 5vw, 56px);
+    margin-top: clamp(32px, 5vw, 56px);
+    padding-top: clamp(24px, 3.5vw, 40px);
     border-top: 1px solid var(--line);
   }
   .description-copy p {
@@ -289,9 +293,16 @@ const heroSize = await getPublicImageSize(data.hero);
   }
 
   .palette-block {
-    margin-top: clamp(40px, 6vw, 64px);
-    padding-top: clamp(32px, 5vw, 56px);
+    margin-top: clamp(32px, 5vw, 48px);
+    padding-top: clamp(24px, 3.5vw, 40px);
     border-top: 1px solid var(--line);
+  }
+
+  /* Tightened from the base .section padding-block — otherwise this
+     section's own top padding stacks on top of .palette-block's bottom
+     spacing above, leaving an oversized gap before the first gallery image. */
+  .gallery-section {
+    padding-top: clamp(20px, 3vw, 32px);
   }
 
   .palette-head {

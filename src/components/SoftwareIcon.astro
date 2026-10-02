@@ -5,11 +5,17 @@ import path from 'node:path';
 interface Props {
   icon: string;
   class?: string;
+  // Which folder under src/icons/ to read from — defaults to "software"
+  // since that's this component's original/primary use (SoftwareIcon name
+  // predates the contact-page icons reusing it as a generic inline-SVG
+  // loader). "contact" holds the email/phone/linkedin/instagram/location
+  // marks used on the Contact page.
+  dir?: 'software' | 'contact';
 }
 
-const { icon, class: className } = Astro.props;
+const { icon, class: className, dir = 'software' } = Astro.props;
 
-const svgPath = path.resolve('src/icons/software', `${icon}.svg`);
+const svgPath = path.resolve(`src/icons/${dir}`, `${icon}.svg`);
 const raw = fs.readFileSync(svgPath, 'utf-8');
 // Strip any explicit width/height so the icon scales via CSS instead.
 const svg = raw.replace(/<svg /, `<svg class="${className ?? ''}" `);

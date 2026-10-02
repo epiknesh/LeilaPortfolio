@@ -2,16 +2,17 @@
 import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ContactForm from '../../components/ContactForm.astro';
+import SoftwareIcon from '../../components/SoftwareIcon.astro';
 import { site } from '../../data/site';
 
 const contact = await getEntry('contact', 'contact');
 
 const channels = [
-  { label: 'email', value: site.email, href: `mailto:${site.email}` },
-  { label: 'phone', value: site.phone, href: `tel:${site.phone.replace(/[^+\d]/g, '')}` },
-  { label: 'linkedin', value: 'linkedin ↗', href: site.linkedin, external: true },
-  { label: 'instagram', value: site.instagramHandle, href: site.instagram, external: true },
-  { label: 'location', value: site.location },
+  { label: 'email', icon: 'email', value: site.email, href: `mailto:${site.email}` },
+  { label: 'phone', icon: 'phone', value: site.phone, href: `tel:${site.phone.replace(/[^+\d]/g, '')}` },
+  { label: 'linkedin', icon: 'linkedin', value: 'linkedin ↗', href: site.linkedin, external: true },
+  { label: 'instagram', icon: 'instagram', value: site.instagramHandle, href: site.instagram, external: true },
+  { label: 'location', icon: 'location', value: site.location },
 ];
 ---
 
@@ -35,19 +36,24 @@ const channels = [
           <ul class="channels-list">
             {channels.map((c) => (
               <li class="channel-row">
-                <span class="channel-label font-mono">{c.label}</span>
-                {c.href ? (
-                  <a
-                    href={c.href}
-                    class="channel-value font-mono"
-                    target={c.external ? '_blank' : undefined}
-                    rel={c.external ? 'noopener noreferrer' : undefined}
-                  >
-                    {c.value}
-                  </a>
-                ) : (
-                  <span class="channel-value font-mono">{c.value}</span>
-                )}
+                <span class="channel-icon" aria-hidden="true">
+                  <SoftwareIcon icon={c.icon} dir="contact" class="tool-icon" />
+                </span>
+                <div class="channel-text">
+                  <span class="channel-label font-mono">{c.label}</span>
+                  {c.href ? (
+                    <a
+                      href={c.href}
+                      class="channel-value font-mono"
+                      target={c.external ? '_blank' : undefined}
+                      rel={c.external ? 'noopener noreferrer' : undefined}
+                    >
+                      {c.value}
+                    </a>
+                  ) : (
+                    <span class="channel-value font-mono">{c.value}</span>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
@@ -102,8 +108,8 @@ const channels = [
   }
   .channel-row {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: center;
+    gap: 14px;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--line);
   }
@@ -111,6 +117,30 @@ const channels = [
     border-bottom: none;
     padding-bottom: 0;
   }
+
+  .channel-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--red);
+  }
+  .channel-icon :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  .channel-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
   .channel-label {
     font-size: var(--fs-caption);
     text-transform: lowercase;

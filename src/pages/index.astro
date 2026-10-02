@@ -3,7 +3,7 @@ import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import SoftwareIcon from '../components/SoftwareIcon.astro';
-import { categories, site } from '../data/site';
+import { site } from '../data/site';
 import { software } from '../data/software';
 
 const home = await getEntry('home', 'home');
@@ -52,7 +52,7 @@ const home = await getEntry('home', 'home');
   <section class="section work-section grain" id="work">
     <div class="sheet">
       <p class="label" style="margin-bottom: 20px;">selected work</p>
-      <ProjectGrid categories={categories} />
+      <ProjectGrid />
     </div>
   </section>
 

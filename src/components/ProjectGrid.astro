@@ -21,23 +21,18 @@
 // so the same code path handles touch, pen, and a mouse-button-held-down,
 // uniformly.
 import { getCollection } from 'astro:content';
-import type { Category } from '../data/site';
 import ProjectCard from './ProjectCard.astro';
 
-interface Props {
-  categories: Category[];
-}
-
-const { categories } = Astro.props;
 const projects = await getCollection('projects');
+const categories = (await getCollection('categories')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <div class="project-grid-wrap" data-project-grid-root>
   <div class="filter-bar">
     <div class="filter-pills">
       {categories.map((c) => (
-        <button type="button" class="filter-pill is-active font-mono" data-filter-pill data-filter-category={c.slug} aria-pressed="true">
-          {c.title.toLowerCase()}
+        <button type="button" class="filter-pill is-active font-mono" data-filter-pill data-filter-category={c.id} aria-pressed="true">
+          {c.data.title.toLowerCase()}
         </button>
       ))}
     </div>

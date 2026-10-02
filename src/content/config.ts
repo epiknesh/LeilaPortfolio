@@ -23,6 +23,23 @@ const projects = defineCollection({
   }),
 });
 
+// One file per category — lets Leila add/rename/reorder categories herself
+// through the CMS, instead of the old fixed list in src/data/site.ts (which
+// only code changes could touch). A project's `category` field (above)
+// stores this collection's entry id (its filename/slug) as a plain string
+// rather than a validated reference, since Astro's content-collection
+// reference() type requires the exact same loader shape on both sides and
+// adds friction for little benefit here — an unmatched category slug just
+// means that project doesn't show up grouped under any filter pill, which
+// is an easy visual catch, not a silent failure.
+const categories = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/categories' }),
+  schema: z.object({
+    title: z.string(),
+    order: z.number().default(0),
+  }),
+});
+
 // Singleton page-copy collections: one Markdown file each, editable as a
 // single "entry" in the CMS rather than a list. Body text (prose that reads
 // naturally as paragraphs) is left in the Markdown content and pulled in
@@ -83,4 +100,4 @@ const contact = defineCollection({
   }),
 });
 
-export const collections = { projects, home, about, resume, contact };
+export const collections = { projects, categories, home, about, resume, contact };

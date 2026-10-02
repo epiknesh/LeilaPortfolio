@@ -19,14 +19,14 @@ collections:
     slug: "{{slug}}"
     identifier_field: title
     fields:
-      - { label: "Category", name: category, widget: select, options: [
-            { label: "Branding & Visual Identity", value: branding-identity },
-            { label: "Digital & Social Media", value: digital-social },
-            { label: "Editorial & Print", value: editorial-print },
-            { label: "Information & Presentation Design", value: information-presentation },
-            { label: "Creative & Visual Direction", value: creative-direction },
-            { label: "3D & Architectural Visualization", value: 3d-architectural },
-          ] }
+      - label: "Category"
+        name: category
+        widget: relation
+        collection: categories
+        search_fields: ["title"]
+        display_fields: ["title"]
+        value_field: "{{slug}}"
+        hint: "Pick from existing categories, or add a new one first under the Categories collection."
       - { label: "Title", name: title, widget: string }
       - { label: "Subtitle", name: subtitle, widget: string, required: false }
       - { label: "Project Type", name: projectType, widget: string }
@@ -49,6 +49,17 @@ collections:
         widget: list
         field: { label: "Image", name: item, widget: image }
       - { label: "Description", name: body, widget: markdown, hint: "The project write-up paragraphs." }
+
+  - name: categories
+    label: "Categories"
+    folder: "src/content/categories"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: title
+    fields:
+      - { label: "Title", name: title, widget: string, hint: "Shown as a filter pill on the homepage, e.g. 'Branding & Visual Identity'." }
+      - { label: "Order", name: order, widget: number, default: 0, hint: "Lower numbers appear first among the filter pills." }
 
   - name: home
     label: "Homepage"

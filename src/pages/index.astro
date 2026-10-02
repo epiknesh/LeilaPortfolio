@@ -1,9 +1,12 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import SoftwareIcon from '../components/SoftwareIcon.astro';
 import { categories, site } from '../data/site';
 import { software } from '../data/software';
+
+const home = await getEntry('home', 'home');
 ---
 
 <BaseLayout
@@ -29,12 +32,7 @@ import { software } from '../data/software';
         </div>
       </div>
       <div class="about-copy">
-        <p class="font-body intro-line">
-          Hi, I'm Leila, a graphic designer, illustrator, and digital/social media creative with an
-          architecture background. I make things for pages, screens, and everywhere in
-          between—designing with unique typography, bold visuals, and ideas that know how to hold
-          your attention.
-        </p>
+        <p class="font-body intro-line">{home?.data.introLine}</p>
         <ul class="software-list">
           {software.map((tool) => (
             <li class="software-item" tabindex="0" aria-label={tool.name}>

@@ -1,0 +1,122 @@
+backend:
+  name: github
+  repo: epiknesh/LeilaPortfolio
+  branch: main
+
+# Netlify rebuilds the site automatically on every push to `main` (already
+# wired up via the GitHub integration) — no separate publish step needed.
+publish_mode: simple
+
+media_folder: "public/images/curated"
+public_folder: "/images/curated"
+
+collections:
+  - name: projects
+    label: "Projects"
+    folder: "src/content/projects"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: title
+    fields:
+      - { label: "Category", name: category, widget: select, options: [
+            { label: "Branding & Visual Identity", value: branding-identity },
+            { label: "Digital & Social Media", value: digital-social },
+            { label: "Editorial & Print", value: editorial-print },
+            { label: "Information & Presentation Design", value: information-presentation },
+            { label: "Creative & Visual Direction", value: creative-direction },
+            { label: "3D & Architectural Visualization", value: 3d-architectural },
+          ] }
+      - { label: "Title", name: title, widget: string }
+      - { label: "Subtitle", name: subtitle, widget: string, required: false }
+      - { label: "Project Type", name: projectType, widget: string }
+      - { label: "Industry", name: industry, widget: string }
+      - label: "Deliverables"
+        name: deliverables
+        widget: list
+        field: { label: "Deliverable", name: item, widget: string }
+      - label: "Color Palette"
+        name: palette
+        widget: list
+        fields:
+          - { label: "Hex", name: hex, widget: color }
+          - { label: "Name", name: name, widget: string, required: false }
+      - { label: "Process Notes", name: process, widget: text, required: false, hint: "Optional — shown in a collapsible 'process & references' panel on the project page." }
+      - { label: "Card Image (grid thumbnail)", name: cardImage, widget: image }
+      - { label: "Hero Image (project page top)", name: hero, widget: image }
+      - label: "Gallery Images"
+        name: gallery
+        widget: list
+        field: { label: "Image", name: item, widget: image }
+      - { label: "Description", name: body, widget: markdown, hint: "The project write-up paragraphs." }
+
+  - name: home
+    label: "Homepage"
+    files:
+      - name: home
+        file: "src/content/pages/home.md"
+        label: "Homepage Intro"
+        fields:
+          - { label: "Intro line (under the about heading)", name: introLine, widget: text }
+
+  - name: about
+    label: "About Page"
+    files:
+      - name: about
+        file: "src/content/pages/about.md"
+        label: "About Page Content"
+        fields:
+          - { label: "Hero Lede", name: heroLede, widget: text }
+          - { label: "Narrative Heading", name: narrativeHeading, widget: string, hint: "Use a line break for a two-line heading, e.g. 'Two disciplines,\\none instinct.'" }
+          - { label: "Narrative Paragraphs", name: body, widget: markdown }
+
+  - name: resume
+    label: "Resume Page"
+    files:
+      - name: resume
+        file: "src/content/pages/resume.md"
+        label: "Resume Content"
+        fields:
+          - { label: "Professional Overview", name: overview, widget: text }
+          - label: "Work Experience"
+            name: experience
+            widget: list
+            summary: "{{title}}"
+            fields:
+              - { label: "Job Title", name: title, widget: string }
+              - { label: "Organization", name: org, widget: string, required: false }
+              - { label: "Period", name: period, widget: string }
+              - label: "Bullets"
+                name: bullets
+                widget: list
+                field: { label: "Bullet", name: item, widget: string }
+          - label: "Education"
+            name: education
+            widget: list
+            summary: "{{degree}}"
+            fields:
+              - { label: "Degree", name: degree, widget: string }
+              - { label: "Institution", name: org, widget: string }
+              - { label: "Period", name: period, widget: string }
+              - { label: "Note", name: note, widget: string, required: false }
+          - label: "Skills"
+            name: skills
+            widget: list
+            field: { label: "Skill", name: item, widget: string }
+          - label: "Courses & Certifications"
+            name: courses
+            widget: list
+            summary: "{{name}}"
+            fields:
+              - { label: "Course Name", name: name, widget: string }
+              - { label: "Provider", name: org, widget: string }
+              - { label: "Year", name: year, widget: string }
+
+  - name: contact
+    label: "Contact Page"
+    files:
+      - name: contact
+        file: "src/content/pages/contact.md"
+        label: "Contact Page Content"
+        fields:
+          - { label: "Lede (before the email link)", name: lede, widget: string }

@@ -20,8 +20,8 @@
 // function. Long-press is built on Pointer Events (not touchstart/touchend)
 // so the same code path handles touch, pen, and a mouse-button-held-down,
 // uniformly.
+import { getCollection } from 'astro:content';
 import type { Category } from '../data/site';
-import { projects } from '../data/projects';
 import ProjectCard from './ProjectCard.astro';
 
 interface Props {
@@ -29,6 +29,7 @@ interface Props {
 }
 
 const { categories } = Astro.props;
+const projects = await getCollection('projects');
 ---
 
 <div class="project-grid-wrap" data-project-grid-root>
@@ -49,7 +50,7 @@ const { categories } = Astro.props;
 
   <div class="project-grid" data-grid>
     {projects.map((project) => (
-      <div class="grid-cell" data-grid-cell data-filter-category={project.category}>
+      <div class="grid-cell" data-grid-cell data-filter-category={project.data.category}>
         <ProjectCard project={project} />
       </div>
     ))}

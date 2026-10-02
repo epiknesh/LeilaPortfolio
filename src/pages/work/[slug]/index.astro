@@ -1,48 +1,45 @@
 ---
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { projects } from '../../../data/projects';
-import { projectAssets } from '../../../data/project-assets';
 import Lightbox from '../../../components/Lightbox.astro';
 
-export function getStaticPaths() {
-  return projects.map((project) => ({
-    params: { slug: project.slug },
-    props: { project },
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project, idx) => ({
+    params: { slug: project.id },
+    props: {
+      project,
+      prev: projects[(idx - 1 + projects.length) % projects.length],
+      next: projects[(idx + 1) % projects.length],
+      idx,
+      total: projects.length,
+    },
   }));
 }
 
-const { project } = Astro.props;
+const { project, prev, next, idx, total } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
 
-const idx = projects.findIndex((p) => p.slug === project.slug);
-const prev = projects[(idx - 1 + projects.length) % projects.length];
-const next = projects[(idx + 1) % projects.length];
-
-const accent = project.palette[0]?.hex ?? '#B32E22';
-const assets = projectAssets[project.slug];
+const accent = data.palette[0]?.hex ?? '#B32E22';
 ---
 
 <BaseLayout
-  title={project.title}
-  description={project.description[0]}
+  title={data.title}
+  description={data.title}
 >
   <article>
     <!-- ============ HERO IMAGE (now first, above the title/details) ============ -->
     <section class="section no-reveal hero-image-section grain">
       <div class="sheet">
-        {assets ? (
-          <img
-            src={assets.hero}
-            alt={`${project.title}, primary deliverable`}
-            class="hero-image"
-            loading="eager"
-            decoding="async"
-            transition:name={`project-image-${project.slug}`}
-          />
-        ) : (
-          <div class="hero-image-placeholder font-mono" style={`--accent: ${accent};`}>
-            [ primary deliverable image, pending curated asset from PDF pages {project.pdfPages.join(', ')} ]
-          </div>
-        )}
+        <img
+          src={data.hero}
+          alt={`${data.title}, primary deliverable`}
+          class="hero-image"
+          loading="eager"
+          decoding="async"
+          transition:name={`project-image-${project.id}`}
+        />
       </div>
     </section>
 
@@ -50,25 +47,25 @@ const assets = projectAssets[project.slug];
     <section class="section project-hero grain" style={`--accent: ${accent};`}>
       <div class="sheet">
         <a href="/#work" class="back-link font-mono">← back to work</a>
-        <h1 class="font-stamp project-title">{project.title}</h1>
-        {project.subtitle && <p class="font-body project-subtitle">{project.subtitle}</p>}
+        <h1 class="font-stamp project-title">{data.title}</h1>
+        {data.subtitle && <p class="font-body project-subtitle">{data.subtitle}</p>}
 
         <div class="meta-grid font-mono">
           <div>
             <p class="label">project type</p>
-            <p>{project.projectType}</p>
+            <p>{data.projectType}</p>
           </div>
           <div>
             <p class="label">industry</p>
-            <p>{project.industry}</p>
+            <p>{data.industry}</p>
           </div>
           <div>
             <p class="label">deliverables</p>
-            <p>{project.deliverables.join(', ')}</p>
+            <p>{data.deliverables.join(', ')}</p>
           </div>
         </div>
 
-        <a href={`/project-sheets/${project.slug}.pdf`} download class="sheet-download font-mono">
+        <a href={`/project-sheets/${project.id}.pdf`} download class="sheet-download font-mono">
           download project sheet ↓
         </a>
 
@@ -78,12 +75,12 @@ const assets = projectAssets[project.slug];
             <p class="label">about this project</p>
           </div>
           <div class="description-copy font-body">
-            {project.description.map((para) => <p>{para}</p>)}
+            <Content />
 
-            {project.process && (
+            {data.process && (
               <details class="process-details">
                 <summary class="font-mono process-summary">process &amp; references</summary>
-                <p class="process-text">{project.process}</p>
+                <p class="process-text">{data.process}</p>
               </details>
             )}
           </div>
@@ -96,7 +93,7 @@ const assets = projectAssets[project.slug];
             <p class="palette-hint font-mono">click a swatch to copy its hex</p>
           </div>
           <div class="swatch-row" data-palette>
-            {project.palette.map((c) => (
+            {data.palette.map((c) => (
               <button type="button" class="swatch" data-swatch={c.hex} aria-label={`Copy hex code ${c.hex}`}>
                 <div class="chip" style={`background:${c.hex};`}></div>
                 {c.name && <p class="font-mono swatch-name">{c.name}</p>}
@@ -111,29 +108,23 @@ const assets = projectAssets[project.slug];
     <!-- ============ GALLERY ============ -->
     <section class="section gallery-section grain">
       <div class="sheet">
-        {assets && assets.gallery.length > 0 ? (
-          <Lightbox images={assets.gallery} altPrefix={project.title} />
-        ) : (
-          <div class="gallery-placeholder font-mono">
-            [ curated deliverable gallery pending, see assets/asset-manifest.md ]
-          </div>
-        )}
+        <Lightbox images={data.gallery} altPrefix={data.title} />
       </div>
     </section>
 
     <!-- ============ PREV / NEXT FILMSTRIP ============ -->
     <nav class="section filmstrip grain" aria-label="Project navigation">
       <div class="sheet filmstrip-inner">
-        <a href={`/work/${prev.slug}/`} class="filmstrip-link font-mono">
+        <a href={`/work/${prev.id}/`} class="filmstrip-link font-mono">
           <span class="dim">← prev</span>
-          <span class="filmstrip-title font-stamp">{prev.title}</span>
+          <span class="filmstrip-title font-stamp">{prev.data.title}</span>
         </a>
         <a href="/#work" class="filmstrip-index font-mono">
-          {String(idx + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+          {String(idx + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
         </a>
-        <a href={`/work/${next.slug}/`} class="filmstrip-link font-mono align-right">
+        <a href={`/work/${next.id}/`} class="filmstrip-link font-mono align-right">
           <span class="dim">next →</span>
-          <span class="filmstrip-title font-stamp">{next.title}</span>
+          <span class="filmstrip-title font-stamp">{next.data.title}</span>
         </a>
       </div>
     </nav>
@@ -187,19 +178,6 @@ const assets = projectAssets[project.slug];
   .sheet-download:hover {
     color: var(--red);
     border-color: var(--red);
-  }
-
-  .hero-image-placeholder {
-    aspect-ratio: 16 / 9;
-    background: color-mix(in srgb, var(--accent) 14%, var(--bg-alt));
-    border: 1px dashed color-mix(in srgb, var(--accent) 40%, var(--line));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 24px;
-    font-size: var(--fs-caption);
-    color: var(--text-dim);
   }
 
   .hero-image {
@@ -321,19 +299,6 @@ const assets = projectAssets[project.slug];
   @media (prefers-reduced-motion: reduce) {
     .chip, .swatch-hex { transition: none; }
     .swatch:hover .chip { transform: none; }
-  }
-
-  .gallery-placeholder {
-    aspect-ratio: 21 / 9;
-    background: var(--bg-alt);
-    border: 1px dashed var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 24px;
-    font-size: var(--fs-caption);
-    color: var(--text-dim);
   }
 
   .filmstrip-inner {

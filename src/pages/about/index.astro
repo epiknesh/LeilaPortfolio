@@ -1,4 +1,5 @@
 ---
+import { getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { brandAssets } from '../../data/project-assets';
 import { software } from '../../data/software';
@@ -6,6 +7,9 @@ import SoftwareIcon from '../../components/SoftwareIcon.astro';
 
 const primaryTools = software.filter((t) => t.tier === 'primary');
 const secondaryTools = software.filter((t) => t.tier === 'secondary');
+
+const about = await getEntry('about', 'about');
+const { Content } = about ? await render(about) : { Content: null };
 ---
 
 <BaseLayout
@@ -24,12 +28,7 @@ const secondaryTools = software.filter((t) => t.tier === 'secondary');
       <div>
         <p class="label">about [me]</p>
         <h1 class="font-stamp hero-title">Leila Karlene<br />Banta</h1>
-        <p class="font-body hero-lede">
-          Hi, I'm Leila, a graphic designer, illustrator, and digital/social media creative with an
-          architecture background. I make things for pages, screens, and everywhere in
-          between—designing with unique typography, bold visuals, and ideas that know how to hold
-          your attention.
-        </p>
+        <p class="font-body hero-lede">{about?.data.heroLede}</p>
       </div>
     </div>
   </section>
@@ -38,22 +37,10 @@ const secondaryTools = software.filter((t) => t.tier === 'secondary');
     <div class="sheet narrative-grid">
       <div>
         <p class="label">architecture → design</p>
-        <h2 class="font-stamp">Two disciplines,<br />one instinct.</h2>
+        <h2 class="font-stamp" set:html={(about?.data.narrativeHeading ?? '').replace('\n', '<br />')} />
       </div>
       <div class="narrative-copy font-body">
-        <p>
-          Leila is finishing her Bachelor of Science in Architecture at the University of the
-          Philippines Diliman, Cum Laude, Class of 2026. That training shows up in her design work:
-          presentation boards taught her how to hold a lot of information on one page without losing
-          the hierarchy, and studio critique taught her to defend a composition, not just make one.
-        </p>
-        <p>
-          Outside coursework, she's designed logos, visual identities, and merchandise for small
-          businesses and personal clients since 2022, led publicity and visual communications for
-          UAPSA-UPD's Academics Committee, and contributed advocacy design work for Gabriela Youth–UPD.
-          She also builds 3D models and interior visualizations for commercial and residential spaces,
-          work that most graphic designers never get asked to do.
-        </p>
+        {Content && <Content />}
       </div>
     </div>
   </section>

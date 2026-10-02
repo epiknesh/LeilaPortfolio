@@ -1,62 +1,10 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { site } from '../../data/site';
 
-const experience = [
-  {
-    title: 'Independent Graphic & Spatial Designer',
-    period: 'Jun 2022 – Present',
-    bullets: [
-      'Designed logos, typefaces, illustrations, merchandise, and branded assets for small businesses and personal clients.',
-      'Created social media graphics and promotional materials for organizations and businesses in hospitality and retail.',
-      'Designed yearbook layouts and publication materials, applying typography, layout, and print design principles.',
-      'Produced 3D models and interior designs for commercial and residential spaces, including offices, workspaces, and entertainment units.',
-    ],
-  },
-  {
-    title: 'Associate Vice President for Communications & Operations, Academics Committee',
-    org: 'UAPSA – UPD, Quezon City',
-    period: 'Aug 2024 – Jun 2025',
-    bullets: [
-      'Co-headed ARKITEKTOK 2.0, coordinating event publicity, promotional materials, and visual communications.',
-      'Developed and coordinated digital publicity materials with internal creative teams for organizational events.',
-      'Managed committee communications, documentation, and project coordination.',
-    ],
-  },
-  {
-    title: 'Associate Vice President for Organizational Relations, Academics Committee',
-    org: 'UAPSA – UPD, Quezon City',
-    period: 'Jan 2024 – Jun 2024',
-    bullets: [
-      'Co-headed ARKITEKTOK 2.0, coordinating event publicity and visual communications with internal creative teams.',
-      'Coordinated speaker communications, event materials, and promotional requirements with external partners.',
-      'Supported creative project planning and execution across the Academics Committee.',
-    ],
-  },
-  {
-    title: 'Creatives Team Contributor, Campaign and Propaganda Committee',
-    org: 'Gabriela Youth – UPD, Quezon City',
-    period: 'Aug 2021 – Jun 2023',
-    bullets: [
-      'Designed social media graphics, posters, banners, and campaign materials for advocacy initiatives.',
-      'Created visual content addressing women’s issues, social justice, and current affairs.',
-      'Developed digital and print layouts while maintaining consistent visual messaging.',
-    ],
-  },
-];
-
-const education = [
-  { degree: 'Bachelor of Science in Architecture', org: 'University of the Philippines Diliman, Quezon City', period: '2021 – 2026', note: 'Graduating Class of 2026 · Cum Laude' },
-  { degree: 'Senior High School Diploma, STEM Strand', org: 'University of Santo Tomas, Sampaloc, Manila', period: '2019 – 2021' },
-];
-
-const skills = ['Graphic Design', 'Layout Design', 'Visual Communication', 'Branding & Visual Identity', 'Presentation Design', 'Art/Creative Direction', '3D Modeling', '3D Rendering and Visualization'];
-
-const courses = [
-  { name: 'Graphic Design Specialization', org: 'California Institute of the Arts | Coursera', year: '2026' },
-  { name: 'Creative Design Tools: Adobe Photoshop, Illustrator, Acrobat Specialization', org: 'Adobe | Coursera', year: '2026' },
-  { name: 'Autodesk Revit BIM 2026 Workshop', org: 'Autodesk | MSTConnect', year: '2026' },
-];
+const resume = await getEntry('resume', 'resume');
+const { experience, education, skills, courses, overview } = resume!.data;
 ---
 
 <BaseLayout
@@ -83,16 +31,7 @@ const courses = [
   <section class="section grain">
     <div class="sheet">
       <p class="label" style="margin-bottom: 20px;">professional overview</p>
-      <p class="font-body overview-text">
-        Creative and detail-oriented architecture graduate with hands-on experience in graphic
-        design, publication design, visual communication, and creative direction through student
-        organizations and freelance projects. Skilled in developing visual concepts, layouts,
-        marketing and promotional materials, and digital content using design principles including
-        typography, composition, visual hierarchy, color, and visual storytelling. Experienced in
-        translating ideas and project requirements into cohesive visual materials, with additional
-        experience in organizational communications, project coordination, and collaborative
-        creative work.
-      </p>
+      <p class="font-body overview-text">{overview}</p>
     </div>
   </section>
 

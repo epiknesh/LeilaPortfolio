@@ -1,7 +1,10 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ContactForm from '../../components/ContactForm.astro';
 import { site } from '../../data/site';
+
+const contact = await getEntry('contact', 'contact');
 ---
 
 <BaseLayout
@@ -13,7 +16,7 @@ import { site } from '../../data/site';
       <p class="label">get in touch</p>
       <h1 class="font-stamp contact-heading">Send a message.</h1>
       <p class="font-body contact-lede">
-        Prefer email? Reach Leila directly at <a href={`mailto:${site.email}`} class="inline-link">{site.email}</a>.
+        {contact?.data.lede} <a href={`mailto:${site.email}`} class="inline-link">{site.email}</a>.
       </p>
       <ContactForm />
     </div>

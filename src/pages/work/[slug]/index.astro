@@ -179,6 +179,18 @@ const heroSize = await getPublicImageSize(data.hero);
     background: linear-gradient(to top, rgba(13, 12, 11, 0.75) 0%, rgba(13, 12, 11, 0) 38%);
     pointer-events: none;
   }
+  /* On narrow viewports the title frequently wraps to 3 lines (a long
+     project title at a smaller hero height), pushing its top line above
+     where the 38% gradient stop is dark enough — it was landing on the
+     brighter part of the image, sometimes directly over text/detail baked
+     into the photo itself and becoming hard to read. A taller, stronger
+     fade on mobile gives the (now taller) text block enough dark coverage
+     regardless of how many lines the title wraps to. */
+  @media (max-width: 640px) {
+    .hero-fade {
+      background: linear-gradient(to top, rgba(13, 12, 11, 0.94) 0%, rgba(13, 12, 11, 0.6) 45%, rgba(13, 12, 11, 0) 85%);
+    }
+  }
 
   .hero-overlay-text {
     position: absolute;
@@ -257,13 +269,19 @@ const heroSize = await getPublicImageSize(data.hero);
     padding-top: clamp(24px, 3.5vw, 40px);
     border-top: 1px solid var(--line);
   }
-  .description-copy p {
+  /* :global here because <Content /> (the rendered Markdown body from the
+     project's content-collection entry) renders its <p> tags without this
+     component's data-astro-cid-* scoping attribute — a scoped selector
+     silently never matches them at all, so without :global every paragraph
+     fell back to the global base stylesheet's `p { margin: 0 }` instead of
+     this 20px gap, running all paragraphs together with no visual break. */
+  .description-copy :global(p) {
     max-width: 68ch;
     font-size: var(--fs-body-lg);
     margin-bottom: 20px;
     opacity: 0.88;
   }
-  .description-copy p:last-child { margin-bottom: 0; }
+  .description-copy :global(p:last-child) { margin-bottom: 0; }
 
   .process-details {
     margin-top: 28px;

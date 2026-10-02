@@ -92,6 +92,12 @@ import { nav } from '../data/site';
     color: var(--text-dim);
     transition: color var(--dur-fast) var(--ease-standard);
     white-space: nowrap;
+    /* Padding (not margin) expands the actual clickable/tappable box
+       without visually enlarging the text, so links stay small/quiet in
+       the header but still meet a reasonable touch-target size on mobile
+       — the text itself was only ~15px tall with no padding at all. */
+    display: inline-block;
+    padding-block: 10px;
   }
 
   nav a:hover {

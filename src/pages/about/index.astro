@@ -116,12 +116,16 @@ const { Content } = about ? await render(about) : { Content: null };
     grid-template-columns: 0.8fr 1.2fr;
     gap: clamp(24px, 5vw, 64px);
   }
-  .narrative-copy p {
+  /* :global here because <Content /> (the rendered Markdown body from the
+     about page's content-collection entry) renders its <p> tags without
+     this component's data-astro-cid-* scoping attribute — see the same
+     fix/explanation in work/[slug]/index.astro's .description-copy rule. */
+  .narrative-copy :global(p) {
     max-width: 62ch;
     margin-bottom: 20px;
     opacity: 0.88;
   }
-  .narrative-copy p:last-child { margin-bottom: 0; }
+  .narrative-copy :global(p:last-child) { margin-bottom: 0; }
 
   .tier-title {
     font-size: 1.1rem;

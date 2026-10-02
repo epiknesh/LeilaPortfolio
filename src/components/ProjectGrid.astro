@@ -268,6 +268,47 @@ const projects = await getCollection('projects');
       });
       applyFilter();
     });
+
+    // Prefetch each project's hero image ahead of the click — without this,
+    // the View Transitions navigation swaps to the project page before its
+    // (larger, often different-from-the-thumbnail) hero image has actually
+    // downloaded, so the shared-element morph animates into an empty box
+    // that then pops the image in late. Two triggers: as soon as a tile
+    // scrolls into view (catches anyone who scrolls past before clicking)
+    // and immediately on hover/focus (catches a fast, deliberate click that
+    // happens before the visibility prefetch would have finished anyway).
+    const prefetched = new Set<string>();
+    const prefetchHero = (card: HTMLElement) => {
+      const heroSrc = card.dataset.prefetchHero;
+      if (!heroSrc || prefetched.has(heroSrc)) return;
+      prefetched.add(heroSrc);
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.as = 'image';
+      link.href = heroSrc;
+      document.head.appendChild(link);
+    };
+
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-prefetch-hero]'));
+    cards.forEach((card) => {
+      card.addEventListener('pointerenter', () => prefetchHero(card));
+      card.addEventListener('focus', () => prefetchHero(card));
+    });
+
+    if ('IntersectionObserver' in window) {
+      const prefetchObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              prefetchHero(entry.target as HTMLElement);
+              prefetchObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '200px' }
+      );
+      cards.forEach((card) => prefetchObserver.observe(card));
+    }
   }
 
   function initAllProjectGrids() {

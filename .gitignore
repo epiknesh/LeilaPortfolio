@@ -20,6 +20,9 @@ npm-debug.log*
 # macOS
 .DS_Store
 
+# Claude Code session state (not project content)
+.claude/
+
 # raw source PDFs and unprocessed extraction scratch (kept locally, not needed in repo history)
 assets/raw-pdf-pages/
 assets/extracted-images/

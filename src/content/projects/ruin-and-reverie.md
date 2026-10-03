@@ -16,10 +16,10 @@ palette:
   - hex: '#C9A876'
     name: Warm gold
 process: Location scouting and shot planning were worked out on a contact-sheet-style concept board before the shoot, mapping ethereal and urbex references against specific spots across UP Diliman and Cubao.
-cardImage: /images/curated/COMPOSITE ABUNDANCE.png
-hero: /images/curated/COMPOSITE ABUNDANCE.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/COMPOSITE ABUNDANCE.png
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 12
 ---

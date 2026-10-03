@@ -1,5 +1,4 @@
 ---
-order: 13
 category: 3d-architectural
 title: 3D & Architectural Visualizations
 subtitle: ''
@@ -15,15 +14,12 @@ palette:
   - hex: '#EDE8E0'
     name: Paper
 process: ''
-cardImage: /images/curated/3d-visualization/exterior-perforated-pergola-screen.png
-hero: /images/curated/3d-visualization/exterior-perforated-pergola-screen.png
+cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 1.png
+hero: /images/curated/Banta_Portfolio_Graphic Design_POST 1.png
 gallery:
-  - image: /images/curated/3d-visualization/interior-souvenir-mural-gallery.png
-    size: wide
-  - image: /images/curated/3d-visualization/freelance-interior-general-view-1.png
-    size: wide
-  - image: /images/curated/3d-visualization/freelance-interior-living-room-stone-wall.png
-    size: wide
+  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 1.png
+    size: standard
+order: 13
 ---
 
 A collection of 3D modeling and rendering work spanning academic architectural projects and freelance interior design visualization for commercial and residential spaces, including offices, workspaces, and entertainment units.

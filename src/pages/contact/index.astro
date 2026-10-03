@@ -29,7 +29,10 @@ const channels = [
       </p>
 
       <div class="contact-layout">
-        <ContactForm />
+        <div class="form-panel">
+          <p class="label form-heading">send a message</p>
+          <ContactForm />
+        </div>
 
         <aside class="channels-panel" aria-label="Other ways to reach Leila">
           <p class="label channels-heading">reach her directly</p>
@@ -88,6 +91,10 @@ const channels = [
     grid-template-columns: 1.3fr 1fr;
     gap: clamp(32px, 6vw, 72px);
     align-items: start;
+  }
+
+  .form-heading {
+    margin-bottom: 20px;
   }
 
   .channels-panel {
@@ -168,6 +175,14 @@ const channels = [
     }
     .channels-panel {
       order: -1;
+    }
+    /* On mobile the channels list sits above the form (so the most
+       scannable info — email/phone/socials — comes first); without its
+       own heading and a border above it, the form just looked like a
+       continuation of the channels list instead of its own section. */
+    .form-panel {
+      border-top: 1px solid var(--line);
+      padding-top: var(--space-block);
     }
   }
 </style>

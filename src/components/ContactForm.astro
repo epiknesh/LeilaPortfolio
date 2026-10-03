@@ -45,7 +45,7 @@ const endpoint = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
 
   <div class="form-success font-mono" data-form-success hidden role="status">
     <p class="success-title font-stamp">Message sent.</p>
-    <p>Thanks for reaching out — I'll get back to you soon.</p>
+    <p>Thanks for reaching out! I'll get back to you soon.</p>
   </div>
 </div>
 
@@ -118,8 +118,19 @@ const endpoint = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
         });
 
         if (response.ok) {
+          // Reset the button back to its idle state before hiding the form
+          // — it was staying stuck on "sending…" because only the catch
+          // branch below ever reset it, so re-showing the form later (e.g.
+          // browser back/forward) would show a permanently disabled button.
+          submitBtn!.disabled = false;
+          btnLabel!.textContent = 'send message';
           form!.hidden = true;
           successPanel!.hidden = false;
+          // Force a reflow before adding the class so the entrance
+          // transition below actually animates instead of snapping
+          // straight to its end state.
+          void successPanel!.offsetWidth;
+          successPanel!.classList.add('is-visible');
           successPanel!.focus?.();
         } else {
           throw new Error('Form submission failed');
@@ -236,6 +247,19 @@ const endpoint = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
 
   .form-success {
     max-width: 52ch;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 360ms var(--ease-standard), transform 360ms var(--ease-standard);
+  }
+  .form-success.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .form-success {
+      transition: none;
+      transform: none;
+    }
   }
   .success-title {
     font-size: var(--fs-h3);

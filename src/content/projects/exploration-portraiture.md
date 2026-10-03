@@ -1,5 +1,5 @@
 ---
-order: 5
+order: 11
 category: "creative-direction"
 title: "Exploration with Portraiture"
 projectType: "Concept Boarding, Shoot Direction, Styling, Post-Processing"

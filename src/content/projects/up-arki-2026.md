@@ -1,5 +1,5 @@
 ---
-order: 13
+order: 8
 category: "editorial-print"
 title: "UP Arki 2026"
 subtitle: "Architecture Class Yearbook, Vol. 1"

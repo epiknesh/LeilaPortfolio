@@ -1,5 +1,5 @@
 ---
-order: 10
+order: 2
 category: "digital-social"
 title: "Myst Fragrance Social Media Identity"
 projectType: "Myst Fragrance Overall Social Media Identity & Content Ideation"

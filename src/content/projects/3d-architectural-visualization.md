@@ -1,5 +1,5 @@
 ---
-order: 1
+order: 13
 category: 3d-architectural
 title: 3D & Architectural Visualizations
 subtitle: ''

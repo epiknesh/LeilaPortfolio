@@ -160,10 +160,16 @@ const software = (await getCollection('software')).sort((a, b) => {
     padding-left: 10px;
   }
 
-  /* Touch devices: hover doesn't apply meaningfully, so keep names visible. */
+  /* Touch devices: hover doesn't apply meaningfully, so keep names visible
+     permanently instead of behind a hover gesture. The hover-state
+     .software-name padding-left never applies here (hover never triggers
+     on touch), so without setting it directly the name rendered flush
+     against the icon with no gap at all. */
   @media (hover: none) {
-    .software-item { padding-left: 10px; }
-    .software-name { max-width: 160px; }
+    .software-name {
+      max-width: 160px;
+      padding-left: 10px;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .software-name, .software-item, .software-icon { transition: none; }

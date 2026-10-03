@@ -1,5 +1,5 @@
 ---
-order: 8
+order: 1
 category: "branding-identity"
 title: "Myst"
 subtitle: "Fragrance. Wear Your Intention."

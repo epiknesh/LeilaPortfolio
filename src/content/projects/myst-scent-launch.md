@@ -1,5 +1,5 @@
 ---
-order: 9
+order: 3
 category: "digital-social"
 title: "Myst Fragrance Scent Launch"
 projectType: "Myst Fragrance Scent Launch Social Media Campaign"

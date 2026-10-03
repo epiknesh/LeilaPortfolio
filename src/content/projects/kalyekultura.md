@@ -1,46 +1,31 @@
 ---
-order: 10
-category: "information-presentation"
-title: "KalyeKultura"
-subtitle: "The Jeepney Culture & Urban Arts Complex"
-projectType: "Architectural Presentation Boards"
-industry: "Cultural / Civic Architecture"
+category: information-presentation
+title: KalyeKultura
+subtitle: The Jeepney Culture & Urban Arts Complex
+projectType: Architectural Presentation Boards
+industry: Cultural / Civic Architecture
 deliverables:
-  - "Presentation Boards"
-  - "Data Visualization"
-  - "Architectural Graphics"
+  - Presentation Boards
+  - Data Visualization
+  - Architectural Graphics
 palette:
-  - hex: "#4F9C9C"
-    name: "Teal"
-  - hex: "#DC9257"
-    name: "Orange"
-  - hex: "#E8C13F"
-    name: "Yellow"
-  - hex: "#C0392B"
-    name: "Red"
-  - hex: "#3B2E2A"
-    name: "Brown"
-cardImage: "/images/curated/kalyekultura/render-mural-viewing-deck.png"
-hero: "/images/curated/kalyekultura/render-mural-viewing-deck.png"
+  - hex: '#4F9C9C'
+    name: Teal
+  - hex: '#DC9257'
+    name: Orange
+  - hex: '#E8C13F'
+    name: Yellow
+  - hex: '#C0392B'
+    name: Red
+  - hex: '#3B2E2A'
+    name: Brown
+process: ''
+cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 5.png
+hero: /images/curated/Banta_Portfolio_Graphic Design_POST 5.png
 gallery:
-  - image: "/images/curated/kalyekultura/slide-cover-render.png"
-    size: "standard"
-  - image: "/images/curated/kalyekultura/board-01-concept-form-floorplans.png"
-    size: "portrait"
-  - image: "/images/curated/kalyekultura/board-02-site-dev-interior-isometrics.png"
-    size: "portrait"
-  - image: "/images/curated/kalyekultura/slide-the-site-map.png"
-    size: "standard"
-  - image: "/images/curated/kalyekultura/slide-site-dev-plan.png"
-    size: "standard"
-  - image: "/images/curated/kalyekultura/slide-elevations-sections.png"
-    size: "standard"
-  - image: "/images/curated/kalyekultura/slide-floor-plans.png"
-    size: "standard"
-  - image: "/images/curated/kalyekultura/render-exterior-street-materials.png"
-    size: "standard"
-  - image: "/images/curated/kalyekultura/render-jeepney-memorabilia-wall.png"
-    size: "wide"
+  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 5.png
+    size: standard
+order: 10
 ---
 
 Architectural boards and presentation slides for KalyeKultura, a proposed jeepney and urban arts complex in Cubao showcasing jeepney art, history, culture, and contemporary street art. The visual system draws from Cubao's urban character through muted, weathered backgrounds paired with teal, orange, yellow, red, and brown accents. Wide industrial typefaces and jeepney-inspired lettering reinforce the project's Filipino urban aesthetic.

@@ -16,10 +16,10 @@ palette:
   - hex: '#6B7F5B'
     name: Green
 process: ''
-cardImage: /images/curated/COMPOSITE CONFIDENCE.png
-hero: /images/curated/COMPOSITE CONFIDENCE.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/COMPOSITE CONFIDENCE.png
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 7
 ---

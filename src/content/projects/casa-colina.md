@@ -18,10 +18,10 @@ palette:
   - hex: '#383121'
     name: Brown
 process: ''
-cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 3.png
-hero: /images/curated/Banta_Portfolio_Graphic Design_POST 3.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 3.png
+  - image: /images/curated/Untitled 42.png
     size: wide
 order: 4
 ---

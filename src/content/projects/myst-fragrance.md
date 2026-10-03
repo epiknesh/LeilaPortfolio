@@ -1,7 +1,7 @@
 ---
 category: branding-identity
 title: Myst Fragrance
-subtitle: ''
+subtitle: Branding, Social Media Identity, & Digital Marketing Materials
 projectType: Academic Project
 industry: Cosmetics & Personal Care
 deliverables:
@@ -35,6 +35,6 @@ gallery:
 order: 1
 ---
 
-Myst is a modern fragrance brand inspired by manifestation and ritual. Myst perfumes are specially charged with intentions for love, luck, abundance, and the like, blending mysticism with a contemporary, fashion-forward identity.
+Developed for the California Institute of the Arts Specialization, Myst is a modern fragrance brand inspired by manifestation and ritual. Myst perfumes are specially charged with intentions for love, luck, abundance, and the like, blending mysticism with a contemporary, fashion-forward identity.
 
 The visual identity uses a modular system of symbolic marks, with each intention represented by its own unique symbol. The ornamental details, refined typography, and rich jewel tones draw from occult symbolism and vintage perfume design, reinterpreting these influences through a polished, contemporary lens.

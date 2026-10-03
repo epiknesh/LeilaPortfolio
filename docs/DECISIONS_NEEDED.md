@@ -17,12 +17,6 @@ Running list, most recent first. Checked items were resolved; unchecked items ar
 **What's happening:** per direct instruction, the hand-script "about [me]" heading and "software" / "information" sub-labels are now placeholder boxes (dashed border, bracketed placeholder text) instead of live text — Leila is making a real logo (replaces "about [me]") and a typescript/wordmark treatment of her name (replaces "software" / "information").
 **What I need from you:** once those two image files exist, swap the two placeholder elements in `index.astro` for real `<img>` tags. Flagging dimensions aren't finalized either — the placeholder boxes are sized roughly (120px / 72px min-height) to approximate where the real assets will sit, but that's a guess, not a spec from Leila.
 
-### 5. Contact form needs a real Formspree account to actually work
-**Where:** homepage `/#contact` section, `src/components/ContactForm.astro`.
-**What was built:** a real contact form (name/email/message, client-side validation, honeypot spam field, accessible error states, success confirmation) that submits via Formspree — a free third-party form-delivery service, chosen specifically because this is a static site with no backend of its own to receive submissions.
-**Why it's not fully done:** the form currently points at a placeholder Formspree ID (`REPLACE_WITH_REAL_FORMSPREE_ID`). It renders and validates correctly, but submissions will fail until this is replaced with a real one.
-**What I need from you (or Leila):** create a free account at formspree.io, add a new form, and give me the form ID (a short string like `abcdwxyz` from the form's endpoint URL `https://formspree.io/f/abcdwxyz`) — I'll drop it into `ContactForm.astro` and it'll be live. Takes about 2 minutes on their end. Free tier caps at 50 submissions/month, which is almost certainly enough for a personal portfolio; flagging in case that ever needs revisiting.
-
 ---
 
 ## OPEN
@@ -55,3 +49,6 @@ Was a blocking, machine-wide issue (hit 0 bytes free once). As of 2026-10-02, ho
 
 ### No git repository initialized
 Resolved 2026-10-02: `git init`'d, curated images/PDFs copied for real into the repo (junctions removed), pushed to `github.com/epiknesh/LeilaPortfolio`, connected to Netlify for auto-deploy-on-push. See PROJECT_CONTEXT.md §11l.
+
+### Contact form needed a real Formspree account to work
+Resolved 2026-10-03: owner created a Formspree account and form; real form ID (`mnpnealz`) dropped into `ContactForm.astro`, replacing the placeholder. Submissions now deliver for real.

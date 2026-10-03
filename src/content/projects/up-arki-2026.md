@@ -16,10 +16,10 @@ palette:
   - hex: '#3F5FA8'
     name: Blue
 process: ''
-cardImage: /images/curated/COMPOSITE LOVE.png
-hero: /images/curated/COMPOSITE LOVE.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/COMPOSITE LOVE.png
+  - image: /images/curated/Untitled 42.png
     size: wide
 order: 8
 ---

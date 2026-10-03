@@ -1,64 +1,38 @@
 ---
-order: 1
-category: "branding-identity"
-title: "Myst"
-subtitle: "Fragrance. Wear Your Intention."
-projectType: "Academic Project"
-industry: "Cosmetics & Personal Care"
+category: branding-identity
+title: Myst Fragrance
+subtitle: ''
+projectType: Academic Project
+industry: Cosmetics & Personal Care
 deliverables:
-  - "Logo / Wordmark / Typography Design"
-  - "Visual Systems"
-  - "Packaging Design"
-  - "Digital & Print Collaterals"
+  - Logo / Wordmark / Typography Design
+  - Visual Systems
+  - Packaging Design
+  - Digital & Print Collaterals
 palette:
-  - hex: "#573B4E"
-    name: "Plum"
-  - hex: "#AB7F9C"
-    name: "Mauve"
-  - hex: "#6D648C"
-    name: "Indigo"
-  - hex: "#243245"
-    name: "Navy"
-  - hex: "#C5A56E"
-    name: "Gold"
-  - hex: "#262720"
-    name: "Near-black"
-process: "Concept boarding drew on vintage perfume advertising and occult/tarot ephemera, reinterpreted into a contemporary system rather than copied directly."
-cardImage: "/images/curated/myst-fragrance/packaging-hero-full-lineup.png"
-hero: "/images/curated/myst-fragrance/logomark-modular-system-grid.png"
+  - hex: '#573B4E'
+    name: Plum
+  - hex: '#AB7F9C'
+    name: Mauve
+  - hex: '#6D648C'
+    name: Indigo
+  - hex: '#243245'
+    name: Navy
+  - hex: '#C5A56E'
+    name: Gold
+  - hex: '#262720'
+    name: Near-black
+process: Concept boarding drew on vintage perfume advertising and occult/tarot ephemera, reinterpreted into a contemporary system rather than copied directly.
+cardImage: /images/curated/MYST PFP.jpg
+hero: /images/curated/MYST IG POST LAYOUT.png
 gallery:
-  - image: "/images/curated/myst-fragrance/logomark-primary.png"
-    size: "portrait"
-  - image: "/images/curated/myst-fragrance/wordmark-myst-fragrance.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/typography-wear-your-intention.png"
-    size: "wide"
-  - image: "/images/curated/myst-fragrance/logo-lockup-colorway-grid.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/packaging-love.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/packaging-luck.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/packaging-abundance.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/packaging-protection.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/packaging-confidence.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/packaging-intuition.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/mockup-storefront-signage.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/mockup-business-card.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/mockup-apparel-tshirt.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/mockup-digital-ad-panel.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/mockup-fabric-pattern-phone.png"
-    size: "standard"
-  - image: "/images/curated/myst-fragrance/mockup-tote-bags.png"
-    size: "standard"
+  - image: /images/curated/MYST PFP.jpg
+    size: standard
+  - image: /images/curated/09 FINAL LOGOTYPE + COLOR PALETTE.jpg
+    size: full
+  - image: /images/curated/13 BRANDING GUIDE_BRAND APPLICATIONS 1.jpg
+    size: full
+order: 1
 ---
 
 Myst is a modern fragrance brand inspired by manifestation and ritual. Myst perfumes are specially charged with intentions for love, luck, abundance, and the like, blending mysticism with a contemporary, fashion-forward identity.

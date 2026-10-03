@@ -16,10 +16,10 @@ palette:
   - hex: '#8A6D5C'
     name: Warm brown
 process: Each half of the project started as its own concept board — "Place & Identity" for the domestic-chaos direction, "Alter-Ego" for the fragmented-styling direction — before moving into shoot planning.
-cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 4.png
-hero: /images/curated/Banta_Portfolio_Graphic Design_POST 4.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 4.png
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 11
 ---

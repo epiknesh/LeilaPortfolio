@@ -79,6 +79,11 @@ const home = defineCollection({
   loader: glob({ pattern: 'home.md', base: './src/content/pages' }),
   schema: z.object({
     introLine: z.string(),
+    // Both optional: the homepage renders a dashed placeholder box in
+    // their place (see index.astro) until Leila uploads the real logo
+    // mark and hand-lettered "typescript" wordmark through the CMS.
+    logoImage: z.string().optional(),
+    typescriptImage: z.string().optional(),
   }),
 });
 
@@ -87,6 +92,7 @@ const about = defineCollection({
   schema: z.object({
     heroLede: z.string(),
     narrativeHeading: z.string(),
+    portrait: z.string(),
   }),
 });
 
@@ -128,4 +134,20 @@ const contact = defineCollection({
   }),
 });
 
-export const collections = { projects, categories, software, home, about, resume, contact };
+// Site-wide contact info (email, phone, social links, location) — one
+// shared source so an edit in the CMS updates the footer, the Resume
+// page's contact strip, and the Contact page's channel list all at once,
+// instead of needing separate copies kept in sync by hand.
+const siteInfo = defineCollection({
+  loader: glob({ pattern: 'site.md', base: './src/content/pages' }),
+  schema: z.object({
+    email: z.string(),
+    phone: z.string(),
+    location: z.string(),
+    linkedin: z.string(),
+    instagram: z.string(),
+    instagramHandle: z.string(),
+  }),
+});
+
+export const collections = { projects, categories, software, home, about, resume, contact, siteInfo };

@@ -118,12 +118,12 @@ const endpoint = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
         });
 
         if (response.ok) {
-          // Reset the button back to its idle state before hiding the form
-          // — it was staying stuck on "sending…" because only the catch
-          // branch below ever reset it, so re-showing the form later (e.g.
-          // browser back/forward) would show a permanently disabled button.
-          submitBtn!.disabled = false;
-          btnLabel!.textContent = 'send message';
+          // Submit button stays disabled after a successful send — once
+          // "Message sent!" is showing, sending again requires a reload
+          // rather than letting the same button fire a second submission.
+          // (The "sending…" label from a moment ago is left as-is too,
+          // since the button is hidden along with the rest of the form
+          // right after this and never shown again this page load.)
           form!.hidden = true;
           successPanel!.hidden = false;
           // Force a reflow before adding the class so the entrance

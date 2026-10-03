@@ -1,7 +1,6 @@
 ---
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { brandAssets } from '../../data/project-assets';
 import SoftwareIcon from '../../components/SoftwareIcon.astro';
 import { toWebpPath } from '../../lib/image-size';
 
@@ -24,9 +23,9 @@ const { Content } = about ? await render(about) : { Content: null };
     <div class="sheet about-hero-grid">
       <div class="portrait-frame">
         <picture>
-          <source srcset={toWebpPath(brandAssets.aboutIllustration)} type="image/webp" />
+          <source srcset={toWebpPath(about!.data.portrait)} type="image/webp" />
           <img
-            src={brandAssets.aboutIllustration}
+            src={about!.data.portrait}
             alt="Illustrated self-portrait of Leila, hand-drawn in ink with red spiral and star accents"
             class="portrait-image"
           />

@@ -3,9 +3,10 @@ import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import SoftwareIcon from '../components/SoftwareIcon.astro';
-import { site } from '../data/site';
+import { toWebpPath } from '../lib/image-size';
 
 const home = await getEntry('home', 'home');
+const siteInfo = await getEntry('siteInfo', 'site');
 const tierOrder = { primary: 0, secondary: 1, basic: 2 };
 const software = (await getCollection('software')).sort((a, b) => {
   const tierDiff = tierOrder[a.data.tier] - tierOrder[b.data.tier];
@@ -21,19 +22,33 @@ const software = (await getCollection('software')).sort((a, b) => {
   <section class="section no-reveal about-intro grain" id="about-intro">
     <div class="sheet about-grid">
       <div>
-        <!--
-          PLACEHOLDER: Leila is making two real assets to replace this —
-          a logo (swaps out the "about [me]" heading) and a typescript/
-          wordmark treatment of her name (swaps out "software" / "information").
-          Replace the two placeholder boxes below with real <img> tags once
-          those files exist. See docs/DECISIONS_NEEDED.md.
-        -->
-        <h1 class="about-heading-placeholder font-mono" aria-label="About me">
-          [ logo placeholder — about [me] ]
-        </h1>
-        <div class="about-sub-placeholder font-mono" aria-label="Software, information">
-          [ typescript placeholder — software / information ]
-        </div>
+        <!-- Both logoImage/typescriptImage are optional CMS fields (Homepage
+             tab in /admin) — until Leila uploads them, these render as
+             dashed placeholder boxes instead. -->
+        {home?.data.logoImage ? (
+          <h1 class="about-heading-image">
+            <picture>
+              <source srcset={toWebpPath(home.data.logoImage)} type="image/webp" />
+              <img src={home.data.logoImage} alt="Leila Karlene Banta" />
+            </picture>
+          </h1>
+        ) : (
+          <h1 class="about-heading-placeholder font-mono" aria-label="About me">
+            [ logo placeholder — about [me] ]
+          </h1>
+        )}
+        {home?.data.typescriptImage ? (
+          <div class="about-sub-image">
+            <picture>
+              <source srcset={toWebpPath(home.data.typescriptImage)} type="image/webp" />
+              <img src={home.data.typescriptImage} alt="" />
+            </picture>
+          </div>
+        ) : (
+          <div class="about-sub-placeholder font-mono" aria-label="Software, information">
+            [ typescript placeholder — software / information ]
+          </div>
+        )}
       </div>
       <div class="about-copy">
         <p class="font-body intro-line">{home?.data.introLine}</p>
@@ -67,7 +82,7 @@ const software = (await getCollection('software')).sort((a, b) => {
         <p class="label">let's work together</p>
         <h2 class="font-stamp contact-heading">Have a project<br />in mind?</h2>
         <p class="font-body contact-lede">
-          {site.email}
+          {siteInfo!.data.email}
         </p>
       </div>
       <a href="/contact/" class="contact-link font-mono">send a message →</a>
@@ -106,6 +121,27 @@ const software = (await getCollection('software')).sort((a, b) => {
   .about-sub-placeholder {
     min-height: 72px;
   }
+
+  .about-heading-image {
+    max-width: 420px;
+    margin-bottom: 16px;
+  }
+  .about-heading-image picture,
+  .about-heading-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .about-sub-image {
+    max-width: 420px;
+  }
+  .about-sub-image picture,
+  .about-sub-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   .intro-line {
     font-size: var(--fs-body-lg);
     max-width: 56ch;

@@ -112,6 +112,16 @@ collections:
         label: "Homepage Intro"
         fields:
           - { label: "Intro line (under the about heading)", name: introLine, widget: text }
+          - label: "Logo"
+            name: logoImage
+            widget: image
+            required: false
+            hint: "Replaces the '[ logo placeholder — about [me] ]' box at the top of the homepage intro once uploaded."
+          - label: "Typescript / Wordmark"
+            name: typescriptImage
+            widget: image
+            required: false
+            hint: "Replaces the '[ typescript placeholder ]' box below the logo once uploaded."
 
   - name: about
     label: "About Page"
@@ -120,6 +130,10 @@ collections:
         file: "src/content/pages/about.md"
         label: "About Page Content"
         fields:
+          - label: "Portrait Photo"
+            name: portrait
+            widget: image
+            hint: "The illustrated self-portrait shown at the top of the About page."
           - { label: "Hero Lede", name: heroLede, widget: text }
           - { label: "Narrative Heading", name: narrativeHeading, widget: string, hint: "Use a line break for a two-line heading, e.g. 'Two disciplines,\\none instinct.'" }
           - { label: "Narrative Paragraphs", name: body, widget: markdown }
@@ -174,3 +188,13 @@ collections:
         label: "Contact Page Content"
         fields:
           - { label: "Lede (before the email link)", name: lede, widget: string }
+      - name: site
+        file: "src/content/pages/site.md"
+        label: "Contact Info (email, phone, socials, location)"
+        fields:
+          - { label: "Email", name: email, widget: string, hint: "Also shown in the footer and on the Resume page." }
+          - { label: "Phone", name: phone, widget: string }
+          - { label: "Location", name: location, widget: string }
+          - { label: "LinkedIn URL", name: linkedin, widget: string }
+          - { label: "Instagram URL", name: instagram, widget: string }
+          - { label: "Instagram Handle (displayed text, e.g. '@leila.karlene')", name: instagramHandle, widget: string }

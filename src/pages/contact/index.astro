@@ -3,16 +3,16 @@ import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ContactForm from '../../components/ContactForm.astro';
 import SoftwareIcon from '../../components/SoftwareIcon.astro';
-import { site } from '../../data/site';
 
 const contact = await getEntry('contact', 'contact');
+const siteInfo = (await getEntry('siteInfo', 'site'))!.data;
 
 const channels = [
-  { label: 'email', icon: 'email', value: site.email, href: `mailto:${site.email}` },
-  { label: 'phone', icon: 'phone', value: site.phone, href: `tel:${site.phone.replace(/[^+\d]/g, '')}` },
-  { label: 'linkedin', icon: 'linkedin', value: 'linkedin ↗', href: site.linkedin, external: true },
-  { label: 'instagram', icon: 'instagram', value: site.instagramHandle, href: site.instagram, external: true },
-  { label: 'location', icon: 'location', value: site.location },
+  { label: 'email', icon: 'email', value: siteInfo.email, href: `mailto:${siteInfo.email}` },
+  { label: 'phone', icon: 'phone', value: siteInfo.phone, href: `tel:${siteInfo.phone.replace(/[^+\d]/g, '')}` },
+  { label: 'linkedin', icon: 'linkedin', value: 'linkedin ↗', href: siteInfo.linkedin, external: true },
+  { label: 'instagram', icon: 'instagram', value: siteInfo.instagramHandle, href: siteInfo.instagram, external: true },
+  { label: 'location', icon: 'location', value: siteInfo.location },
 ];
 ---
 
@@ -25,7 +25,7 @@ const channels = [
       <p class="label">get in touch</p>
       <h1 class="font-stamp contact-heading">Send a message.</h1>
       <p class="font-body contact-lede">
-        {contact?.data.lede} <a href={`mailto:${site.email}`} class="inline-link">{site.email}</a>.
+        {contact?.data.lede} <a href={`mailto:${siteInfo.email}`} class="inline-link">{siteInfo.email}</a>.
       </p>
 
       <div class="contact-layout">

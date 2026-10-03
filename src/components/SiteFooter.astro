@@ -1,5 +1,6 @@
 ---
-import { site } from '../data/site';
+import { getEntry } from 'astro:content';
+const siteInfo = await getEntry('siteInfo', 'site');
 ---
 
 <footer class="site-footer grain">
@@ -8,15 +9,15 @@ import { site } from '../data/site';
       <p class="label">get in touch</p>
       <h2 class="font-stamp contact-title">Let's make<br />something.</h2>
       <div class="contact-lines">
-        <a href={`mailto:${site.email}`} class="contact-line font-mono">{site.email}</a>
-        <p class="contact-line font-mono dim">{site.phone}</p>
-        <a href={site.linkedin} class="contact-line font-mono" target="_blank" rel="noopener noreferrer">linkedin ↗</a>
-        <a href={site.instagram} class="contact-line font-mono" target="_blank" rel="noopener noreferrer">instagram ↗</a>
+        <a href={`mailto:${siteInfo!.data.email}`} class="contact-line font-mono">{siteInfo!.data.email}</a>
+        <p class="contact-line font-mono dim">{siteInfo!.data.phone}</p>
+        <a href={siteInfo!.data.linkedin} class="contact-line font-mono" target="_blank" rel="noopener noreferrer">linkedin ↗</a>
+        <a href={siteInfo!.data.instagram} class="contact-line font-mono" target="_blank" rel="noopener noreferrer">instagram ↗</a>
       </div>
     </div>
     <div class="footer-meta">
       <p class="label">location</p>
-      <p class="font-mono">{site.location}</p>
+      <p class="font-mono">{siteInfo!.data.location}</p>
       <p class="label" style="margin-top: 28px;">index</p>
       <ul class="footer-nav">
         <li><a href="/" data-scroll-to="work" class="font-mono">work</a></li>

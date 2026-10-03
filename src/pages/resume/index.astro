@@ -1,10 +1,10 @@
 ---
 import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { site } from '../../data/site';
 
 const resume = await getEntry('resume', 'resume');
 const { experience, education, skills, courses, overview } = resume!.data;
+const siteInfo = await getEntry('siteInfo', 'site');
 ---
 
 <BaseLayout
@@ -21,10 +21,10 @@ const { experience, education, skills, courses, overview } = resume!.data;
       <a href="/Leila-Banta-Resume.pdf" download class="download-btn font-mono">download pdf ↓</a>
     </div>
     <div class="sheet contact-strip font-mono">
-      <span>{site.location}</span>
-      <span>{site.phone}</span>
-      <a href={`mailto:${site.email}`}>{site.email}</a>
-      <a href={site.linkedin} target="_blank" rel="noopener noreferrer">linkedin ↗</a>
+      <span>{siteInfo!.data.location}</span>
+      <span>{siteInfo!.data.phone}</span>
+      <a href={`mailto:${siteInfo!.data.email}`}>{siteInfo!.data.email}</a>
+      <a href={siteInfo!.data.linkedin} target="_blank" rel="noopener noreferrer">linkedin ↗</a>
     </div>
   </section>
 

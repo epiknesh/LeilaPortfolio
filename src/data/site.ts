@@ -1,15 +1,13 @@
-// Central site data — nav structure, contact info, category taxonomy.
+// Central site data — nav structure, category taxonomy.
 // Sourced directly from the PDF portfolio's own table of contents (page 3) and cover/closing pages.
+//
+// Contact info (email/phone/location/socials) now lives in the siteInfo
+// content collection (src/content/pages/site.md) instead of here, so it's
+// editable through the CMS — see src/content/config.ts.
 
 export const site = {
   name: 'Leila Karlene Banta',
   role: 'Graphic Designer',
-  email: 'leila.banta@gmail.com',
-  phone: '+63 920 953 1002',
-  location: 'Las Piñas City, Metro Manila, PH',
-  linkedin: 'https://www.linkedin.com/in/leila-karlene-banta-534n1ly/',
-  instagram: 'https://www.instagram.com/leila.karlene/',
-  instagramHandle: '@leila.karlene',
 };
 
 // Category taxonomy now lives in src/content/categories/*.md (a real

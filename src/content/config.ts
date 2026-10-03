@@ -30,6 +30,11 @@ const projects = defineCollection({
         size: z.enum(['standard', 'wide', 'portrait', 'full']).default('standard'),
       })
     ),
+    // Controls display order in the homepage grid — lower numbers first.
+    // The glob loader otherwise returns entries in filesystem order (not
+    // something Leila can control through the CMS), so this field is what
+    // actually lets her rearrange the grid herself.
+    order: z.number().default(0),
   }),
 });
 
@@ -46,6 +51,19 @@ const categories = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/categories' }),
   schema: z.object({
     title: z.string(),
+    order: z.number().default(0),
+  }),
+});
+
+// One file per software tool — lets Leila add tools, reassign a tool's
+// tier (primary/secondary/basic), and reorder within a tier herself
+// through the CMS, instead of the old fixed array in src/data/software.ts.
+const software = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/software' }),
+  schema: z.object({
+    name: z.string(),
+    icon: z.string(),
+    tier: z.enum(['primary', 'secondary', 'basic']).default('secondary'),
     order: z.number().default(0),
   }),
 });
@@ -110,4 +128,4 @@ const contact = defineCollection({
   }),
 });
 
-export const collections = { projects, categories, home, about, resume, contact };
+export const collections = { projects, categories, software, home, about, resume, contact };

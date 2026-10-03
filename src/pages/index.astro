@@ -1,12 +1,16 @@
 ---
-import { getEntry } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import SoftwareIcon from '../components/SoftwareIcon.astro';
 import { site } from '../data/site';
-import { software } from '../data/software';
 
 const home = await getEntry('home', 'home');
+const tierOrder = { primary: 0, secondary: 1, basic: 2 };
+const software = (await getCollection('software')).sort((a, b) => {
+  const tierDiff = tierOrder[a.data.tier] - tierOrder[b.data.tier];
+  return tierDiff !== 0 ? tierDiff : a.data.order - b.data.order;
+});
 ---
 
 <BaseLayout
@@ -35,11 +39,11 @@ const home = await getEntry('home', 'home');
         <p class="font-body intro-line">{home?.data.introLine}</p>
         <ul class="software-list">
           {software.map((tool) => (
-            <li class="software-item" tabindex="0" aria-label={tool.name}>
+            <li class="software-item" tabindex="0" aria-label={tool.data.name}>
               <span class="software-icon-wrap">
-                <SoftwareIcon icon={tool.icon} class="software-icon" />
+                <SoftwareIcon icon={tool.data.icon} class="software-icon" />
               </span>
-              <span class="software-name font-mono" aria-hidden="true">{tool.name}</span>
+              <span class="software-name font-mono" aria-hidden="true">{tool.data.name}</span>
             </li>
           ))}
         </ul>

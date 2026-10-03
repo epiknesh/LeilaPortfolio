@@ -1,4 +1,5 @@
 ---
+order: 7
 category: "information-presentation"
 title: "KalyeKultura"
 subtitle: "The Jeepney Culture & Urban Arts Complex"

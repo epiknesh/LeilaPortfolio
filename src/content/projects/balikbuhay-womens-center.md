@@ -1,4 +1,5 @@
 ---
+order: 3
 category: "information-presentation"
 title: "Balikbuhay Women's Center"
 projectType: "Architectural Presentation Boards"

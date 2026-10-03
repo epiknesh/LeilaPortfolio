@@ -60,6 +60,11 @@ collections:
               - { label: "Portrait (narrower, taller crop)", value: "portrait" }
               - { label: "Full width", value: "full" }
       - { label: "Description", name: body, widget: markdown, hint: "The project write-up paragraphs." }
+      - label: "Grid Order"
+        name: order
+        widget: number
+        default: 0
+        hint: "Controls where this project appears in the homepage grid — lower numbers show first."
 
   - name: categories
     label: "Categories"
@@ -71,6 +76,33 @@ collections:
     fields:
       - { label: "Title", name: title, widget: string, hint: "Shown as a filter pill on the homepage, e.g. 'Branding & Visual Identity'." }
       - { label: "Order", name: order, widget: number, default: 0, hint: "Lower numbers appear first among the filter pills." }
+
+  - name: software
+    label: "Software"
+    folder: "src/content/software"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: name
+    fields:
+      - { label: "Name", name: name, widget: string, hint: "Shown next to the icon, e.g. 'Adobe Illustrator'." }
+      - label: "Icon"
+        name: icon
+        widget: string
+        hint: "Filename (without .svg) of an existing icon in src/icons/software/ — e.g. 'illustrator'. Adding a brand-new icon file needs a code change; ask if a tool you want to add doesn't have one yet."
+      - label: "Tier"
+        name: tier
+        widget: select
+        default: "secondary"
+        options:
+          - { label: "Primary", value: "primary" }
+          - { label: "Secondary", value: "secondary" }
+          - { label: "Basic", value: "basic" }
+      - label: "Order"
+        name: order
+        widget: number
+        default: 0
+        hint: "Lower numbers appear first within its tier."
 
   - name: home
     label: "Homepage"

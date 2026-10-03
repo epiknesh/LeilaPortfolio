@@ -1,4 +1,5 @@
 ---
+order: 12
 category: "editorial-print"
 title: "Strawberry Season"
 projectType: "Editorial Art Zine"

@@ -1,4 +1,5 @@
 ---
+order: 2
 category: "digital-social"
 title: "UAPSA-UPD Alterkitektura 2024"
 projectType: "UAPSA-UPD Alterkitektura 2024 Social Media Campaign"

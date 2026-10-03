@@ -1,4 +1,5 @@
 ---
+order: 4
 category: "branding-identity"
 title: "Casa Colina"
 projectType: "Freelance Project"

@@ -20,10 +20,10 @@ palette:
   - hex: '#1B5E3C'
     name: Green
 process: Material and massing studies explored how curved, organic forms could translate the idea of liminality into built architecture, ahead of the final architectural translations shown here.
-cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 2.png
-hero: /images/curated/Banta_Portfolio_Graphic Design_POST 2.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 2.png
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 9
 ---

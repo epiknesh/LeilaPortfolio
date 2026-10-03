@@ -17,10 +17,10 @@ palette:
   - hex: '#7BC067'
     name: Green
 process: ''
-cardImage: /images/curated/COMPOSITE INTUITION.png
-hero: /images/curated/COMPOSITE INTUITION.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/COMPOSITE INTUITION.png
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 5
 ---

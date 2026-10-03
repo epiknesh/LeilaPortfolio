@@ -20,10 +20,10 @@ palette:
   - hex: '#3B2E2A'
     name: Brown
 process: ''
-cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 5.png
-hero: /images/curated/Banta_Portfolio_Graphic Design_POST 5.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 5.png
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 10
 ---

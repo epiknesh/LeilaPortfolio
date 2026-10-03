@@ -23,15 +23,11 @@ palette:
   - hex: '#262720'
     name: Near-black
 process: Concept boarding drew on vintage perfume advertising and occult/tarot ephemera, reinterpreted into a contemporary system rather than copied directly.
-cardImage: /images/curated/MYST PFP.jpg
-hero: /images/curated/MYST IG POST LAYOUT.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/MYST PFP.jpg
+  - image: /images/curated/Untitled 42.png
     size: standard
-  - image: /images/curated/09 FINAL LOGOTYPE + COLOR PALETTE.jpg
-    size: full
-  - image: /images/curated/13 BRANDING GUIDE_BRAND APPLICATIONS 1.jpg
-    size: full
 order: 1
 ---
 

@@ -17,20 +17,10 @@ palette:
   - hex: '#E6DAE4'
     name: Pale pink
 process: ''
-cardImage: /images/curated/IMG_4162.JPG
-hero: /images/curated/IMG_4162.JPG
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/IMG_4162.JPG
-    size: standard
-  - image: /images/curated/VAWC 3.jpg
-    size: standard
-  - image: /images/curated/IMG_4179.JPG
-    size: standard
-  - image: /images/curated/IMG_4180.JPG
-    size: standard
-  - image: /images/curated/IMG_4177.JPG
-    size: standard
-  - image: /images/curated/IMG_4181.JPG
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 6
 ---

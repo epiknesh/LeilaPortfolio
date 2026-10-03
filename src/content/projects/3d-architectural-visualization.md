@@ -14,10 +14,10 @@ palette:
   - hex: '#EDE8E0'
     name: Paper
 process: ''
-cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 1.png
-hero: /images/curated/Banta_Portfolio_Graphic Design_POST 1.png
+cardImage: /images/curated/Untitled 42.png
+hero: /images/curated/Untitled 42.png
 gallery:
-  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 1.png
+  - image: /images/curated/Untitled 42.png
     size: standard
 order: 13
 ---

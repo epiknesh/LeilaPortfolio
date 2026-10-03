@@ -1,35 +1,29 @@
 ---
-order: 4
-category: "branding-identity"
-title: "Casa Colina"
-projectType: "Freelance Project"
-industry: "Hospitality"
+category: branding-identity
+title: Casa Colina
+subtitle: ''
+projectType: Freelance Project
+industry: Hospitality
 deliverables:
-  - "Logo / Wordmark / Typography Design"
-  - "Visual Systems"
-  - "Merchandise Illustration & Design"
+  - Logo / Wordmark / Typography Design
+  - Visual Systems
+  - Merchandise Illustration & Design
 palette:
-  - hex: "#63A577"
-    name: "Green"
-  - hex: "#CDC96D"
-    name: "Yellow"
-  - hex: "#99AFB1"
-    name: "Blue-grey"
-  - hex: "#383121"
-    name: "Brown"
-cardImage: "/images/curated/casa-colina/mockup-apparel-tshirt-hero.png"
-hero: "/images/curated/casa-colina/logomark-primary.png"
+  - hex: '#63A577'
+    name: Green
+  - hex: '#CDC96D'
+    name: Yellow
+  - hex: '#99AFB1'
+    name: Blue-grey
+  - hex: '#383121'
+    name: Brown
+process: ''
+cardImage: /images/curated/Banta_Portfolio_Graphic Design_POST 3.png
+hero: /images/curated/Banta_Portfolio_Graphic Design_POST 3.png
 gallery:
-  - image: "/images/curated/casa-colina/wordmark-lockup-variants.png"
-    size: "wide"
-  - image: "/images/curated/casa-colina/mockup-apparel-tshirt-hero.png"
-    size: "standard"
-  - image: "/images/curated/casa-colina/mockup-tote-bag.png"
-    size: "standard"
-  - image: "/images/curated/casa-colina/mockup-caps.png"
-    size: "standard"
-  - image: "/images/curated/casa-colina/logomark-alt-colorway.png"
-    size: "standard"
+  - image: /images/curated/Banta_Portfolio_Graphic Design_POST 3.png
+    size: wide
+order: 4
 ---
 
 Casa Colina is a modern A-frame AirBNB in Anilao, Batangas. Casa Colina balances modern built structure and natural landscapes for connection, comfort, and escape.

@@ -1,8 +1,8 @@
 ---
 categories:
-  - "3d-architectural"
+  - 3d-architectural
 title: Architectural Interiors Renovation
-subtitle: 3D & Architectural Visualization
+subtitle: Architectural Rendering
 projectType: Freelance Project
 industry: Architecture / Interior Design
 deliverables:
@@ -11,9 +11,19 @@ deliverables:
   - Interior Visualization
 palette:
   - hex: '#181614'
-    name: Ink
+    name: Onyx
   - hex: '#EDE8E0'
-    name: Paper
+    name: Albescent White
+  - hex: '#3d3e27'
+    name: Thatch Green
+  - hex: '#432a1e'
+    name: Cork
+  - hex: '#987961'
+    name: Pale Brown
+  - hex: '#545b46'
+    name: Fuscous Grey
+  - hex: '#8a7c75'
+    name: Hurricane
 process: ''
 cardImage: /images/curated/arch-viz/13.png
 hero: /images/curated/arch-viz/13.png

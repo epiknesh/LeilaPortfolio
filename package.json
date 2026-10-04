@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "prebuild": "node scripts/compress-images.mjs && node scripts/generate-project-pdfs.mjs",
+    "prebuild": "node scripts/compress-images.mjs",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-pdfs": "npx playwright install chromium && node scripts/generate-project-pdfs.mjs"
   },
   "dependencies": {
     "astro": "^5.14.0",

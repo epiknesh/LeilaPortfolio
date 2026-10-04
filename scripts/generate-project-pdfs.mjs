@@ -1,11 +1,18 @@
 // Generates a one-page "project sheet" PDF per project, read directly from
 // each project's Markdown frontmatter + body — not scraped from a running
-// dev server, so it's always in sync with whatever is actually published
-// (previously this was a manually-run, one-off script that baked in
-// whatever the live page looked like at the moment it was last run, and
-// silently went stale as content changed through the CMS afterward).
-// Runs as part of every build (see package.json "prebuild"), so a fresh
-// set of PDFs ships with every deploy automatically.
+// dev server, so whatever it produces is always a true snapshot of
+// currently-published content (previously this was a manually-run, one-off
+// script that baked in whatever the live page looked like at the moment it
+// was last run, and silently went stale as content changed through the
+// CMS afterward).
+//
+// Run manually via `npm run generate-pdfs` (NOT wired into the automatic
+// build/prebuild step) — it needs Playwright's Chromium browser, which
+// Vercel's build cache doesn't reliably persist, so including it in every
+// build would re-download ~100-150MB and add real time to every single
+// publish. Run it after a batch of real content changes, commit the
+// regenerated PDFs, then push — see PROJECT_CONTEXT.md / the commit that
+// introduced this for the exact command sequence.
 import { readdirSync, readFileSync, mkdirSync, existsSync, rmSync } from 'node:fs';
 import { join, extname } from 'node:path';
 import { chromium } from 'playwright';

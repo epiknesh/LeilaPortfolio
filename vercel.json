@@ -2,7 +2,8 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "cms/*": false
+      "cms/*": false,
+      "cms/**": false
     }
   }
 }

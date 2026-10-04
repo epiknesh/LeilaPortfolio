@@ -2,7 +2,7 @@
 category: 3d-architectural
 title: Architectural Interiors Renovation
 subtitle: 3D & Architectural Visualization
-projectType: Freelance Project
+projectType: Freelance Project!
 industry: Architecture / Interior Design
 deliverables:
   - 3D Modeling

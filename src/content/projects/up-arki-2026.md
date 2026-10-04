@@ -1,5 +1,6 @@
 ---
-category: editorial-print
+categories:
+  - "editorial-print"
 title: UP Arki 2026
 subtitle: Architecture Class Yearbook, Vol. 1
 projectType: Yearbook / Publication Design

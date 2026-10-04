@@ -38,14 +38,16 @@ collections:
     slug: "{{slug}}"
     identifier_field: title
     fields:
-      - label: "Category"
-        name: category
+      - label: "Categories"
+        name: categories
         widget: relation
         collection: categories
         search_fields: ["title"]
         display_fields: ["title"]
         value_field: "{{slug}}"
-        hint: "Pick from existing categories, or add a new one first under the Categories collection."
+        multiple: true
+        min: 1
+        hint: "Pick one or more related categories, or add a new one first under the Categories collection."
       - { label: "Title", name: title, widget: string }
       - { label: "Subtitle", name: subtitle, widget: string, required: false }
       - { label: "Project Type", name: projectType, widget: string }

@@ -1,5 +1,6 @@
 ---
-category: editorial-print
+categories:
+  - "editorial-print"
 title: Strawberry Season
 subtitle: ''
 projectType: Editorial Art Zine

@@ -1,5 +1,6 @@
 ---
-category: branding-identity
+categories:
+  - "branding-identity"
 title: Myst Fragrance
 subtitle: Branding, Social Media Identity, & Digital Marketing Materials
 projectType: Academic Project

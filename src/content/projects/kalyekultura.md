@@ -1,5 +1,6 @@
 ---
-category: information-presentation
+categories:
+  - "information-presentation"
 title: KalyeKultura
 subtitle: The Jeepney Culture & Urban Arts Complex
 projectType: Architectural Presentation Boards

@@ -16,7 +16,7 @@ const accent = data.palette[0]?.hex ?? '#B32E22';
   href={`/work/${id}/`}
   class="project-card"
   data-grid-item
-  data-category={data.category}
+  data-category={data.categories.join(' ')}
   data-prefetch-hero={toWebpPath(data.hero)}
   style={`--accent: ${accent};`}
 >

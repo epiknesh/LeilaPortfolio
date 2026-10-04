@@ -1,5 +1,6 @@
 ---
-category: digital-social
+categories:
+  - "digital-social"
 title: UAPSA-UPD Alterkitektura 2024
 subtitle: ''
 projectType: UAPSA-UPD Alterkitektura 2024 Social Media Campaign

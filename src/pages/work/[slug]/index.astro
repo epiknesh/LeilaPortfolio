@@ -24,6 +24,11 @@ const { Content } = await render(project);
 
 const accent = data.palette[0]?.hex ?? '#B32E22';
 const heroSize = await getPublicImageSize(data.hero);
+
+const allCategories = await getCollection('categories');
+const projectCategories = data.categories
+  .map((slug) => allCategories.find((c) => c.id === slug))
+  .filter((c) => c !== undefined);
 ---
 
 <BaseLayout
@@ -71,6 +76,14 @@ const heroSize = await getPublicImageSize(data.hero);
             <p>{data.deliverables.join(', ')}</p>
           </div>
         </div>
+
+        {projectCategories.length > 0 && (
+          <div class="category-badges">
+            {projectCategories.map((c) => (
+              <span class="category-badge font-mono">{c.data.title.toLowerCase()}</span>
+            ))}
+          </div>
+        )}
 
         <a href={`/project-sheets/${project.id}.pdf`} download class="sheet-download font-mono">
           download project sheet ↓
@@ -226,6 +239,22 @@ const heroSize = await getPublicImageSize(data.hero);
     font-size: var(--fs-small);
     margin-top: 8px;
     line-height: 1.6;
+  }
+
+  .category-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: clamp(20px, 3vw, 28px);
+  }
+  .category-badge {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+    padding: 6px 14px;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 2px;
   }
 
   .sheet-download {

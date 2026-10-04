@@ -1,5 +1,6 @@
 ---
-category: 3d-architectural
+categories:
+  - "3d-architectural"
 title: Architectural Interiors Renovation
 subtitle: 3D & Architectural Visualization
 projectType: Freelance Project!

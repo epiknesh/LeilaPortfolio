@@ -1,5 +1,6 @@
 ---
-category: information-presentation
+categories:
+  - "information-presentation"
 title: Balikbuhay Women's Center
 subtitle: ''
 projectType: Architectural Presentation Boards

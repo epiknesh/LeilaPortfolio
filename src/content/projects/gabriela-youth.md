@@ -1,5 +1,6 @@
 ---
-category: digital-social
+categories:
+  - "digital-social"
 title: Gabriela Youth UP Diliman
 subtitle: ''
 projectType: Gabriela Youth UP Diliman Social Media Campaign Design

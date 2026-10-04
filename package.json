@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "prebuild": "node scripts/compress-images.mjs",
+    "prebuild": "node scripts/compress-images.mjs && node scripts/generate-project-pdfs.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -16,6 +16,7 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "playwright": "^1.63.0"
+    "playwright": "^1.63.0",
+    "js-yaml": "^4.3.2"
   }
 }

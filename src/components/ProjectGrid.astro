@@ -45,7 +45,7 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
 
   <div class="project-grid" data-grid>
     {projects.map((project) => (
-      <div class="grid-cell" data-grid-cell data-filter-category={project.data.category}>
+      <div class="grid-cell" data-grid-cell data-filter-category={project.data.categories.join(' ')}>
         <ProjectCard project={project} />
       </div>
     ))}
@@ -114,8 +114,12 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
       const toHide: HTMLElement[] = [];
 
       cells.forEach((cell) => {
-        const category = cell.dataset.filterCategory!;
-        const shouldBeVisible = !active || active.has(category);
+        // A cell's data-filter-category is a space-separated list — it's
+        // visible if the pill-active set overlaps ANY of the project's
+        // categories, not just a single exact match, since a project can
+        // now belong to more than one category.
+        const cellCategories = cell.dataset.filterCategory!.split(' ');
+        const shouldBeVisible = !active || cellCategories.some((cat) => active.has(cat));
         const isCurrentlyVisible = !cell.hidden;
 
         if (shouldBeVisible && !isCurrentlyVisible) toShow.push(cell);
@@ -146,8 +150,8 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
           // a cell the user's most recent click says should stay shown.
           const currentActive = activeCategories();
           const stillHiding = toHide.filter((cell) => {
-            const category = cell.dataset.filterCategory!;
-            const shouldBeVisible = !currentActive || currentActive.has(category);
+            const cellCategories = cell.dataset.filterCategory!.split(' ');
+            const shouldBeVisible = !currentActive || cellCategories.some((cat) => currentActive.has(cat));
             return !shouldBeVisible && cell.classList.contains('is-filtering-out');
           });
           if (stillHiding.length) {

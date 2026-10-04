@@ -1,5 +1,6 @@
 ---
-category: creative-direction
+categories:
+  - "creative-direction"
 title: Ruin and Reverie
 subtitle: ''
 projectType: Concept Boarding, Shoot Direction, Styling, Post-Processing

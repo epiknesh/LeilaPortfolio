@@ -1,5 +1,6 @@
 ---
-category: branding-identity
+categories:
+  - "branding-identity"
 title: Casa Colina
 subtitle: ''
 projectType: Freelance Project

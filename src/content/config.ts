@@ -4,7 +4,13 @@ import { glob } from 'astro/loaders';
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   schema: z.object({
-    category: z.string(),
+    // An array (not a single string) so a project can belong to more than
+    // one category — e.g. a project that's both "3D & Architectural
+    // Visualization" and "Information & Presentation Design". Every filter
+    // pill the project matches keeps it visible; it's hidden only once
+    // none of its categories are active. At least one entry is required —
+    // an uncategorized project would never show up under any filter.
+    categories: z.array(z.string()).min(1),
     title: z.string(),
     subtitle: z.string().optional(),
     projectType: z.string(),

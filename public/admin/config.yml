@@ -2,10 +2,29 @@ backend:
   name: github
   repo: epiknesh/LeilaPortfolio
   branch: main
+  # Site moved off Netlify (whose built-in OAuth proxy made "Sign in with
+  # GitHub" work with zero extra config) to Vercel, which has no equivalent
+  # built-in proxy. Sveltia CMS's GitHub backend only supports three auth
+  # methods (confirmed directly against its docs): a Personal Access Token,
+  # PKCE (not yet implemented by GitHub itself), or a classic OAuth App
+  # behind a server-side proxy. PAT was chosen for now as the fastest way
+  # to get Leila back into /admin — each editor logs in by pasting a GitHub
+  # token instead of clicking a "Sign in with GitHub" button. Revisit if a
+  # smoother login is worth standing up an OAuth proxy (e.g. Sveltia's own
+  # sveltia-cms-auth on Cloudflare Workers) for later.
 
-# Netlify rebuilds the site automatically on every push to `main` (already
-# wired up via the GitHub integration) — no separate publish step needed.
-publish_mode: simple
+# Editorial workflow (not "simple"): saving an entry in /admin does NOT
+# commit straight to `main` and does NOT trigger a deploy. Instead each
+# edited entry gets its own draft branch + pull request (named
+# cms/<collection>/<slug> — see vercel.json, which explicitly blocks Vercel
+# from auto-building those branches) that Leila can keep saving to across
+# as many items as she wants with zero deploy cost. A deploy only happens
+# once she opens the CMS's "Workflow" board and explicitly clicks Publish
+# on an entry, which merges its branch into `main`. This replaces the
+# previous `publish_mode: simple`, which deployed on every single save —
+# that's what exhausted the site's Netlify build credits in one afternoon
+# of content edits.
+publish_mode: editorial_workflow
 
 media_folder: "public/images/curated"
 public_folder: "/images/curated"
@@ -106,6 +125,11 @@ collections:
 
   - name: home
     label: "Homepage"
+    # Single-file collections can't use editorial_workflow (Sveltia errors
+    # otherwise) — overridden back to simple/direct-to-main here. These are
+    # low-frequency page-copy edits, not the high-churn project/software
+    # lists the batching above is meant for.
+    publish_mode: simple
     files:
       - name: home
         file: "src/content/pages/home.md"
@@ -125,6 +149,7 @@ collections:
 
   - name: about
     label: "About Page"
+    publish_mode: simple
     files:
       - name: about
         file: "src/content/pages/about.md"
@@ -140,6 +165,7 @@ collections:
 
   - name: resume
     label: "Resume Page"
+    publish_mode: simple
     files:
       - name: resume
         file: "src/content/pages/resume.md"
@@ -182,6 +208,7 @@ collections:
 
   - name: contact
     label: "Contact Page"
+    publish_mode: simple
     files:
       - name: contact
         file: "src/content/pages/contact.md"

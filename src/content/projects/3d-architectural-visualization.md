@@ -1,8 +1,8 @@
 ---
 category: 3d-architectural
-title: 3D & Architectural Visualizations
-subtitle: ''
-projectType: Academic & Freelance Projects
+title: Architectural Interiors Renovation
+subtitle: 3D & Architectural Visualization
+projectType: Freelance Project
 industry: Architecture / Interior Design
 deliverables:
   - 3D Modeling
@@ -14,12 +14,46 @@ palette:
   - hex: '#EDE8E0'
     name: Paper
 process: ''
-cardImage: /images/curated/Untitled 42.png
-hero: /images/curated/Untitled 42.png
+cardImage: /images/curated/arch-viz/13.png
+hero: /images/curated/arch-viz/13.png
 gallery:
-  - image: /images/curated/Untitled 42.png
+  - image: /images/curated/arch-viz/13.png
+    size: standard
+  - image: /images/curated/arch-viz/1.png
+    size: standard
+  - image: /images/curated/arch-viz/9.png
+    size: standard
+  - image: /images/curated/arch-viz/11.png
+    size: standard
+  - image: /images/curated/arch-viz/17.png
+    size: standard
+  - image: /images/curated/arch-viz/15.png
+    size: standard
+  - image: /images/curated/arch-viz/3.png
+    size: standard
+  - image: /images/curated/arch-viz/7.png
+    size: standard
+  - image: /images/curated/arch-viz/10.png
+    size: standard
+  - image: /images/curated/arch-viz/8.png
+    size: standard
+  - image: /images/curated/arch-viz/3-1.png
+    size: standard
+  - image: /images/curated/arch-viz/5-1.png
+    size: standard
+  - image: /images/curated/arch-viz/7-1.png
+    size: standard
+  - image: /images/curated/arch-viz/24.png
+    size: standard
+  - image: /images/curated/arch-viz/23.png
+    size: standard
+  - image: /images/curated/arch-viz/18.png
+    size: standard
+  - image: /images/curated/arch-viz/20.png
+    size: standard
+  - image: /images/curated/arch-viz/22.png
     size: standard
 order: 13
 ---
 
-A collection of 3D modeling and rendering work spanning academic architectural projects and freelance interior design visualization for commercial and residential spaces, including offices, workspaces, and entertainment units.
+A collection of 3D modeling and rendering work spanning freelance architectural and interior design visualization for Alexcy Corporation's commercial and residential spaces, including offices, workspaces, and entertainment units.

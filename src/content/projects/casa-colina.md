@@ -42,7 +42,7 @@ gallery:
     size: wide
   - image: /images/curated/casa-colina/CC CIRCLE SIGN.jpg
     size: portrait
-order: 4
+order: 2
 ---
 
 Casa Colina is a modern A-frame AirBNB in Anilao, Batangas. Casa Colina balances modern built structure and natural landscapes for connection, comfort, and escape. The branding translates Casa Colina's A-frame architecture and mountainous setting into a clean, nature-led visual system. Muted green, yellow, and brown form the core palette, complemented by thin typography and organic graphic elements.

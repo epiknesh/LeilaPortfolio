@@ -34,14 +34,14 @@ gallery:
     size: standard
   - image: /images/curated/balikbuhay-womens-center/TH BOARD 2.png
     size: standard
-  - image: /images/curated/balikbuhay-womens-center/TH VISBOARD.png
-    size: full
   - image: /images/curated/balikbuhay-womens-center/TH SITE SEL.png
     size: standard
   - image: /images/curated/balikbuhay-womens-center/TH SITE ANA.png
     size: standard
+  - image: /images/curated/balikbuhay-womens-center/TH VISBOARD.png
+    size: standard
   - image: /images/curated/balikbuhay-womens-center/TH STUDIES.png
-    size: full
+    size: standard
   - image: /images/curated/balikbuhay-womens-center/TH PERSP 1.png
     size: full
   - image: /images/curated/balikbuhay-womens-center/SIGN & BLDG 1 DETAIL.png

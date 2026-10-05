@@ -68,7 +68,7 @@ gallery:
     size: standard
   - image: /images/curated/balikbuhay-womens-center/104.png
     size: standard
-order: 9
+order: 10
 ---
 
 Architectural boards, presentation slides, and 3D renders for Balik-Buhay Women's Center, a thesis project proposing a reintegration support center for female OFWs in Cavite using liminality as a framework for spatial design. The visual system centers on femininity, liminality, and biophilic wellness, using pink as the primary color, green & warm sunset tones as secondary accents, and curved organic forms to represent transition, connection, and nature as healing.

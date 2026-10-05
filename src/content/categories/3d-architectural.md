@@ -1,4 +1,4 @@
 ---
-title: "3D & Architectural Visualization"
+title: 3D & Arch. Visualization
 order: 6
 ---

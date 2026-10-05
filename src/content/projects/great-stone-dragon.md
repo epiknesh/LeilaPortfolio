@@ -27,7 +27,7 @@ process: References varied across each project, drawing from vintage postage, he
 cardImage: /images/curated/chanelhugo.jpg
 hero: /images/curated/chanelhugo.jpg
 gallery: []
-order: -1
+order: -25
 ---
 
 A collection of design work developed for Great Stone Dragon, spanning product graphics, promotional materials, social media assets, and print collaterals for its collectible pin collections. The work involved translating individual product themes into cohesive, brand-aligned visual materials across different promotional needs.

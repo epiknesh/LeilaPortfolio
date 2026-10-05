@@ -10,12 +10,18 @@ deliverables:
   - Publication Design
   - Print Design
 palette:
-  - hex: '#E23D6B'
-    name: Pink
-  - hex: '#F2B632'
+  - hex: '#ec3f3b'
+    name: ''
+  - hex: '#f1893b'
+    name: ''
+  - hex: '#da9e35'
     name: Yellow
-  - hex: '#3F5FA8'
+  - hex: '#0eb691'
+    name: ''
+  - hex: '#3e69e3'
     name: Blue
+  - hex: '#d55075'
+    name: Pink
 process: Developed the yearbook branding, theme, and layout templates with a team of creatives.
 cardImage: /images/curated/yearbook/COVER W BG.png
 hero: /images/curated/yearbook/COVER W BG.png

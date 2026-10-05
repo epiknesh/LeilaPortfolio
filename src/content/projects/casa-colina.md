@@ -35,13 +35,13 @@ gallery:
   - image: /images/curated/casa-colina/ADDITIONAL PORTFOLIO ASSETS_CC TYPE.png
     size: standard
   - image: /images/curated/casa-colina/CASA COLINA TOTEBAG.png
-    size: wide
-  - image: /images/curated/casa-colina/CASA COLINA SHIRT.png
-    size: portrait
+    size: standard
   - image: /images/curated/casa-colina/CASA COLINA CAP.png
-    size: wide
+    size: standard
+  - image: /images/curated/casa-colina/CASA COLINA SHIRT.png
+    size: standard
   - image: /images/curated/casa-colina/CC CIRCLE SIGN.jpg
-    size: portrait
+    size: standard
 order: 2
 ---
 

@@ -1,15 +1,19 @@
 ---
 categories:
-  - "branding-identity"
+  - branding-identity
 title: Casa Colina
-subtitle: ''
-projectType: Freelance Project
+subtitle: Branding + Identity & Merchandise
+projectType: Contract / Commission Project
 industry: Hospitality
 deliverables:
   - Logo / Wordmark / Typography Design
   - Visual Systems
   - Merchandise Illustration & Design
 palette:
+  - hex: ''
+    name: Black
+  - hex: '#ffffff'
+    name: White
   - hex: '#63A577'
     name: Green
   - hex: '#CDC96D'

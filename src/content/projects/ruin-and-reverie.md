@@ -17,7 +17,7 @@ palette:
   - hex: '#170d0a'
     name: Asphalt
   - hex: '#3d1012'
-    name: Dark Sienns
+    name: Dark Sienna
   - hex: '#a06336'
     name: Sepia Skin
   - hex: '#d5a915'
@@ -57,7 +57,7 @@ gallery:
   - image: /images/curated/ruin-and-reverie/1.png
     size: full
   - image: /images/curated/ruin-and-reverie/2.png
-    size: standard
+    size: full
   - image: /images/curated/ruin-and-reverie/SOLO 8.png
     size: standard
   - image: /images/curated/ruin-and-reverie/COUPLE 6.png

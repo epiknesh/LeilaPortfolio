@@ -1,9 +1,9 @@
 ---
 categories:
-  - "3d-architectural"
-title: Architectural Interiors Renovation
-subtitle: 3D & Architectural Visualization
-projectType: Freelance Project
+  - 3d-architectural
+title: Architectural Interiors
+subtitle: ''
+projectType: Contract/Commission Project
 industry: Architecture / Interior Design
 deliverables:
   - 3D Modeling
@@ -11,10 +11,20 @@ deliverables:
   - Interior Visualization
 palette:
   - hex: '#181614'
-    name: Ink
+    name: Onyx
   - hex: '#EDE8E0'
-    name: Paper
-process: ''
+    name: Albescent White
+  - hex: '#3d3e27'
+    name: Thatch Green
+  - hex: '#545b46'
+    name: Fuscous Grey
+  - hex: '#432a1e'
+    name: Cork
+  - hex: '#987961'
+    name: Pale Brown
+  - hex: '#8a7c75'
+    name: Hurricane
+process: Site visits were conducted to record needed measurements. Highly-detailed 3D modeling and rendering (walls & columns, ceiling treatments & piping, new construction elements) were done through Sketchup & Enscape.
 cardImage: /images/curated/arch-viz/13.png
 hero: /images/curated/arch-viz/13.png
 gallery:
@@ -57,4 +67,4 @@ gallery:
 order: 13
 ---
 
-A collection of 3D modeling and rendering work spanning freelance architectural and interior design visualization for Alexcy Corporation's commercial and residential spaces, including offices, workspaces, and entertainment units.
+A collection of 3D modeling and rendering work spanning architectural and interior design visualization for Alexcy Corporation's commercial and residential spaces, including offices, workspaces, and property entertainment units.

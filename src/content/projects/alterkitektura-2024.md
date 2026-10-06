@@ -18,7 +18,7 @@ palette:
   - hex: '#7BC067'
     name: Mantis
 process: Explored how the concepts of net-zero architecture, technology, and sustainability could translate into a contemporary visual identity, using blue-green gradients, abstract architectural forms, and geometric compositions to establish a cohesive campaign system.
-cardImage: /images/curated/alterkitektura-2024/ALTER IG POST LAYOUT.png
+cardImage: /images/curated/alterkitektura-2024/Submission Extended.png
 hero: /images/curated/alterkitektura-2024/ALTER IG POST LAYOUT.png
 gallery:
   - image: /images/curated/alterkitektura-2024/ALTER IG POST LAYOUT.png

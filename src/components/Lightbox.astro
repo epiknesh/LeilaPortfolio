@@ -40,8 +40,17 @@ const gallery = await Promise.all(
           aria-label={`Open image ${i + 1} of ${images.length} full size`}
         >
           <picture>
-            <source srcset={thumb} type="image/webp" />
-            <img src={src} width={width} height={height} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" data-skeleton-img />
+            <source data-srcset={thumb} type="image/webp" />
+            <img
+              data-src={src}
+              width={width}
+              height={height}
+              alt={`${altPrefix}, image ${i + 1} of ${images.length}`}
+              decoding="async"
+              class="gallery-image"
+              data-skeleton-img
+              data-lazy-gallery-image
+            />
           </picture>
         </button>
       ) : (
@@ -100,6 +109,44 @@ const gallery = await Promise.all(
     const nextBtn = root.querySelector<HTMLButtonElement>('[data-lightbox-next]');
 
     if (!overlay || !frame || !imgEl || !captionEl || !progressEl || triggers.length === 0) return;
+
+    // Gallery thumbnails load via a wide-margin IntersectionObserver instead
+    // of the browser's native loading="lazy" — native lazy-load only starts
+    // fetching an image once it's very close to (or inside) the viewport,
+    // which on a long, image-heavy project page meant new images kept
+    // starting their fetch+decode just as they scrolled into view, instead
+    // of already being ready. A large rootMargin starts each image loading
+    // long before it's actually visible, so by the time you scroll to it
+    // the fetch has had a head start. This is scroll-driven, not hover-
+    // driven, so it doesn't carry the mousewheel-jank risk a hover-based
+    // trigger would (see ProjectGrid.astro's prefetch comment for that
+    // history).
+    const lazyImages = Array.from(root.querySelectorAll<HTMLImageElement>('[data-lazy-gallery-image]'));
+    if (lazyImages.length > 0 && 'IntersectionObserver' in window) {
+      const loadImageEl = (img: HTMLImageElement) => {
+        const source = img.previousElementSibling as HTMLSourceElement | null;
+        if (source?.dataset.srcset) {
+          source.srcset = source.dataset.srcset;
+          delete source.dataset.srcset;
+        }
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          delete img.dataset.src;
+        }
+      };
+      const lazyObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              loadImageEl(entry.target as HTMLImageElement);
+              lazyObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '600px 0px' }
+      );
+      lazyImages.forEach((img) => lazyObserver.observe(img));
+    }
 
     let currentIndex = 0;
     let lastFocused: HTMLElement | null = null;

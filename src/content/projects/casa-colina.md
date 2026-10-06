@@ -10,7 +10,7 @@ deliverables:
   - Visual Systems
   - Merchandise Illustration & Design
 palette:
-  - hex: ''
+  - hex: '#010101'
     name: Black
   - hex: '#ffffff'
     name: White

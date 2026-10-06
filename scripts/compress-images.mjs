@@ -119,43 +119,49 @@ async function run() {
     // original, or getPublicImageSize's own fallback, rather than taking
     // the entire deploy down) and keep going.
     try {
-      await mkdir(dirname(webpPath), { recursive: true });
-
+      // Header-only read (cheap). A source narrower than a variant would
+      // just yield a pointless upscaled duplicate of the full file, and the
+      // page's srcset skips variants that don't exist — so those are dropped
+      // here, and a file with nothing left to do is skipped without ever
+      // being decoded (narrow sources otherwise re-qualified every build).
       const metadata = await sharp(sourcePath).metadata();
+      const variants = heroVariantsNeeded.filter(({ w }) => metadata.width && metadata.width > w);
+      if (!needsFull && !needsThumb && variants.length === 0) {
+        skipped++;
+        continue;
+      }
+
+      await mkdir(dirname(webpPath), { recursive: true });
       const before = (await stat(sourcePath)).size;
 
+      // Decode the (often 4000px+, multi-MB) source ONCE, downscaled to the
+      // 2000px ceiling, and derive every output from those raw pixels. Each
+      // output used to re-decode the full original; every build on Vercel
+      // starts with no generated files, so with 3-4 outputs per image that
+      // redundant decoding roughly doubled the build time (~3.5min -> 6.5min).
+      const { data, info } = await sharp(sourcePath)
+        .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      const derive = () => sharp(data, { raw: { width: info.width, height: info.height, channels: info.channels } });
+
+      const jobs = [];
+      if (needsFull) jobs.push(derive().webp({ quality: 82 }).toFile(webpPath));
+      if (needsThumb) {
+        jobs.push(derive().resize({ width: THUMB_WIDTH, withoutEnlargement: true }).webp({ quality: 78 }).toFile(thumbPath));
+      }
+      for (const { w, variantPath } of variants) {
+        jobs.push(derive().resize({ width: w, withoutEnlargement: true }).webp({ quality: 82 }).toFile(variantPath));
+      }
+      await Promise.all(jobs);
+
       if (needsFull) {
-        const resizeWidth = metadata.width && metadata.width > MAX_WIDTH ? MAX_WIDTH : undefined;
-        await sharp(sourcePath)
-          .resize({ width: resizeWidth, withoutEnlargement: true })
-          .webp({ quality: 82 })
-          .toFile(webpPath);
-        const after = (await stat(webpPath)).size;
         totalBefore += before;
-        totalAfter += after;
+        totalAfter += (await stat(webpPath)).size;
         compressed++;
       }
-
-      if (needsThumb) {
-        const thumbResizeWidth = metadata.width && metadata.width > THUMB_WIDTH ? THUMB_WIDTH : undefined;
-        await sharp(sourcePath)
-          .resize({ width: thumbResizeWidth, withoutEnlargement: true })
-          .webp({ quality: 78 })
-          .toFile(thumbPath);
-        thumbsGenerated++;
-      }
-
-      for (const { w, variantPath } of heroVariantsNeeded) {
-        // A source narrower than the variant would just be a pointless
-        // upscaled duplicate of the full file; the page's srcset skips
-        // variants that don't exist, so there's nothing to write.
-        if (!metadata.width || metadata.width <= w) continue;
-        await sharp(sourcePath)
-          .resize({ width: w, withoutEnlargement: true })
-          .webp({ quality: 82 })
-          .toFile(variantPath);
-        heroVariantsGenerated++;
-      }
+      if (needsThumb) thumbsGenerated++;
+      heroVariantsGenerated += variants.length;
     } catch (err) {
       failed++;
       console.warn(`[compress-images] SKIPPED (not a valid/readable image): ${sourcePath} — ${err.message}`);

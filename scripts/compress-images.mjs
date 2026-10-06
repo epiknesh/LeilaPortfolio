@@ -17,6 +17,13 @@ const SOURCE_EXTS = new Set(['.png', '.jpg', '.jpeg']);
 // (3-col grid, hero at max 72vh, lightbox) ever need more than this across
 // any realistic display, including retina.
 const MAX_WIDTH = 2000;
+// Every image used to compress to ONLY this one 2000px size regardless of
+// where it's displayed — a homepage grid tile or gallery thumbnail shown
+// at maybe 400-600px on screen was still downloading and decoding the
+// full 2000px version. A dedicated, much smaller thumbnail variant (at
+// 2x for retina, since tiles are small) cuts that waste dramatically; the
+// full 2000px .webp is kept as-is for the lightbox's actual zoomed view.
+const THUMB_WIDTH = 640;
 
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -32,18 +39,23 @@ async function walk(dir) {
   return files;
 }
 
-async function needsCompression(sourcePath, webpPath) {
+async function needsCompression(sourcePath, outputPath) {
   try {
-    const [sourceStat, webpStat] = await Promise.all([stat(sourcePath), stat(webpPath)]);
-    return sourceStat.mtimeMs > webpStat.mtimeMs;
+    const [sourceStat, outputStat] = await Promise.all([stat(sourcePath), stat(outputPath)]);
+    return sourceStat.mtimeMs > outputStat.mtimeMs;
   } catch {
-    return true; // webp doesn't exist yet
+    return true; // output doesn't exist yet
   }
+}
+
+function toThumbPath(webpPath) {
+  return webpPath.replace(/\.webp$/, '-thumb.webp');
 }
 
 async function run() {
   const files = await walk(SOURCE_DIR);
   let compressed = 0;
+  let thumbsGenerated = 0;
   let skipped = 0;
   let failed = 0;
   let totalBefore = 0;
@@ -51,8 +63,12 @@ async function run() {
 
   for (const sourcePath of files) {
     const webpPath = sourcePath.replace(/\.(png|jpe?g)$/i, '.webp');
+    const thumbPath = toThumbPath(webpPath);
 
-    if (!(await needsCompression(sourcePath, webpPath))) {
+    const needsFull = await needsCompression(sourcePath, webpPath);
+    const needsThumb = await needsCompression(sourcePath, thumbPath);
+
+    if (!needsFull && !needsThumb) {
       skipped++;
       continue;
     }
@@ -67,20 +83,29 @@ async function run() {
     try {
       await mkdir(dirname(webpPath), { recursive: true });
 
-      const image = sharp(sourcePath);
-      const metadata = await image.metadata();
-      const resizeWidth = metadata.width && metadata.width > MAX_WIDTH ? MAX_WIDTH : undefined;
-
+      const metadata = await sharp(sourcePath).metadata();
       const before = (await stat(sourcePath)).size;
-      await image
-        .resize({ width: resizeWidth, withoutEnlargement: true })
-        .webp({ quality: 82 })
-        .toFile(webpPath);
-      const after = (await stat(webpPath)).size;
 
-      totalBefore += before;
-      totalAfter += after;
-      compressed++;
+      if (needsFull) {
+        const resizeWidth = metadata.width && metadata.width > MAX_WIDTH ? MAX_WIDTH : undefined;
+        await sharp(sourcePath)
+          .resize({ width: resizeWidth, withoutEnlargement: true })
+          .webp({ quality: 82 })
+          .toFile(webpPath);
+        const after = (await stat(webpPath)).size;
+        totalBefore += before;
+        totalAfter += after;
+        compressed++;
+      }
+
+      if (needsThumb) {
+        const thumbResizeWidth = metadata.width && metadata.width > THUMB_WIDTH ? THUMB_WIDTH : undefined;
+        await sharp(sourcePath)
+          .resize({ width: thumbResizeWidth, withoutEnlargement: true })
+          .webp({ quality: 78 })
+          .toFile(thumbPath);
+        thumbsGenerated++;
+      }
     } catch (err) {
       failed++;
       console.warn(`[compress-images] SKIPPED (not a valid/readable image): ${sourcePath} — ${err.message}`);
@@ -89,7 +114,7 @@ async function run() {
 
   const savedPct = totalBefore > 0 ? Math.round((1 - totalAfter / totalBefore) * 100) : 0;
   console.log(
-    `[compress-images] ${compressed} compressed, ${skipped} already up to date` +
+    `[compress-images] ${compressed} compressed, ${thumbsGenerated} thumbnails generated, ${skipped} already up to date` +
       (failed > 0 ? `, ${failed} skipped (invalid)` : '') +
       (compressed > 0 ? ` (${(totalBefore / 1e6).toFixed(1)}MB -> ${(totalAfter / 1e6).toFixed(1)}MB, -${savedPct}%)` : '')
   );

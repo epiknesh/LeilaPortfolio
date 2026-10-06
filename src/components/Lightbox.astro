@@ -1,5 +1,5 @@
 ---
-import { getPublicImageSize, toWebpPath } from '../lib/image-size';
+import { getPublicImageSize, toWebpPath, toThumbPath } from '../lib/image-size';
 
 type GalleryImage = { image: string; size: 'standard' | 'wide' | 'portrait' | 'full' };
 
@@ -10,34 +10,36 @@ interface Props {
 
 const { images, altPrefix } = Astro.props;
 
-// The compressed .webp sibling (scripts/compress-images.mjs, capped at
-// 2000px wide) is already small enough to use for both the grid thumbnail
-// and the lightbox's zoomed-in view — no need for two separately-sized
-// variants. Real dimensions are still read for the thumbnail's width/height
-// attributes, to avoid layout shift while the grid loads.
+// The grid thumbnail uses the small (640px-capped) thumb variant — it was
+// previously using the same full 2000px .webp the lightbox's zoomed-in
+// view needs, meaning every gallery tile downloaded/decoded a far larger
+// image than its on-screen size ever needed. data-full-src (what the
+// lightbox actually opens to) still points at the full-size version via
+// toWebpPath(). Real dimensions are still read for the thumbnail's width/
+// height attributes, to avoid layout shift while the grid loads.
 const gallery = await Promise.all(
   images.map(async ({ image: src, size }) => {
     const { width, height, ok } = await getPublicImageSize(src);
-    return { src, webp: toWebpPath(src), width, height, size, ok };
+    return { src, thumb: toThumbPath(src), full: toWebpPath(src), width, height, size, ok };
   })
 );
 ---
 
 <div class="lightbox-gallery" data-lightbox-root>
   <div class="gallery-grid">
-    {gallery.map(({ src, webp, width, height, size, ok }, i) => (
+    {gallery.map(({ src, thumb, full, width, height, size, ok }, i) => (
       ok ? (
         <button
           type="button"
           class={`gallery-trigger size-${size}`}
           data-lightbox-open
           data-index={i}
-          data-full-src={webp}
+          data-full-src={full}
           data-full-alt={`${altPrefix}, image ${i + 1} of ${images.length}`}
           aria-label={`Open image ${i + 1} of ${images.length} full size`}
         >
           <picture>
-            <source srcset={webp} type="image/webp" />
+            <source srcset={thumb} type="image/webp" />
             <img src={src} width={width} height={height} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" />
           </picture>
         </button>

@@ -69,6 +69,18 @@ const { title, description } = Astro.props;
           return;
         }
 
+        // threshold: 0.12 means "12% of the section's own total area must
+        // be visible" — fine for a normal ~600-800px section, but for a
+        // very tall one (a 20+ image gallery section can run 5000-8000px)
+        // 12% of its area is MORE than a full viewport height, so the
+        // threshold could never be crossed by normal scrolling and the
+        // section stayed permanently stuck at opacity:0 — confirmed for
+        // real on Balikbuhay Women's Center's 31-image gallery (7600px
+        // tall section, images all loaded fine, section simply never
+        // revealed). A small pixel-based rootMargin fires as soon as any
+        // sliver of the section enters that margin, regardless of the
+        // section's own height, which is what "reveal as it scrolls into
+        // view" actually needs for a long page.
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
@@ -78,7 +90,7 @@ const { title, description } = Astro.props;
               }
             });
           },
-          { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+          { threshold: 0, rootMargin: '0px 0px -8% 0px' }
         );
         sections.forEach((s) => observer.observe(s));
       }

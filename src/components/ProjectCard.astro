@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { toWebpPath, getPublicImageSize } from '../lib/image-size';
+import { toWebpPath, toThumbPath, getPublicImageSize } from '../lib/image-size';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -24,7 +24,7 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
   <div class="card-image">
     {cardImageInfo.ok ? (
       <picture>
-        <source srcset={toWebpPath(data.cardImage)} type="image/webp" />
+        <source srcset={toThumbPath(data.cardImage)} type="image/webp" />
         <img
           src={data.cardImage}
           alt=""
@@ -40,7 +40,7 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
     )}
     <div class="card-overlay">
       <h3 class="font-stamp card-title">{data.title}</h3>
-      <p class="font-mono card-tag">{data.projectType}</p>
+      <p class="font-mono card-tag">{data.subtitle || data.projectType}</p>
     </div>
   </div>
 </a>
@@ -106,13 +106,15 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
       opacity var(--dur-standard) var(--ease-standard);
   }
   .project-card:hover .card-overlay,
-  .project-card:focus-visible .card-overlay {
+  .project-card:focus-visible .card-overlay,
+  .project-card.is-active .card-overlay {
     background: rgba(13, 12, 11, 0.55);
     opacity: 1;
   }
 
   .card-title {
     font-size: 1.7rem;
+    line-height: 1.05;
     text-transform: none;
     letter-spacing: 0;
     color: #EDE8E0;
@@ -130,8 +132,8 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
     .card-overlay { transition: none; }
   }
 
-  /* On touch devices hover doesn't exist, so the overlay never triggers —
-     per explicit request, tiles stay as plain images with no title/tag
-     visible on mobile at all; the project's title is revealed once the
-     visitor actually taps into it. */
+  /* On touch devices there's no :hover at all — ProjectGrid.astro's own
+     script adds/removes an .is-active class as each card scrolls through
+     the vertical center of the screen, giving the overlay a scroll-driven
+     equivalent to the desktop hover effect instead of never showing. */
 </style>

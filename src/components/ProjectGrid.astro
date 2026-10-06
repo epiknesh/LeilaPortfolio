@@ -307,6 +307,40 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
         { rootMargin: '200px' }
       );
       cards.forEach((card) => prefetchObserver.observe(card));
+
+      // Touch devices have no :hover at all, so the title/tag overlay (see
+      // ProjectCard.astro's .card-overlay) never has a way to show itself
+      // there — this gives it an equivalent on scroll instead: whichever
+      // card is nearest the vertical center of the screen gets the same
+      // "is-active" class the CSS already treats identically to :hover,
+      // smoothly gaining/losing it as the user scrolls past. Negative
+      // top/bottom rootMargin shrinks the observer's trigger zone to a
+      // thin horizontal band through the viewport's middle, so only a
+      // card actually near-center counts as "centered" — a plain
+      // isIntersecting check (default 0px margins) would mark almost
+      // every card on screen as active simultaneously instead.
+      if (window.matchMedia('(hover: none)').matches) {
+        let centeredCard: HTMLElement | null = null;
+        const centerObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const card = entry.target as HTMLElement;
+              if (entry.isIntersecting) {
+                if (centeredCard && centeredCard !== card) {
+                  centeredCard.classList.remove('is-active');
+                }
+                centeredCard = card;
+                card.classList.add('is-active');
+              } else if (centeredCard === card) {
+                card.classList.remove('is-active');
+                centeredCard = null;
+              }
+            });
+          },
+          { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+        );
+        cards.forEach((card) => centerObserver.observe(card));
+      }
     }
   }
 

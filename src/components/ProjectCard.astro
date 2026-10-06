@@ -1,15 +1,19 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { toWebpPath, toThumbPath, getPublicImageSize } from '../lib/image-size';
+import { toThumbPath, toHeroSrcSet, getPublicImageSize } from '../lib/image-size';
 
 interface Props {
   project: CollectionEntry<'projects'>;
+  // First-row cards are in the initial viewport, so waiting for the lazy-
+  // loading heuristic to notice them only delays the most visible images.
+  eager?: boolean;
 }
 
-const { project } = Astro.props;
+const { project, eager = false } = Astro.props;
 const { id, data } = project;
 const accent = data.palette[0]?.hex ?? '#B32E22';
 const cardImageInfo = await getPublicImageSize(data.cardImage);
+const heroInfo = await getPublicImageSize(data.hero);
 ---
 
 <a
@@ -18,7 +22,7 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
   class="project-card"
   data-grid-item
   data-category={data.categories.join(' ')}
-  data-prefetch-hero={toWebpPath(data.hero)}
+  data-hero-srcset={heroInfo.ok ? toHeroSrcSet(data.hero, heroInfo.width) : undefined}
   style={`--accent: ${accent};`}
 >
   <div class="card-image" data-skeleton-container>
@@ -28,7 +32,7 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
         <img
           src={data.cardImage}
           alt=""
-          loading="lazy"
+          loading={eager ? 'eager' : 'lazy'}
           decoding="async"
           transition:name={`project-image-${id}`}
           data-skeleton-img
@@ -67,6 +71,9 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
      reads as "loading" rather than blank/bare while its thumbnail is
      still being fetched/decoded. */
   .card-image:not(.is-loaded) img[data-skeleton-img] { opacity: 0; }
+  /* The sweep is a transform animation (compositor-only, no repaint per
+     frame — animating background-position repainted every card each
+     frame) and is switched off entirely once the image has loaded. */
   .card-image::after {
     content: '';
     position: absolute;
@@ -79,11 +86,11 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
       color-mix(in srgb, var(--accent) 30%, white 20%) 50%,
       transparent 70%
     );
-    background-size: 200% 100%;
     animation: skeleton-shimmer 1.6s ease-in-out infinite;
+    will-change: transform;
     pointer-events: none;
   }
-  .card-image.is-loaded::after { opacity: 0; animation: none; }
+  .card-image.is-loaded::after { opacity: 0; animation: none; will-change: auto; }
   @media (prefers-reduced-motion: reduce) {
     .card-image::after { animation: none; }
   }

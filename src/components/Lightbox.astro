@@ -110,20 +110,21 @@ const gallery = await Promise.all(
 
     if (!overlay || !frame || !imgEl || !captionEl || !progressEl || triggers.length === 0) return;
 
-    // Gallery thumbnails load via a wide-margin IntersectionObserver instead
-    // of the browser's native loading="lazy" — native lazy-load only starts
-    // fetching an image once it's very close to (or inside) the viewport,
-    // which on a long, image-heavy project page meant new images kept
-    // starting their fetch+decode just as they scrolled into view, instead
-    // of already being ready. A large rootMargin starts each image loading
-    // long before it's actually visible, so by the time you scroll to it
-    // the fetch has had a head start. This is scroll-driven, not hover-
-    // driven, so it doesn't carry the mousewheel-jank risk a hover-based
-    // trigger would (see ProjectGrid.astro's prefetch comment for that
-    // history).
+    // Gallery thumbnails load via an IntersectionObserver with a lookahead
+    // margin instead of the browser's native loading="lazy", whose trigger
+    // distance can't be controlled and starts fetches only just before an
+    // image is visible. 350px is roughly half a screen of lead time: enough
+    // that a tile is usually ready by the time it scrolls in, without
+    // pulling large chunks of a 30-image gallery that the visitor may
+    // never reach (it was 600px; that fired too many simultaneous
+    // downloads). Scroll-driven, not hover-driven, so it can't cause the
+    // mousewheel jank a hover trigger did.
     const lazyImages = Array.from(root.querySelectorAll<HTMLImageElement>('[data-lazy-gallery-image]'));
     if (lazyImages.length > 0 && 'IntersectionObserver' in window) {
       const loadImageEl = (img: HTMLImageElement) => {
+        // Marks the tile as actually loading so its shimmer only animates
+        // from this point (see .is-loading in the styles below).
+        img.closest('[data-skeleton-container]')?.classList.add('is-loading');
         const source = img.previousElementSibling as HTMLSourceElement | null;
         if (source?.dataset.srcset) {
           source.srcset = source.dataset.srcset;
@@ -143,7 +144,7 @@ const gallery = await Promise.all(
             }
           });
         },
-        { rootMargin: '600px 0px' }
+        { rootMargin: '350px 0px' }
       );
       lazyImages.forEach((img) => lazyObserver.observe(img));
     }
@@ -328,9 +329,13 @@ const gallery = await Promise.all(
     aspect-ratio: 3 / 4;
   }
 
-  /* Skeleton shimmer, same pattern as ProjectCard.astro's .card-image —
-     visible until the shared data-skeleton-img handler (BaseLayout.astro)
-     marks this tile .is-loaded. */
+  /* Skeleton placeholder, same pattern as ProjectCard.astro's .card-image
+     — visible until the shared data-skeleton-img handler (BaseLayout.astro)
+     marks this tile .is-loaded. It only sweeps (transform animation,
+     compositor-only) while the tile is .is-loading, i.e. its image has
+     actually started downloading; the tiles further down the page that
+     haven't been reached yet stay as a static block instead of ~30
+     simultaneously animating layers. */
   .gallery-trigger:not(.missing-image)::after {
     content: '';
     position: absolute;
@@ -343,13 +348,15 @@ const gallery = await Promise.all(
       color-mix(in srgb, var(--bg-alt) 40%, white 25%) 50%,
       transparent 70%
     );
-    background-size: 200% 100%;
-    animation: skeleton-shimmer 1.6s ease-in-out infinite;
     pointer-events: none;
   }
-  .gallery-trigger.is-loaded::after { opacity: 0; animation: none; }
+  .gallery-trigger.is-loading:not(.is-loaded)::after {
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+    will-change: transform;
+  }
+  .gallery-trigger.is-loaded::after { opacity: 0; }
   @media (prefers-reduced-motion: reduce) {
-    .gallery-trigger::after { animation: none; }
+    .gallery-trigger.is-loading:not(.is-loaded)::after { animation: none; }
   }
 
   /* <picture> defaults to display:inline, which sizes it to the <img>'s

@@ -127,6 +127,41 @@ const { title, description } = Astro.props;
     </script>
 
     <script>
+      // Keeps the grid-tile -> project-hero shared-element morph from
+      // animating into an empty box. Once the router has fetched a /work/
+      // page (event.newDocument is set by the original loader) but BEFORE
+      // it swaps the DOM and starts the transition, wait for that page's
+      // hero image to be downloaded and decoded. When the visitor hovered/
+      // pressed the card, ProjectGrid.astro already started that exact
+      // request, so this resolves almost instantly; the cap bounds the
+      // worst case (cold cache / slow connection) so a click can never
+      // hang on an image — past it the page swaps and the hero's own
+      // skeleton + fade-in takes over, same as before.
+      const HERO_DECODE_WAIT_MS = 600;
+
+      document.addEventListener('astro:before-preparation', (event) => {
+        const ev = event as Event & { to: URL; loader: () => Promise<void>; newDocument?: Document };
+        if (!ev.to.pathname.startsWith('/work/')) return;
+
+        const originalLoader = ev.loader;
+        ev.loader = async () => {
+          await originalLoader();
+          const source = ev.newDocument?.querySelector('[data-hero-source]');
+          const srcset = source?.getAttribute('srcset');
+          if (!srcset) return;
+
+          const img = new Image();
+          img.sizes = source?.getAttribute('sizes') ?? '100vw';
+          img.srcset = srcset;
+          await Promise.race([
+            img.decode().catch(() => {}),
+            new Promise((resolve) => setTimeout(resolve, HERO_DECODE_WAIT_MS)),
+          ]);
+        };
+      });
+    </script>
+
+    <script>
       // Links "back to work" carry data-scroll-to="work" and a plain "/"
       // href instead of "/#work" — a hash link racing a View Transition
       // (the shared-element morph from a project's hero image back to its

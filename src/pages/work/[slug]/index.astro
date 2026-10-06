@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Lightbox from '../../../components/Lightbox.astro';
-import { getPublicImageSize, toWebpPath } from '../../../lib/image-size';
+import { getPublicImageSize, toHeroSrcSet } from '../../../lib/image-size';
 
 export async function getStaticPaths() {
   const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -42,7 +42,7 @@ const projectCategories = data.categories
       {heroSize.ok ? (
         <div class="hero-image-wrap" data-skeleton-container>
           <picture>
-            <source srcset={toWebpPath(data.hero)} type="image/webp" />
+            <source srcset={toHeroSrcSet(data.hero, heroSize.width)} sizes="100vw" type="image/webp" data-hero-source />
             <img
               src={data.hero}
               alt={`${data.title}, primary deliverable`}
@@ -50,6 +50,7 @@ const projectCategories = data.categories
               height={heroSize.height}
               class="hero-image"
               loading="eager"
+              fetchpriority="high"
               decoding="async"
               transition:name={`project-image-${project.id}`}
               data-skeleton-img
@@ -174,7 +175,11 @@ const projectCategories = data.categories
 
   .hero-image-wrap {
     position: relative;
+    overflow: hidden;
   }
+  /* Shimmer is a transform-animated overlay (compositor-only) rather than
+     an animated background-position, which repainted every frame. Stops
+     for good once the image has loaded. */
   .hero-image-wrap[data-skeleton-container]::after {
     content: '';
     position: absolute;
@@ -187,11 +192,11 @@ const projectCategories = data.categories
       rgba(255, 255, 255, 0.12) 50%,
       transparent 70%
     );
-    background-size: 200% 100%;
     animation: skeleton-shimmer 1.6s ease-in-out infinite;
+    will-change: transform;
     pointer-events: none;
   }
-  .hero-image-wrap.is-loaded::after { opacity: 0; animation: none; }
+  .hero-image-wrap.is-loaded::after { opacity: 0; animation: none; will-change: auto; }
   @media (prefers-reduced-motion: reduce) {
     .hero-image-wrap::after { animation: none; }
   }

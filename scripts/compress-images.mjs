@@ -7,7 +7,7 @@
 // idempotent (skips images that already have an up-to-date .webp) so it
 // stays fast on every deploy after the first, and new CMS uploads just get
 // picked up and compressed automatically on their next deploy.
-import { readdir, stat, mkdir } from 'node:fs/promises';
+import { readdir, readFile, stat, mkdir } from 'node:fs/promises';
 import { join, extname, dirname } from 'node:path';
 import sharp from 'sharp';
 
@@ -24,6 +24,32 @@ const MAX_WIDTH = 2000;
 // 2x for retina, since tiles are small) cuts that waste dramatically; the
 // full 2000px .webp is kept as-is for the lightbox's actual zoomed view.
 const THUMB_WIDTH = 640;
+// Project heroes span the full viewport, so they also get intermediate
+// sizes (served via srcset, see toHeroSrcSet in src/lib/image-size.ts —
+// keep the two lists in sync): a phone downloads the 1200px file instead
+// of 2000px. Only generated for images actually used as a project hero
+// (read from the content files below), not all of the library, and only
+// when the source is wider than the variant.
+const HERO_WIDTHS = [1200, 1600];
+const PROJECTS_DIR = join(process.cwd(), 'src', 'content', 'projects');
+const PUBLIC_DIR = join(process.cwd(), 'public');
+
+async function findHeroSources() {
+  const heroes = new Set();
+  let entries = [];
+  try {
+    entries = await readdir(PROJECTS_DIR);
+  } catch {
+    return heroes;
+  }
+  for (const name of entries) {
+    if (!name.endsWith('.md')) continue;
+    const raw = (await readFile(join(PROJECTS_DIR, name), 'utf8')).replace(/\r\n/g, '\n');
+    const match = raw.match(/^hero:\s*["']?(.+?)["']?\s*$/m);
+    if (match) heroes.add(join(PUBLIC_DIR, match[1]));
+  }
+  return heroes;
+}
 
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -54,8 +80,10 @@ function toThumbPath(webpPath) {
 
 async function run() {
   const files = await walk(SOURCE_DIR);
+  const heroSources = await findHeroSources();
   let compressed = 0;
   let thumbsGenerated = 0;
+  let heroVariantsGenerated = 0;
   let skipped = 0;
   let failed = 0;
   let totalBefore = 0;
@@ -67,8 +95,15 @@ async function run() {
 
     const needsFull = await needsCompression(sourcePath, webpPath);
     const needsThumb = await needsCompression(sourcePath, thumbPath);
+    const heroVariantsNeeded = [];
+    if (heroSources.has(sourcePath)) {
+      for (const w of HERO_WIDTHS) {
+        const variantPath = webpPath.replace(/\.webp$/, `-${w}.webp`);
+        if (await needsCompression(sourcePath, variantPath)) heroVariantsNeeded.push({ w, variantPath });
+      }
+    }
 
-    if (!needsFull && !needsThumb) {
+    if (!needsFull && !needsThumb && heroVariantsNeeded.length === 0) {
       skipped++;
       continue;
     }
@@ -106,6 +141,18 @@ async function run() {
           .toFile(thumbPath);
         thumbsGenerated++;
       }
+
+      for (const { w, variantPath } of heroVariantsNeeded) {
+        // A source narrower than the variant would just be a pointless
+        // upscaled duplicate of the full file; the page's srcset skips
+        // variants that don't exist, so there's nothing to write.
+        if (!metadata.width || metadata.width <= w) continue;
+        await sharp(sourcePath)
+          .resize({ width: w, withoutEnlargement: true })
+          .webp({ quality: 82 })
+          .toFile(variantPath);
+        heroVariantsGenerated++;
+      }
     } catch (err) {
       failed++;
       console.warn(`[compress-images] SKIPPED (not a valid/readable image): ${sourcePath} — ${err.message}`);
@@ -114,7 +161,7 @@ async function run() {
 
   const savedPct = totalBefore > 0 ? Math.round((1 - totalAfter / totalBefore) * 100) : 0;
   console.log(
-    `[compress-images] ${compressed} compressed, ${thumbsGenerated} thumbnails generated, ${skipped} already up to date` +
+    `[compress-images] ${compressed} compressed, ${thumbsGenerated} thumbnails + ${heroVariantsGenerated} hero variants generated, ${skipped} already up to date` +
       (failed > 0 ? `, ${failed} skipped (invalid)` : '') +
       (compressed > 0 ? ` (${(totalBefore / 1e6).toFixed(1)}MB -> ${(totalAfter / 1e6).toFixed(1)}MB, -${savedPct}%)` : '')
   );

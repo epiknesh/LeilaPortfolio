@@ -44,9 +44,9 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
   </div>
 
   <div class="project-grid" data-grid>
-    {projects.map((project) => (
+    {projects.map((project, i) => (
       <div class="grid-cell" data-grid-cell data-filter-category={project.data.categories.join(' ')}>
-        <ProjectCard project={project} />
+        <ProjectCard project={project} eager={i < 3} />
       </div>
     ))}
   </div>
@@ -80,30 +80,63 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
 
     // FLIP: every surviving visible cell glides to its new grid position
     // instead of teleporting the instant the grid reflows.
+    //
+    // Reads and writes are kept in separate batches (all "first" rects,
+    // mutate, all "last" rects, then all inverts, then ONE forced reflow)
+    // instead of the earlier per-cell read -> write -> forced-reflow loop,
+    // which made the browser recompute layout once per moving cell. Cells
+    // more than a screen away from the viewport before AND after the move
+    // aren't animated at all (nobody can see them glide), and only cells
+    // that actually moved get touched. Animation itself is transform-only.
+    const flipTimers = new WeakMap<HTMLElement, number>();
     const runFlip = (mutate: () => void) => {
+      const viewportHeight = window.innerHeight;
+      const nearViewport = (r: DOMRect) => r.bottom > -viewportHeight && r.top < viewportHeight * 2;
+
+      // READ (one layout)
       const visibleBefore = cells.filter((cell) => !cell.hidden);
       const firstRects = new Map(visibleBefore.map((cell) => [cell, cell.getBoundingClientRect()]));
 
+      // WRITE
       mutate();
 
-      const visibleAfter = cells.filter((cell) => !cell.hidden);
-      visibleAfter.forEach((cell) => {
+      // READ (one layout, nothing written in between)
+      const moves: { cell: HTMLElement; dx: number; dy: number }[] = [];
+      cells.forEach((cell) => {
+        if (cell.hidden) return;
         const first = firstRects.get(cell);
         if (!first) return; // newly shown cell — no "before" position to FLIP from
         const last = cell.getBoundingClientRect();
-        const deltaX = first.left - last.left;
-        const deltaY = first.top - last.top;
-        if (deltaX === 0 && deltaY === 0) return;
+        const dx = first.left - last.left;
+        const dy = first.top - last.top;
+        if (dx === 0 && dy === 0) return;
+        if (!nearViewport(first) && !nearViewport(last)) return;
+        moves.push({ cell, dx, dy });
+      });
+      if (moves.length === 0) return;
 
+      // WRITE: invert every moving cell, then flush layout once
+      moves.forEach(({ cell, dx, dy }) => {
+        const pending = flipTimers.get(cell);
+        if (pending !== undefined) window.clearTimeout(pending);
         cell.style.transition = 'none';
-        cell.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-        void cell.offsetWidth; // force layout flush
-        requestAnimationFrame(() => {
+        cell.style.willChange = 'transform';
+        cell.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      });
+      void grid.offsetWidth;
+
+      // PLAY
+      requestAnimationFrame(() => {
+        moves.forEach(({ cell }) => {
           cell.style.transition = `transform ${FILTER_TRANSITION_MS}ms var(--ease-standard)`;
           cell.style.transform = '';
-          window.setTimeout(() => {
-            cell.style.transition = '';
-          }, FILTER_TRANSITION_MS);
+          flipTimers.set(
+            cell,
+            window.setTimeout(() => {
+              cell.style.transition = '';
+              cell.style.willChange = '';
+            }, FILTER_TRANSITION_MS)
+          );
         });
       });
     };
@@ -268,49 +301,61 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
       applyFilter();
     });
 
-    // Prefetch each project's hero image ahead of the click — without this,
-    // the View Transitions navigation swaps to the project page before its
-    // (larger, often different-from-the-thumbnail) hero image has actually
-    // downloaded, so the shared-element morph animates into an empty box
-    // that then pops the image in late. Triggered once a tile scrolls into
-    // view (~200px early, below), which covers virtually every real
-    // navigation. This used to ALSO fire on pointerenter/focus for a
-    // slightly earlier prefetch on a fast deliberate click — removed
-    // because it meant every cursor crossing into a not-yet-prefetched
-    // card during mousewheel scrolling (cursor stationary over the grid
-    // while the page scrolls under it) did a synchronous DOM write
-    // (creating + appending a <link> to <head>), causing real scroll
-    // jank that a scrollbar-drag never triggered (it never crosses a
-    // card's bounds). The visibility-based prefetch alone is both enough
-    // and jank-free.
-    const prefetched = new Set<string>();
+    // Start fetching + decoding a project's hero when the visitor shows
+    // INTENT to open it — never merely because its card scrolled past. The
+    // grid used to prefetch every card's full 2000px hero as soon as the
+    // card came within 200px of the viewport, so just scrolling the page
+    // downloaded every hero whether or not anything was opened.
+    //
+    // Intent signals:
+    //  - mouse: resting on a card for HOVER_INTENT_MS (the dwell + cancel on
+    //    leave means a cursor sweeping across cards during a wheel-scroll
+    //    never triggers it), and mousedown, which precedes click by ~80ms
+    //  - keyboard: focus
+    //  - touch: pointerup (a tap; a scroll gesture ends in pointercancel
+    //    instead, so swiping through the grid prefetches nothing)
+    // The request uses the exact srcset/sizes the hero page uses, so the
+    // browser picks the same file and the page finds it already cached.
+    // Skipped entirely when the visitor has Data Saver on.
+    const HOVER_INTENT_MS = 120;
+    const prefetchedHeroes = new Map<string, HTMLImageElement>();
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
     const prefetchHero = (card: HTMLElement) => {
-      const heroSrc = card.dataset.prefetchHero;
-      if (!heroSrc || prefetched.has(heroSrc)) return;
-      prefetched.add(heroSrc);
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.as = 'image';
-      link.href = heroSrc;
-      document.head.appendChild(link);
+      const srcset = card.dataset.heroSrcset;
+      if (!srcset || saveData || prefetchedHeroes.has(srcset)) return;
+      const img = new Image();
+      img.sizes = '100vw';
+      img.decoding = 'async';
+      img.srcset = srcset;
+      prefetchedHeroes.set(srcset, img); // keep a reference so it isn't collected mid-download
+      img.decode().catch(() => {});
     };
 
-    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-prefetch-hero]'));
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-hero-srcset]'));
+    cards.forEach((card) => {
+      let hoverTimer: number | null = null;
+      const clearHover = () => {
+        if (hoverTimer !== null) {
+          window.clearTimeout(hoverTimer);
+          hoverTimer = null;
+        }
+      };
+      card.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        clearHover();
+        hoverTimer = window.setTimeout(() => prefetchHero(card), HOVER_INTENT_MS);
+      });
+      card.addEventListener('pointerleave', clearHover);
+      card.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'touch') prefetchHero(card);
+      });
+      card.addEventListener('pointerup', (e) => {
+        if (e.pointerType === 'touch') prefetchHero(card);
+      });
+      card.addEventListener('focus', () => prefetchHero(card));
+    });
 
     if ('IntersectionObserver' in window) {
-      const prefetchObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              prefetchHero(entry.target as HTMLElement);
-              prefetchObserver.unobserve(entry.target);
-            }
-          });
-        },
-        { rootMargin: '200px' }
-      );
-      cards.forEach((card) => prefetchObserver.observe(card));
-
       // Touch devices have no :hover at all, so the title/tag overlay (see
       // ProjectCard.astro's .card-overlay) never has a way to show itself
       // there — this gives it an equivalent on scroll instead: whichever

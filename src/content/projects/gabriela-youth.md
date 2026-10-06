@@ -16,7 +16,7 @@ palette:
   - hex: '#B5000D'
     name: Guardsman Red
   - hex: '#E6DAE4'
-    name: Lavender Pinocchio
+    name: Lavender
 process: Explored how advocacy-focused messaging could be translated into bold, attention-grabbing graphic compositions, using strong typography, imagery, and campaign-oriented layouts to communicate social issues and organizational initiatives.
 cardImage: /images/curated/gabriela-youth/IMG_4162.JPG
 hero: /images/curated/gabriela-youth/GY IG POST LAYOUT.png

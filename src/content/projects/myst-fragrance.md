@@ -26,7 +26,7 @@ palette:
     name: Oil
 process: Explored how manifestation, ritual, and occult symbolism could translate into a contemporary fragrance identity, drawing references from vintage perfume packaging, mystical iconography, ornamental details, and jewel-toned palettes. Developed a modular system of symbolic marks for each intention, then extended the system through typography, color, packaging, and supporting graphic applications.
 cardImage: /images/curated/myst-fragrance/Banta_Portfolio_Graphic Design_POST 5.png
-hero: /images/curated/myst-fragrance/Banta_Portfolio_Graphic Design_POST 5.png
+hero: /images/curated/myst-fragrance/MYST IG POST LAYOUT.png
 gallery:
   - image: /images/curated/myst-fragrance/MYST PFP.jpg
     size: portrait

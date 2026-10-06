@@ -2,8 +2,8 @@
 categories:
   - 3d-architectural
 title: Architectural Interiors
-subtitle: ''
-projectType: Contract/Commission Project
+subtitle: 3D Interior Visualization
+projectType: Contract / Commission Project
 industry: Architecture / Interior Design
 deliverables:
   - 3D Modeling
@@ -64,7 +64,7 @@ gallery:
     size: standard
   - image: /images/curated/arch-viz/22.png
     size: standard
-order: 13
+order: 35
 ---
 
 A collection of 3D modeling and rendering work spanning architectural and interior design visualization for Alexcy Corporation's commercial and residential spaces, including offices, workspaces, and property entertainment units.

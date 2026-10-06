@@ -48,25 +48,49 @@ gallery:
     size: standard
   - image: /images/curated/balikbuhay-womens-center/TH PERSP 2.png
     size: standard
+  - image: /images/curated/balikbuhay-womens-center/DROP OFF DETAIL.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/PARKING DETAIL.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/AL FRESCO DETAIL.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/HEALING GARDENS DETAIL 1.png
+    size: standard
   - image: /images/curated/balikbuhay-womens-center/TH PERSP 4.png
     size: standard
   - image: /images/curated/balikbuhay-womens-center/TH PERSP 3.png
     size: standard
-  - image: /images/curated/balikbuhay-womens-center/AL FRESCO DETAIL.png
+  - image: /images/curated/balikbuhay-womens-center/PERFORATED PANELS.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/SUN-SHADING LOUVERS.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/SOFFITS.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/SPIRAL STAIRCASE.png
     size: standard
   - image: /images/curated/balikbuhay-womens-center/LOBBY.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/Screenshot 2026-10-06 150626.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/101.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/100.png
     size: standard
   - image: /images/curated/balikbuhay-womens-center/97.png
     size: standard
   - image: /images/curated/balikbuhay-womens-center/98.png
     size: standard
+  - image: /images/curated/balikbuhay-womens-center/105.png
+    size: standard
+  - image: /images/curated/balikbuhay-womens-center/106.png
+    size: standard
   - image: /images/curated/balikbuhay-womens-center/99.png
     size: standard
-  - image: /images/curated/balikbuhay-womens-center/105.png
+  - image: /images/curated/balikbuhay-womens-center/104.png
     size: standard
   - image: /images/curated/balikbuhay-womens-center/102.png
     size: standard
-  - image: /images/curated/balikbuhay-womens-center/104.png
+  - image: /images/curated/balikbuhay-womens-center/103.png
     size: standard
 order: 10
 ---

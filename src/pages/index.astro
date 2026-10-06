@@ -3,7 +3,7 @@ import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import SoftwareIcon from '../components/SoftwareIcon.astro';
-import { toWebpPath, getPublicImageSize } from '../lib/image-size';
+import { toTileSrcSet, getPublicImageSize } from '../lib/image-size';
 
 const home = await getEntry('home', 'home');
 const siteInfo = await getEntry('siteInfo', 'site');
@@ -36,8 +36,15 @@ const software = (await getCollection('software')).sort((a, b) => {
         {logoInfo?.ok ? (
           <h1 class="about-heading-image">
             <picture>
-              <source srcset={toWebpPath(home!.data.logoImage!)} type="image/webp" />
-              <img src={home!.data.logoImage} alt="Leila Karlene Banta" />
+              <source srcset={toTileSrcSet(home!.data.logoImage!, logoInfo.width)} sizes="min(420px, 100vw)" type="image/webp" />
+              <img
+                src={home!.data.logoImage}
+                alt="Leila Karlene Banta"
+                width={logoInfo.width}
+                height={logoInfo.height}
+                fetchpriority="high"
+                decoding="async"
+              />
             </picture>
           </h1>
         ) : (
@@ -48,8 +55,14 @@ const software = (await getCollection('software')).sort((a, b) => {
         {typescriptInfo?.ok ? (
           <div class="about-sub-image">
             <picture>
-              <source srcset={toWebpPath(home!.data.typescriptImage!)} type="image/webp" />
-              <img src={home!.data.typescriptImage} alt="" />
+              <source srcset={toTileSrcSet(home!.data.typescriptImage!, typescriptInfo.width)} sizes="min(420px, 100vw)" type="image/webp" />
+              <img
+                src={home!.data.typescriptImage}
+                alt=""
+                width={typescriptInfo.width}
+                height={typescriptInfo.height}
+                decoding="async"
+              />
             </picture>
           </div>
         ) : (

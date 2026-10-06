@@ -2,7 +2,7 @@
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SoftwareIcon from '../../components/SoftwareIcon.astro';
-import { toWebpPath, getPublicImageSize } from '../../lib/image-size';
+import { toTileSrcSet, getPublicImageSize } from '../../lib/image-size';
 
 const software = await getCollection('software');
 const byTier = (tier: 'primary' | 'secondary' | 'basic') =>
@@ -13,7 +13,9 @@ const basicTools = byTier('basic');
 
 const about = await getEntry('about', 'about');
 const { Content } = about ? await render(about) : { Content: null };
-const portraitInfo = about ? await getPublicImageSize(about.data.portrait) : { ok: false };
+const portraitInfo = about
+  ? await getPublicImageSize(about.data.portrait)
+  : { ok: false, width: 0, height: 0 };
 ---
 
 <BaseLayout
@@ -25,11 +27,15 @@ const portraitInfo = about ? await getPublicImageSize(about.data.portrait) : { o
       <div class="portrait-frame">
         {portraitInfo.ok ? (
           <picture>
-            <source srcset={toWebpPath(about!.data.portrait)} type="image/webp" />
+            <source srcset={toTileSrcSet(about!.data.portrait, portraitInfo.width)} sizes="(max-width: 900px) 100vw, 45vw" type="image/webp" />
             <img
               src={about!.data.portrait}
               alt="Illustrated self-portrait of Leila, hand-drawn in ink with red spiral and star accents"
               class="portrait-image"
+              width={portraitInfo.width}
+              height={portraitInfo.height}
+              fetchpriority="high"
+              decoding="async"
             />
           </picture>
         ) : (

@@ -1,5 +1,16 @@
 @import './tokens.css';
 
+/* Metric-matched stand-in used until IBM Plex Mono loads: Consolas has a
+   0.55em advance, Plex Mono 0.6em, so scaling by 0.6/0.55 makes every
+   line wrap exactly as it will with the real font. Only applies where
+   Consolas exists (Windows); elsewhere the stack falls through to
+   monospace faces that are already ~0.6em. */
+@font-face {
+  font-family: 'Plex Mono Fallback';
+  src: local('Consolas');
+  size-adjust: 109.1%;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {

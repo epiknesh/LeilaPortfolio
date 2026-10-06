@@ -36,8 +36,13 @@
      .font-body are still two different *roles* (captions/labels/nav vs.
      paragraph copy) that happen to share a typeface now, not because
      they're meant to diverge again later without someone deciding that. */
-  --font-body: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
-  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  /* 'Plex Mono Fallback' (declared in global.css) is Consolas scaled to
+     Plex Mono's character width, so text wraps identically before and
+     after the web font swaps in — plain Consolas is ~9% narrower, which
+     re-wrapped the category filter pills and shoved the whole grid down
+     41px when the font arrived (CLS 0.38 on desktop Windows). */
+  --font-body: 'IBM Plex Mono', 'SFMono-Regular', 'Plex Mono Fallback', Consolas, monospace;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', 'Plex Mono Fallback', Consolas, monospace;
 
   /* ---- type scale (fluid) ---- */
   --fs-display: clamp(2.75rem, 3.5vw + 1.5rem, 6.5rem);

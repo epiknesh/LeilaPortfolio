@@ -355,6 +355,44 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
       card.addEventListener('focus', () => prefetchHero(card));
     });
 
+    // Tier 2 loading: below-the-fold card images start downloading when
+    // they come within ~60% of a screen height of the viewport (min 300px)
+    // — roughly one grid row / 1-2 stacked phone cards of lead time. Not on
+    // page load, and not ~1250px+ ahead like native loading="lazy". Scaled
+    // to the viewport because a phone card is only ~40% of its screen
+    // tall, so a fixed 300px was under one card of warning there.
+    // See ProjectCard.astro.
+    const cardLeadPx = Math.max(300, Math.round(window.innerHeight * 0.6));
+    const lazyCardImages = Array.from(grid.querySelectorAll<HTMLImageElement>('[data-lazy-card-image]'));
+    const loadCardImage = (img: HTMLImageElement) => {
+      img.closest('[data-skeleton-container]')?.classList.add('is-loading');
+      const source = img.previousElementSibling as HTMLSourceElement | null;
+      if (source?.dataset.srcset) {
+        source.srcset = source.dataset.srcset;
+        delete source.dataset.srcset;
+      }
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+        delete img.dataset.src;
+      }
+    };
+    if ('IntersectionObserver' in window) {
+      const cardLoader = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              loadCardImage(entry.target as HTMLImageElement);
+              cardLoader.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: `${cardLeadPx}px 0px` }
+      );
+      lazyCardImages.forEach((img) => cardLoader.observe(img));
+    } else {
+      lazyCardImages.forEach(loadCardImage);
+    }
+
     if ('IntersectionObserver' in window) {
       // Touch devices have no :hover at all, so the title/tag overlay (see
       // ProjectCard.astro's .card-overlay) never has a way to show itself

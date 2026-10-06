@@ -14,6 +14,7 @@ const { id, data } = project;
 const accent = data.palette[0]?.hex ?? '#B32E22';
 const cardImageInfo = await getPublicImageSize(data.cardImage);
 const heroInfo = await getPublicImageSize(data.hero);
+const tileSrcSet = toTileSrcSet(data.cardImage, cardImageInfo.width);
 ---
 
 <a
@@ -25,18 +26,23 @@ const heroInfo = await getPublicImageSize(data.hero);
   data-hero-srcset={heroInfo.ok ? toHeroSrcSet(data.hero, heroInfo.width) : undefined}
   style={`--accent: ${accent};`}
 >
-  <div class="card-image" data-skeleton-container>
+  <div class={eager ? 'card-image is-loading' : 'card-image'} data-skeleton-container>
     {cardImageInfo.ok ? (
       <picture>
+        {/* Eager (first-row) cards load immediately. The rest hold their URL
+            in data-* until ProjectGrid.astro's lookahead observer says
+            they're near the viewport — native loading="lazy" starts
+            fetching ~1250px+ ahead, which on a 5-row grid meant all 13
+            cards (1.4MB on a retina desktop) downloaded on page load while
+            only 3 were visible. */}
         <source
-          srcset={toTileSrcSet(data.cardImage, cardImageInfo.width)}
+          {...(eager ? { srcset: tileSrcSet } : { 'data-srcset': tileSrcSet })}
           sizes="(max-width: 480px) 100vw, (max-width: 900px) 50vw, 33vw"
           type="image/webp"
         />
         <img
-          src={data.cardImage}
+          {...(eager ? { src: data.cardImage, loading: 'eager' } : { 'data-src': data.cardImage, 'data-lazy-card-image': true })}
           alt=""
-          loading={eager ? 'eager' : 'lazy'}
           decoding="async"
           transition:name={`project-image-${id}`}
           data-skeleton-img
@@ -90,13 +96,18 @@ const heroInfo = await getPublicImageSize(data.hero);
       color-mix(in srgb, var(--accent) 30%, white 20%) 50%,
       transparent 70%
     );
-    animation: skeleton-shimmer 1.6s ease-in-out infinite;
-    will-change: transform;
     pointer-events: none;
   }
-  .card-image.is-loaded::after { opacity: 0; animation: none; will-change: auto; }
+  /* Only sweeps once the card's image has actually started loading
+     (.is-loading), so cards further down the grid are a static block
+     instead of ~10 simultaneously animating layers. */
+  .card-image.is-loading:not(.is-loaded)::after {
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+    will-change: transform;
+  }
+  .card-image.is-loaded::after { opacity: 0; }
   @media (prefers-reduced-motion: reduce) {
-    .card-image::after { animation: none; }
+    .card-image.is-loading:not(.is-loaded)::after { animation: none; }
   }
 
   .card-image picture {

@@ -27,7 +27,7 @@ palette:
   - hex: '#a37b78'
     name: Beaver
 process: Explored how curved, organic forms, biophilic architecture, and learning-conducive design could translate the idea of both social and architectural liminality into built architecture, specifically targeted towards female OFWs.
-cardImage: /images/curated/balikbuhay-womens-center/TH PERSP 1.png
+cardImage: /images/curated/balikbuhay-womens-center/TH PERSP 2.png
 hero: /images/curated/balikbuhay-womens-center/TH PERSP 1.png
 gallery:
   - image: /images/curated/balikbuhay-womens-center/TH BOARD 1.png

@@ -3,7 +3,7 @@ categories:
   - 3d-architectural
 title: Architectural Interiors
 subtitle: 3D Interior Visualization
-projectType: Contract/Commission Project
+projectType: Contract / Commission Project
 industry: Architecture / Interior Design
 deliverables:
   - 3D Modeling

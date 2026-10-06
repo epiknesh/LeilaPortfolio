@@ -17,29 +17,35 @@ const { images, altPrefix } = Astro.props;
 // attributes, to avoid layout shift while the grid loads.
 const gallery = await Promise.all(
   images.map(async ({ image: src, size }) => {
-    const { width, height } = await getPublicImageSize(src);
-    return { src, webp: toWebpPath(src), width, height, size };
+    const { width, height, ok } = await getPublicImageSize(src);
+    return { src, webp: toWebpPath(src), width, height, size, ok };
   })
 );
 ---
 
 <div class="lightbox-gallery" data-lightbox-root>
   <div class="gallery-grid">
-    {gallery.map(({ src, webp, width, height, size }, i) => (
-      <button
-        type="button"
-        class={`gallery-trigger size-${size}`}
-        data-lightbox-open
-        data-index={i}
-        data-full-src={webp}
-        data-full-alt={`${altPrefix}, image ${i + 1} of ${images.length}`}
-        aria-label={`Open image ${i + 1} of ${images.length} full size`}
-      >
-        <picture>
-          <source srcset={webp} type="image/webp" />
-          <img src={src} width={width} height={height} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" />
-        </picture>
-      </button>
+    {gallery.map(({ src, webp, width, height, size, ok }, i) => (
+      ok ? (
+        <button
+          type="button"
+          class={`gallery-trigger size-${size}`}
+          data-lightbox-open
+          data-index={i}
+          data-full-src={webp}
+          data-full-alt={`${altPrefix}, image ${i + 1} of ${images.length}`}
+          aria-label={`Open image ${i + 1} of ${images.length} full size`}
+        >
+          <picture>
+            <source srcset={webp} type="image/webp" />
+            <img src={src} width={width} height={height} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" />
+          </picture>
+        </button>
+      ) : (
+        <div class={`gallery-trigger missing-image size-${size} font-mono`} aria-hidden="true">
+          [ image missing: {src.split('/').pop()} ]
+        </div>
+      )
     ))}
   </div>
 
@@ -253,6 +259,24 @@ const gallery = await Promise.all(
   .gallery-trigger.size-wide { grid-column: span 8; }
   .gallery-trigger.size-full { grid-column: span 12; }
   .gallery-trigger.size-portrait { grid-column: span 4; }
+
+  .gallery-trigger.missing-image {
+    cursor: default;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px;
+    border: 1px dashed var(--line);
+    background: var(--bg-alt);
+    color: var(--text-dim);
+    font-size: var(--fs-caption);
+    letter-spacing: 0.02em;
+  }
+  .gallery-trigger.missing-image.size-portrait {
+    aspect-ratio: 3 / 4;
+  }
 
   /* <picture> defaults to display:inline, which sizes it to the <img>'s
      own intrinsic dimensions instead of stretching to fill the grid cell

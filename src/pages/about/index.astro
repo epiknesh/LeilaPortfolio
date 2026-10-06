@@ -2,7 +2,7 @@
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SoftwareIcon from '../../components/SoftwareIcon.astro';
-import { toWebpPath } from '../../lib/image-size';
+import { toWebpPath, getPublicImageSize } from '../../lib/image-size';
 
 const software = await getCollection('software');
 const byTier = (tier: 'primary' | 'secondary' | 'basic') =>
@@ -13,6 +13,7 @@ const basicTools = byTier('basic');
 
 const about = await getEntry('about', 'about');
 const { Content } = about ? await render(about) : { Content: null };
+const portraitInfo = about ? await getPublicImageSize(about.data.portrait) : { ok: false };
 ---
 
 <BaseLayout
@@ -22,14 +23,20 @@ const { Content } = about ? await render(about) : { Content: null };
   <section class="section no-reveal about-hero grain">
     <div class="sheet about-hero-grid">
       <div class="portrait-frame">
-        <picture>
-          <source srcset={toWebpPath(about!.data.portrait)} type="image/webp" />
-          <img
-            src={about!.data.portrait}
-            alt="Illustrated self-portrait of Leila, hand-drawn in ink with red spiral and star accents"
-            class="portrait-image"
-          />
-        </picture>
+        {portraitInfo.ok ? (
+          <picture>
+            <source srcset={toWebpPath(about!.data.portrait)} type="image/webp" />
+            <img
+              src={about!.data.portrait}
+              alt="Illustrated self-portrait of Leila, hand-drawn in ink with red spiral and star accents"
+              class="portrait-image"
+            />
+          </picture>
+        ) : (
+          <div class="missing-image font-mono" aria-hidden="true">
+            [ image missing{about ? `: ${about.data.portrait.split('/').pop()}` : '' } ]
+          </div>
+        )}
       </div>
       <div>
         <p class="label">about [me]</p>
@@ -105,6 +112,18 @@ const { Content } = about ? await render(about) : { Content: null };
     display: block;
     width: 100%;
     height: 100%;
+  }
+  .portrait-frame .missing-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    color: var(--text-dim);
+    font-size: var(--fs-caption);
+    letter-spacing: 0.02em;
   }
   .portrait-image {
     width: 100%;

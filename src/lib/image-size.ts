@@ -7,23 +7,25 @@ import sharp from 'sharp';
 
 const publicDir = join(process.cwd(), 'public');
 
-const dimensionCache = new Map<string, Promise<{ width: number; height: number }>>();
+export type PublicImageInfo = { width: number; height: number; ok: boolean };
 
-// Falls back to a plausible default instead of throwing when an image is
-// missing or unreadable — a single bad reference (an upload that failed
-// partway, a file renamed/deleted after a project's data still points at
-// the old name, a non-image file saved with an image extension) used to
-// throw all the way up through Astro's build and fail the ENTIRE site, not
-// just the one project with the bad reference. That's happened for real —
-// see the build failures for alterkitektura-2024 ("unsupported image
-// format") and ruin-and-reverie ("Input file is missing") once Sveltia CMS
-// went live, both from an otherwise-unrelated project taking the whole
-// deploy down with it. A warning in the build log plus a reasonable
-// fallback (square-ish, will just letterbox/crop oddly, not crash) is a
-// much safer failure mode for a site a non-developer is actively editing.
+const dimensionCache = new Map<string, Promise<PublicImageInfo>>();
+
+// A single bad reference (an upload that failed partway, a file renamed/
+// deleted after a project's data still points at the old name, a non-image
+// file saved with an image extension) used to throw all the way up through
+// Astro's build and fail the ENTIRE site, not just the one project with
+// the bad reference — confirmed for real via two live build failures
+// (alterkitektura-2024: "unsupported image format"; ruin-and-reverie:
+// "Input file is missing") once Sveltia CMS went live and Leila started
+// uploading directly. `ok: false` lets each page decide how to show that
+// visibly (a "missing image" placeholder) instead of either crashing the
+// whole build or silently rendering nothing wrong at all — a non-developer
+// actively editing content needs some signal on the page itself that an
+// image reference broke, not just a build-log warning nobody will read.
 const FALLBACK_SIZE = { width: 1200, height: 900 };
 
-export function getPublicImageSize(publicPath: string): Promise<{ width: number; height: number }> {
+export function getPublicImageSize(publicPath: string): Promise<PublicImageInfo> {
   const cached = dimensionCache.get(publicPath);
   if (cached) return cached;
 
@@ -32,10 +34,10 @@ export function getPublicImageSize(publicPath: string): Promise<{ width: number;
     try {
       const { width, height } = await sharp(filePath).metadata();
       if (!width || !height) throw new Error('no dimensions in metadata');
-      return { width, height };
+      return { width, height, ok: true };
     } catch (err) {
-      console.warn(`[image-size] Could not read "${publicPath}" (${(err as Error).message}) — using fallback dimensions. Check this file exists and is a valid image.`);
-      return FALLBACK_SIZE;
+      console.warn(`[image-size] Could not read "${publicPath}" (${(err as Error).message}) — rendering a missing-image placeholder instead.`);
+      return { ...FALLBACK_SIZE, ok: false };
     }
   })();
 

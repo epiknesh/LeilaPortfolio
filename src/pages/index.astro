@@ -3,10 +3,17 @@ import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import SoftwareIcon from '../components/SoftwareIcon.astro';
-import { toWebpPath } from '../lib/image-size';
+import { toWebpPath, getPublicImageSize } from '../lib/image-size';
 
 const home = await getEntry('home', 'home');
 const siteInfo = await getEntry('siteInfo', 'site');
+// Both logoImage/typescriptImage are optional — if set, also confirm the
+// file actually exists before trying to render it, so a broken reference
+// (deleted/renamed file) falls back to the same "not uploaded yet"
+// placeholder instead of a broken <img>, rather than needing a third
+// visual state just for that case.
+const logoInfo = home?.data.logoImage ? await getPublicImageSize(home.data.logoImage) : null;
+const typescriptInfo = home?.data.typescriptImage ? await getPublicImageSize(home.data.typescriptImage) : null;
 const tierOrder = { primary: 0, secondary: 1, basic: 2 };
 const software = (await getCollection('software')).sort((a, b) => {
   const tierDiff = tierOrder[a.data.tier] - tierOrder[b.data.tier];
@@ -23,13 +30,14 @@ const software = (await getCollection('software')).sort((a, b) => {
     <div class="sheet about-grid">
       <div>
         <!-- Both logoImage/typescriptImage are optional CMS fields (Homepage
-             tab in /admin) — until Leila uploads them, these render as
-             dashed placeholder boxes instead. -->
-        {home?.data.logoImage ? (
+             tab in /admin) — until Leila uploads them (or if a reference is
+             set but the file is missing/broken), these render as dashed
+             placeholder boxes instead. -->
+        {logoInfo?.ok ? (
           <h1 class="about-heading-image">
             <picture>
-              <source srcset={toWebpPath(home.data.logoImage)} type="image/webp" />
-              <img src={home.data.logoImage} alt="Leila Karlene Banta" />
+              <source srcset={toWebpPath(home!.data.logoImage!)} type="image/webp" />
+              <img src={home!.data.logoImage} alt="Leila Karlene Banta" />
             </picture>
           </h1>
         ) : (
@@ -37,11 +45,11 @@ const software = (await getCollection('software')).sort((a, b) => {
             [ logo placeholder — about [me] ]
           </h1>
         )}
-        {home?.data.typescriptImage ? (
+        {typescriptInfo?.ok ? (
           <div class="about-sub-image">
             <picture>
-              <source srcset={toWebpPath(home.data.typescriptImage)} type="image/webp" />
-              <img src={home.data.typescriptImage} alt="" />
+              <source srcset={toWebpPath(home!.data.typescriptImage!)} type="image/webp" />
+              <img src={home!.data.typescriptImage} alt="" />
             </picture>
           </div>
         ) : (

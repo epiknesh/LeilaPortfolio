@@ -11,17 +11,17 @@ deliverables:
   - Print Design
 palette:
   - hex: '#ec3f3b'
-    name: ''
+    name: Deep Carmine
   - hex: '#f1893b'
-    name: ''
+    name: Dusty Orange
   - hex: '#da9e35'
-    name: Yellow
+    name: Satin Sheet Gold
   - hex: '#0eb691'
-    name: ''
+    name: Green Blue
   - hex: '#3e69e3'
-    name: Blue
+    name: Ultramarine Blue
   - hex: '#d55075'
-    name: Pink
+    name: Cranberry
 process: Developed the yearbook branding, theme, and layout templates with a team of creatives.
 cardImage: /images/curated/yearbook/COVER W BG.png
 hero: /images/curated/yearbook/COVER W BG.png

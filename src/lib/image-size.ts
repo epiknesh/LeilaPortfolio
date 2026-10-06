@@ -54,10 +54,17 @@ export function getPublicImageSize(publicPath: string): Promise<PublicImageInfo>
 // dropped as invalid, and the browser silently fell back to the <img>'s
 // original multi-megabyte PNG (confirmed: ~138MB downloaded scrolling the
 // homepage, only filenames without spaces ever got their thumbnails).
-// Commas would break srcset the same way, hence per-segment
-// encodeURIComponent rather than encodeURI.
+// Commas would break srcset the same way (and # / ? would be read as a
+// fragment/query), so those are encoded on top of encodeURI. Other
+// reserved characters that are legal in a path (& ; = + $ @ :) are left
+// alone on purpose: encoding them (e.g. "&" -> "%26") is correct on
+// production hosting but 404s under Astro's dev server, which doesn't
+// decode them when looking up the file.
 function encodePublicPath(publicPath: string): string {
-  return publicPath.split('/').map(encodeURIComponent).join('/');
+  return publicPath
+    .split('/')
+    .map((segment) => encodeURI(segment).replace(/[#?,]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase()))
+    .join('/');
 }
 
 // The compressed sibling scripts/compress-images.mjs generates next to each
@@ -76,6 +83,25 @@ export function toWebpPath(publicPath: string): string {
 // lightbox's actual zoomed-in view, which does need the larger version.
 export function toThumbPath(publicPath: string): string {
   return toWebpPath(publicPath).replace(/\.webp$/, '-thumb.webp');
+}
+
+const THUMB_WIDTH = 640;
+const MID_WIDTH = 1200;
+
+// srcset for grid cards and gallery tiles: 640px thumb, 1200px mid-size
+// (only if the source is wider) and the full .webp. Paired with a sizes=
+// that reflects the tile's real layout width, so a 1x laptop gets the
+// size it actually needs and a phone/retina screen gets a sharper one —
+// the thumb alone was visibly upscaled (a full-width gallery tile is
+// ~1400 CSS px). Keep widths in sync with compress-images.mjs.
+export function toTileSrcSet(publicPath: string, sourceWidth: number): string {
+  const entries = [`${toThumbPath(publicPath)} ${Math.min(sourceWidth, THUMB_WIDTH)}w`];
+  if (sourceWidth > MID_WIDTH) {
+    const midFile = publicPath.replace(/\.(png|jpe?g)$/i, `-${MID_WIDTH}.webp`);
+    if (existsSync(join(publicDir, midFile))) entries.push(`${encodePublicPath(midFile)} ${MID_WIDTH}w`);
+  }
+  if (sourceWidth > THUMB_WIDTH) entries.push(`${toWebpPath(publicPath)} ${Math.min(sourceWidth, FULL_WIDTH)}w`);
+  return entries.join(', ');
 }
 
 // Intermediate widths compress-images.mjs generates for project heroes

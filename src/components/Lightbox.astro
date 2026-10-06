@@ -1,5 +1,14 @@
 ---
-import { getPublicImageSize, toWebpPath, toThumbPath } from '../lib/image-size';
+import { getPublicImageSize, toWebpPath, toTileSrcSet } from '../lib/image-size';
+
+// Each tile's real layout width (see the 12-column grid styles below), so
+// the browser can pick the smallest file that's still sharp.
+const TILE_SIZES: Record<string, string> = {
+  standard: '(max-width: 760px) 100vw, 50vw',
+  portrait: '(max-width: 760px) 100vw, 33vw',
+  wide: '(max-width: 760px) 100vw, 67vw',
+  full: '100vw',
+};
 
 type GalleryImage = { image: string; size: 'standard' | 'wide' | 'portrait' | 'full' };
 
@@ -20,7 +29,7 @@ const { images, altPrefix } = Astro.props;
 const gallery = await Promise.all(
   images.map(async ({ image: src, size }) => {
     const { width, height, ok } = await getPublicImageSize(src);
-    return { src, thumb: toThumbPath(src), full: toWebpPath(src), width, height, size, ok };
+    return { src, thumb: toTileSrcSet(src, width), full: toWebpPath(src), width, height, size, ok };
   })
 );
 ---
@@ -40,7 +49,7 @@ const gallery = await Promise.all(
           aria-label={`Open image ${i + 1} of ${images.length} full size`}
         >
           <picture>
-            <source data-srcset={thumb} type="image/webp" />
+            <source data-srcset={thumb} sizes={TILE_SIZES[size]} type="image/webp" />
             <img
               data-src={src}
               width={width}
@@ -169,6 +178,33 @@ const gallery = await Promise.all(
       imgEl.alt = fullAlt ?? '';
     }
 
+    // Full-size lightbox images are large, so assigning a new src and
+    // animating immediately meant the "enter" animation played while the
+    // file was still downloading — the previous image stayed on screen
+    // through it, then abruptly snapped to the new one. Instead, fetch and
+    // decode the target first (the leave animation covers that time), and
+    // keep the neighbours warm so stepping through is usually instant.
+    const preloaded = new Map<number, Promise<void>>();
+    function preloadFull(index: number): Promise<void> {
+      const i = (index + triggers.length) % triggers.length;
+      let pending = preloaded.get(i);
+      if (!pending) {
+        const src = triggers[i].dataset.fullSrc;
+        if (!src) return Promise.resolve();
+        const img = new Image();
+        img.src = src;
+        pending = img.decode().catch(() => {});
+        preloaded.set(i, pending);
+      }
+      return pending;
+    }
+    function preloadNeighbours(index: number) {
+      preloadFull(index + 1);
+      preloadFull(index - 1);
+    }
+    // Upper bound so a stalled download can never freeze the lightbox.
+    const PRELOAD_WAIT_MS = 1500;
+
     function show(index: number, direction: 1 | -1 | 0 = 0) {
       const nextIndex = (index + triggers.length) % triggers.length;
       if (nextIndex === currentIndex && overlay!.hidden === false && direction === 0) return;
@@ -177,13 +213,20 @@ const gallery = await Promise.all(
         currentIndex = nextIndex;
         loadImage(currentIndex);
         updateChrome(currentIndex);
+        preloadNeighbours(currentIndex);
         return;
       }
 
       isAnimating = true;
       frame!.classList.add(direction > 0 ? 'is-leaving-left' : 'is-leaving-right');
 
-      window.setTimeout(() => {
+      const leaveDone = new Promise<void>((resolve) => window.setTimeout(resolve, 180));
+      const imageReady = Promise.race([
+        preloadFull(nextIndex),
+        new Promise<void>((resolve) => window.setTimeout(resolve, PRELOAD_WAIT_MS)),
+      ]);
+
+      Promise.all([leaveDone, imageReady]).then(() => {
         currentIndex = nextIndex;
         loadImage(currentIndex);
         updateChrome(currentIndex);
@@ -193,7 +236,8 @@ const gallery = await Promise.all(
         void frame!.offsetWidth;
         frame!.classList.remove('is-entering-from-right', 'is-entering-from-left');
         isAnimating = false;
-      }, 180);
+        preloadNeighbours(currentIndex);
+      });
     }
 
     // Matches the CSS transition-duration on .lightbox-overlay below.
@@ -204,6 +248,7 @@ const gallery = await Promise.all(
       currentIndex = index;
       loadImage(currentIndex);
       updateChrome(currentIndex);
+      preloadNeighbours(currentIndex);
       overlay!.hidden = false;
       // Force a layout flush between removing [hidden] and adding the
       // "visible" class, so the browser treats the opacity/scale change as

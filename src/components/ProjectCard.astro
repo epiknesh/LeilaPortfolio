@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { toThumbPath, toHeroSrcSet, getPublicImageSize } from '../lib/image-size';
+import { toTileSrcSet, toHeroSrcSet, getPublicImageSize } from '../lib/image-size';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -28,7 +28,11 @@ const heroInfo = await getPublicImageSize(data.hero);
   <div class="card-image" data-skeleton-container>
     {cardImageInfo.ok ? (
       <picture>
-        <source srcset={toThumbPath(data.cardImage)} type="image/webp" />
+        <source
+          srcset={toTileSrcSet(data.cardImage, cardImageInfo.width)}
+          sizes="(max-width: 480px) 100vw, (max-width: 900px) 50vw, 33vw"
+          type="image/webp"
+        />
         <img
           src={data.cardImage}
           alt=""

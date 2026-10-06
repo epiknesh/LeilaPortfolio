@@ -24,13 +24,17 @@ const MAX_WIDTH = 2000;
 // 2x for retina, since tiles are small) cuts that waste dramatically; the
 // full 2000px .webp is kept as-is for the lightbox's actual zoomed view.
 const THUMB_WIDTH = 640;
-// Project heroes span the full viewport, so they also get intermediate
-// sizes (served via srcset, see toHeroSrcSet in src/lib/image-size.ts —
-// keep the two lists in sync): a phone downloads the 1200px file instead
-// of 2000px. Only generated for images actually used as a project hero
-// (read from the content files below), not all of the library, and only
-// when the source is wider than the variant.
-const HERO_WIDTHS = [1200, 1600];
+// 640px is too small for most of the places tiles are actually shown: a
+// full-width gallery tile is ~1400 CSS px on a laptop, and cards are
+// ~900-1100 device px on retina/phones. So EVERY image also gets a 1200px
+// mid-size variant, and the page picks thumb / mid / full via srcset +
+// sizes (see toTileSrcSet in src/lib/image-size.ts — keep widths in sync).
+const MID_WIDTH = 1200;
+// Project heroes span the full viewport, so they additionally get a
+// 1600px variant (toHeroSrcSet) — only for images actually used as a
+// project hero (read from the content files below). Variants are only
+// written when the source is wider than the variant.
+const HERO_EXTRA_WIDTHS = [1600];
 const PROJECTS_DIR = join(process.cwd(), 'src', 'content', 'projects');
 const PUBLIC_DIR = join(process.cwd(), 'public');
 
@@ -96,11 +100,10 @@ async function run() {
     const needsFull = await needsCompression(sourcePath, webpPath);
     const needsThumb = await needsCompression(sourcePath, thumbPath);
     const heroVariantsNeeded = [];
-    if (heroSources.has(sourcePath)) {
-      for (const w of HERO_WIDTHS) {
-        const variantPath = webpPath.replace(/\.webp$/, `-${w}.webp`);
-        if (await needsCompression(sourcePath, variantPath)) heroVariantsNeeded.push({ w, variantPath });
-      }
+    const variantWidths = heroSources.has(sourcePath) ? [MID_WIDTH, ...HERO_EXTRA_WIDTHS] : [MID_WIDTH];
+    for (const w of variantWidths) {
+      const variantPath = webpPath.replace(/\.webp$/, `-${w}.webp`);
+      if (await needsCompression(sourcePath, variantPath)) heroVariantsNeeded.push({ w, variantPath });
     }
 
     if (!needsFull && !needsThumb && heroVariantsNeeded.length === 0) {
@@ -161,7 +164,7 @@ async function run() {
 
   const savedPct = totalBefore > 0 ? Math.round((1 - totalAfter / totalBefore) * 100) : 0;
   console.log(
-    `[compress-images] ${compressed} compressed, ${thumbsGenerated} thumbnails + ${heroVariantsGenerated} hero variants generated, ${skipped} already up to date` +
+    `[compress-images] ${compressed} compressed, ${thumbsGenerated} thumbnails + ${heroVariantsGenerated} mid/hero variants generated, ${skipped} already up to date` +
       (failed > 0 ? `, ${failed} skipped (invalid)` : '') +
       (compressed > 0 ? ` (${(totalBefore / 1e6).toFixed(1)}MB -> ${(totalAfter / 1e6).toFixed(1)}MB, -${savedPct}%)` : '')
   );

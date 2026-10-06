@@ -12,10 +12,20 @@ deliverables:
   - Set Design & Styling
   - Image Editing & Post-Processing
 palette:
-  - hex: '#181614'
-    name: Ink
-  - hex: '#8A6D5C'
-    name: Warm brown
+  - hex: '#151519'
+    name: Cinder
+  - hex: '#333130'
+    name: Dune
+  - hex: '#847f7b'
+    name: Granite
+  - hex: '#611b19'
+    name: Cherrywood
+  - hex: '#3a1328'
+    name: Eggplant
+  - hex: '#8b5638'
+    name: Potters Clay
+  - hex: '#878e57'
+    name: Camo
 process: Each half of the project started as its own concept board—"Place & Identity" for the domestic-chaos direction, "Alter-Ego" for the fragmented-styling direction—before moving into shoot planning. References for composition, lighting, styling, color, and photographic treatment were gathered for each concept, informing the environments, poses, wardrobe, and image-making approach. The resulting images were developed through direct flash photography, saturated color treatment, and digital manipulation to reinforce the distinct visual language of each direction.
 cardImage: /images/curated/exploration-with-portraiture/MAIN PIC 1.png
 hero: /images/curated/exploration-with-portraiture/MAIN PIC 1.png
@@ -29,7 +39,7 @@ gallery:
   - image: /images/curated/exploration-with-portraiture/MAIN PIC 2.png
     size: standard
   - image: /images/curated/exploration-with-portraiture/OUTTAKES 1.1.png
-    size: standard
+    size: full
   - image: /images/curated/exploration-with-portraiture/OUTTAKES 1.2.png
     size: standard
   - image: /images/curated/exploration-with-portraiture/OUTTAKES 1.3.png

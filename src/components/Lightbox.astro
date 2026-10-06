@@ -33,6 +33,7 @@ const gallery = await Promise.all(
           type="button"
           class={`gallery-trigger size-${size}`}
           data-lightbox-open
+          data-skeleton-container
           data-index={i}
           data-full-src={full}
           data-full-alt={`${altPrefix}, image ${i + 1} of ${images.length}`}
@@ -40,7 +41,7 @@ const gallery = await Promise.all(
         >
           <picture>
             <source srcset={thumb} type="image/webp" />
-            <img src={src} width={width} height={height} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" />
+            <img src={src} width={width} height={height} alt={`${altPrefix}, image ${i + 1} of ${images.length}`} loading="lazy" decoding="async" class="gallery-image" data-skeleton-img />
           </picture>
         </button>
       ) : (
@@ -280,6 +281,30 @@ const gallery = await Promise.all(
     aspect-ratio: 3 / 4;
   }
 
+  /* Skeleton shimmer, same pattern as ProjectCard.astro's .card-image —
+     visible until the shared data-skeleton-img handler (BaseLayout.astro)
+     marks this tile .is-loaded. */
+  .gallery-trigger:not(.missing-image)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+    transition: opacity var(--dur-standard) var(--ease-standard);
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      color-mix(in srgb, var(--bg-alt) 40%, white 25%) 50%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .gallery-trigger.is-loaded::after { opacity: 0; animation: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-trigger::after { animation: none; }
+  }
+
   /* <picture> defaults to display:inline, which sizes it to the <img>'s
      own intrinsic dimensions instead of stretching to fill the grid cell
      — without this, each gallery tile shows its image at a tiny, oddly
@@ -300,7 +325,12 @@ const gallery = await Promise.all(
     width: 100%;
     height: auto;
     display: block;
-    transition: transform var(--dur-standard) var(--ease-standard), filter var(--dur-standard) var(--ease-standard);
+    transition: transform var(--dur-standard) var(--ease-standard), filter var(--dur-standard) var(--ease-standard),
+      opacity var(--dur-standard) var(--ease-standard);
+  }
+  .gallery-trigger:not(.is-loaded) .gallery-image[data-skeleton-img] { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-image[data-skeleton-img] { transition: none; }
   }
   .gallery-trigger.size-portrait .gallery-image {
     height: 100%;

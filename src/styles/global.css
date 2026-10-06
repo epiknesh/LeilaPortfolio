@@ -19,6 +19,15 @@ body {
 
 img, svg, video { display: block; max-width: 100%; }
 
+/* Shared by every skeleton-shimmer loading state (ProjectCard.astro's
+   .card-image, Lightbox.astro's .gallery-trigger, the project hero) —
+   defined globally since Astro's scoped <style> blocks don't share
+   @keyframes across components. */
+@keyframes skeleton-shimmer {
+  0% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
+}
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, h4, p, figure, blockquote { margin: 0; }

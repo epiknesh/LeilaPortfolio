@@ -272,10 +272,17 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
     // the View Transitions navigation swaps to the project page before its
     // (larger, often different-from-the-thumbnail) hero image has actually
     // downloaded, so the shared-element morph animates into an empty box
-    // that then pops the image in late. Two triggers: as soon as a tile
-    // scrolls into view (catches anyone who scrolls past before clicking)
-    // and immediately on hover/focus (catches a fast, deliberate click that
-    // happens before the visibility prefetch would have finished anyway).
+    // that then pops the image in late. Triggered once a tile scrolls into
+    // view (~200px early, below), which covers virtually every real
+    // navigation. This used to ALSO fire on pointerenter/focus for a
+    // slightly earlier prefetch on a fast deliberate click — removed
+    // because it meant every cursor crossing into a not-yet-prefetched
+    // card during mousewheel scrolling (cursor stationary over the grid
+    // while the page scrolls under it) did a synchronous DOM write
+    // (creating + appending a <link> to <head>), causing real scroll
+    // jank that a scrollbar-drag never triggered (it never crosses a
+    // card's bounds). The visibility-based prefetch alone is both enough
+    // and jank-free.
     const prefetched = new Set<string>();
     const prefetchHero = (card: HTMLElement) => {
       const heroSrc = card.dataset.prefetchHero;
@@ -289,10 +296,6 @@ const categories = (await getCollection('categories')).sort((a, b) => a.data.ord
     };
 
     const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-prefetch-hero]'));
-    cards.forEach((card) => {
-      card.addEventListener('pointerenter', () => prefetchHero(card));
-      card.addEventListener('focus', () => prefetchHero(card));
-    });
 
     if ('IntersectionObserver' in window) {
       const prefetchObserver = new IntersectionObserver(

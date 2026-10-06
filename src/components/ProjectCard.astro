@@ -21,7 +21,7 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
   data-prefetch-hero={toWebpPath(data.hero)}
   style={`--accent: ${accent};`}
 >
-  <div class="card-image">
+  <div class="card-image" data-skeleton-container>
     {cardImageInfo.ok ? (
       <picture>
         <source srcset={toThumbPath(data.cardImage)} type="image/webp" />
@@ -31,6 +31,7 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
           loading="lazy"
           decoding="async"
           transition:name={`project-image-${id}`}
+          data-skeleton-img
         />
       </picture>
     ) : (
@@ -61,6 +62,32 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
     position: relative;
   }
 
+  /* Skeleton shimmer: visible until the <img> fires 'load' (see the
+     shared data-skeleton-img handler in BaseLayout.astro), so a card
+     reads as "loading" rather than blank/bare while its thumbnail is
+     still being fetched/decoded. */
+  .card-image:not(.is-loaded) img[data-skeleton-img] { opacity: 0; }
+  .card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+    transition: opacity var(--dur-standard) var(--ease-standard);
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      color-mix(in srgb, var(--accent) 30%, white 20%) 50%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .card-image.is-loaded::after { opacity: 0; animation: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .card-image::after { animation: none; }
+  }
+
   .card-image picture {
     display: block;
     width: 100%;
@@ -71,6 +98,14 @@ const cardImageInfo = await getPublicImageSize(data.cardImage);
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .card-image img[data-skeleton-img] {
+    opacity: 1;
+    transition: opacity var(--dur-standard) var(--ease-standard);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-image img[data-skeleton-img] { transition: none; }
   }
 
   .missing-image {

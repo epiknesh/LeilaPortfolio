@@ -99,6 +99,34 @@ const { title, description } = Astro.props;
     </script>
 
     <script>
+      // Shared skeleton-shimmer handler for every data-skeleton-img image
+      // (project grid cards, lightbox gallery tiles, project hero) — marks
+      // the nearest data-skeleton-container ancestor .is-loaded once the
+      // browser has actually finished loading the image, which each
+      // component's CSS uses to fade out that container's shimmer overlay.
+      // Walking up to a marked ancestor (rather than just .parentElement)
+      // is needed because the <img> usually sits inside a <picture>, not
+      // directly inside the element the shimmer is drawn on. A cached
+      // image can already be .complete by the time this script runs (no
+      // 'load' event will fire for it), so that case is checked explicitly
+      // instead of leaving the shimmer stuck on permanently.
+      function initSkeletonImages() {
+        document.querySelectorAll<HTMLImageElement>('img[data-skeleton-img]').forEach((img) => {
+          const reveal = () => img.closest('[data-skeleton-container]')?.classList.add('is-loaded');
+          if (img.complete && img.naturalWidth > 0) {
+            reveal();
+          } else {
+            img.addEventListener('load', reveal, { once: true });
+            img.addEventListener('error', reveal, { once: true });
+          }
+        });
+      }
+
+      initSkeletonImages();
+      document.addEventListener('astro:page-load', initSkeletonImages);
+    </script>
+
+    <script>
       // Links "back to work" carry data-scroll-to="work" and a plain "/"
       // href instead of "/#work" — a hash link racing a View Transition
       // (the shared-element morph from a project's hero image back to its

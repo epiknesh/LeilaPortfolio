@@ -110,7 +110,9 @@ const projectCategories = data.categories
             {data.process && (
               <details class="process-details">
                 <summary class="font-mono process-summary">process &amp; references</summary>
-                <p class="process-text">{data.process}</p>
+                <div class="process-body">
+                  <p class="process-text">{data.process}</p>
+                </div>
               </details>
             )}
           </div>
@@ -378,6 +380,12 @@ const projectCategories = data.categories
     display: flex;
     align-items: center;
     gap: 8px;
+    /* It's a toggle, not copy: quickly clicking it open/closed (a double
+       click is a word-select) was highlighting the label. The panel's own
+       text stays selectable. */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .process-summary::-webkit-details-marker { display: none; }
   .process-summary::before {
@@ -385,8 +393,16 @@ const projectCategories = data.categories
     font-family: var(--font-mono);
     color: var(--red);
   }
-  .process-details[open] .process-summary::before {
+  /* data-expanded flips the instant the toggle is clicked (the script
+     keeps [open] set until the close animation finishes), so the icon
+     doesn't lag behind the motion. [open] alone covers no-JS. */
+  .process-details[open]:not([data-expanded='false']) .process-summary::before,
+  .process-details[data-expanded='true'] .process-summary::before {
     content: '−';
+  }
+  /* The script animates this wrapper's height + opacity. */
+  .process-body {
+    overflow: hidden;
   }
   .process-summary:hover { color: var(--red); }
   .process-summary:focus-visible {
@@ -557,4 +573,69 @@ const projectCategories = data.categories
 
   initAllPaletteCopy();
   document.addEventListener('astro:page-load', initAllPaletteCopy);
+
+  // Smooth expand/collapse for "process & references". A native <details>
+  // snaps open/shut because its content has no height to animate between
+  // display:none and auto, so the height + opacity of .process-body is
+  // animated by hand. [open] is held until a closing animation finishes
+  // (otherwise the content would vanish before it could animate out), and
+  // a click mid-animation reverses from wherever the panel currently is
+  // instead of jumping or being ignored.
+  function initProcessDetails(details: HTMLDetailsElement) {
+    if (details.dataset.processInitialized === 'true') return;
+    details.dataset.processInitialized = 'true';
+
+    const summary = details.querySelector<HTMLElement>('.process-summary');
+    const body = details.querySelector<HTMLElement>('.process-body');
+    if (!summary || !body) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DURATION_MS = 320;
+    const EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+    let wantOpen = details.open;
+    let animation: Animation | null = null;
+    details.dataset.expanded = String(wantOpen);
+
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+      wantOpen = !wantOpen;
+      details.dataset.expanded = String(wantOpen);
+
+      if (prefersReducedMotion) {
+        details.open = wantOpen;
+        return;
+      }
+
+      // Where the panel is right now (0 when fully closed), so a rapid
+      // second click continues from the current frame.
+      const startHeight = details.open ? body.getBoundingClientRect().height : 0;
+      const startOpacity = details.open ? Number(getComputedStyle(body).opacity) : 0;
+      animation?.cancel();
+
+      if (wantOpen) details.open = true;
+      const endHeight = wantOpen ? body.scrollHeight : 0;
+
+      animation = body.animate(
+        [
+          { height: `${startHeight}px`, opacity: startOpacity },
+          { height: `${endHeight}px`, opacity: wantOpen ? 1 : 0 },
+        ],
+        { duration: DURATION_MS, easing: EASING }
+      );
+      const current = animation;
+      current.onfinish = () => {
+        if (!wantOpen) details.open = false;
+        current.cancel();
+        animation = null;
+      };
+    });
+  }
+
+  function initAllProcessDetails() {
+    document.querySelectorAll<HTMLDetailsElement>('.process-details').forEach(initProcessDetails);
+  }
+
+  initAllProcessDetails();
+  document.addEventListener('astro:page-load', initAllProcessDetails);
 </script>

@@ -1,6 +1,7 @@
 ---
 categories:
   - branding-identity
+  - digital-social
 title: PROBIO 24
 subtitle: Branding, Packaging, Digital & Print Collaterals
 projectType: Professional Brief

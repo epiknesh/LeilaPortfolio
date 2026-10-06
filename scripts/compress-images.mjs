@@ -45,6 +45,7 @@ async function run() {
   const files = await walk(SOURCE_DIR);
   let compressed = 0;
   let skipped = 0;
+  let failed = 0;
   let totalBefore = 0;
   let totalAfter = 0;
 
@@ -56,32 +57,49 @@ async function run() {
       continue;
     }
 
-    await mkdir(dirname(webpPath), { recursive: true });
+    // One corrupt/truncated upload or non-image file saved with an image
+    // extension used to throw out of this loop entirely and fail the
+    // WHOLE site build over a single bad file among hundreds — this has
+    // happened for real since Leila started uploading through the CMS.
+    // Skip just that file (it'll fall through to the uncompressed
+    // original, or getPublicImageSize's own fallback, rather than taking
+    // the entire deploy down) and keep going.
+    try {
+      await mkdir(dirname(webpPath), { recursive: true });
 
-    const image = sharp(sourcePath);
-    const metadata = await image.metadata();
-    const resizeWidth = metadata.width && metadata.width > MAX_WIDTH ? MAX_WIDTH : undefined;
+      const image = sharp(sourcePath);
+      const metadata = await image.metadata();
+      const resizeWidth = metadata.width && metadata.width > MAX_WIDTH ? MAX_WIDTH : undefined;
 
-    const before = (await stat(sourcePath)).size;
-    await image
-      .resize({ width: resizeWidth, withoutEnlargement: true })
-      .webp({ quality: 82 })
-      .toFile(webpPath);
-    const after = (await stat(webpPath)).size;
+      const before = (await stat(sourcePath)).size;
+      await image
+        .resize({ width: resizeWidth, withoutEnlargement: true })
+        .webp({ quality: 82 })
+        .toFile(webpPath);
+      const after = (await stat(webpPath)).size;
 
-    totalBefore += before;
-    totalAfter += after;
-    compressed++;
+      totalBefore += before;
+      totalAfter += after;
+      compressed++;
+    } catch (err) {
+      failed++;
+      console.warn(`[compress-images] SKIPPED (not a valid/readable image): ${sourcePath} — ${err.message}`);
+    }
   }
 
   const savedPct = totalBefore > 0 ? Math.round((1 - totalAfter / totalBefore) * 100) : 0;
   console.log(
     `[compress-images] ${compressed} compressed, ${skipped} already up to date` +
+      (failed > 0 ? `, ${failed} skipped (invalid)` : '') +
       (compressed > 0 ? ` (${(totalBefore / 1e6).toFixed(1)}MB -> ${(totalAfter / 1e6).toFixed(1)}MB, -${savedPct}%)` : '')
   );
 }
 
 run().catch((err) => {
+  // A failure here means something broke outside the per-file try/catch
+  // above (e.g. the source directory itself is missing) — a real,
+  // unrecoverable problem, not a single bad upload, so still fail the
+  // build in that case.
   console.error('[compress-images] failed:', err);
   process.exit(1);
 });

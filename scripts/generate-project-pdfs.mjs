@@ -80,22 +80,37 @@ const MIME_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/
 function resolvePublicAsset(publicRelativePath) {
   const cleanedPath = publicRelativePath.replace(/^\/+/, '');
   let diskPath = join(PUBLIC_DIR, cleanedPath);
-  // Prefer the compressed .webp sibling that scripts/compress-images.mjs
-  // generates (it runs earlier in the same prebuild chain, so it's always
-  // present by now) — the raw source PNGs can be several MB each, which
-  // would otherwise make a 10+-image project sheet balloon to 50+MB once
-  // every image is inlined as base64.
+  // Prefer the compressed .webp sibling if `npm run compress-images` (or a
+  // full `npm run build`, which includes it) has been run recently — the
+  // raw source PNGs can be several MB each, which would otherwise make a
+  // 10+-image project sheet balloon to 50+MB once every image is inlined
+  // as base64. Falls back to the original if no .webp exists yet.
   const webpPath = diskPath.replace(/\.(png|jpe?g)$/i, '.webp');
   if (webpPath !== diskPath && existsSync(webpPath)) diskPath = webpPath;
 
-  const mime = MIME_TYPES[extname(diskPath).toLowerCase()] ?? 'application/octet-stream';
-  const base64 = readFileSync(diskPath).toString('base64');
-  return `data:${mime};base64,${base64}`;
+  // Returns null instead of throwing on a missing/unreadable file — a
+  // single bad image reference on one project shouldn't stop every other
+  // project's PDF from generating. The caller skips the <img> tag entirely
+  // when this comes back null.
+  if (!existsSync(diskPath)) {
+    console.warn(`[generate-project-pdfs] missing image, skipping: ${publicRelativePath}`);
+    return null;
+  }
+  try {
+    const mime = MIME_TYPES[extname(diskPath).toLowerCase()] ?? 'application/octet-stream';
+    const base64 = readFileSync(diskPath).toString('base64');
+    return `data:${mime};base64,${base64}`;
+  } catch (err) {
+    console.warn(`[generate-project-pdfs] could not read image, skipping: ${publicRelativePath} — ${err.message}`);
+    return null;
+  }
 }
 
 function buildHtml(project, categoryTitles) {
-  const heroAbsUrl = project.hero ? resolvePublicAsset(project.hero) : '';
-  const galleryUrls = (project.gallery ?? []).map((g) => resolvePublicAsset(g.image));
+  const heroAbsUrl = project.hero ? resolvePublicAsset(project.hero) : null;
+  const galleryUrls = (project.gallery ?? [])
+    .map((g) => resolvePublicAsset(g.image))
+    .filter((url) => url !== null);
 
   return `<!doctype html>
 <html><head><meta charset="utf-8">

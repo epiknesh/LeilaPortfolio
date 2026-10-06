@@ -27,8 +27,6 @@ gallery:
     size: standard
   - image: /images/curated/alterkitektura-2024/1 Week Left.png
     size: standard
-  - image: ''
-    size: standard
   - image: /images/curated/alterkitektura-2024/Meet the Judges.png
     size: standard
   - image: /images/curated/alterkitektura-2024/Meet the Speakers.png

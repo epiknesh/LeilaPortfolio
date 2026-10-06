@@ -26,7 +26,7 @@ palette:
   - hex: '#797374'
     name: Boulder
 process: Explored how Cubao’s urban character, jeepney graphics, street art, and Filipino visual culture could translate into a cohesive graphic language for the architectural presentation, using weathered textures, industrial typography, and jeepney-inspired lettering to reinforce the project’s urban identity.
-cardImage: /images/curated/kalyekultura/KK PERSP 4.png
+cardImage: /images/curated/kalyekultura/KK PERSP 1.png
 hero: /images/curated/kalyekultura/KK PERSP 4.png
 gallery:
   - image: /images/curated/kalyekultura/KK BOARD 1.png

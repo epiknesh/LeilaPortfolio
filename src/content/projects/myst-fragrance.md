@@ -79,7 +79,7 @@ gallery:
   - image: /images/curated/myst-fragrance/Banta_Portfolio_Graphic Design_POST 8.png
     size: portrait
   - image: /images/curated/myst-fragrance/Banta_Portfolio_Graphic Design_POST 9.png
-    size: standard
+    size: portrait
 order: -30
 ---
 

@@ -1,6 +1,6 @@
 ---
-name: "Adobe InDesign"
-icon: "indesign"
-tier: "primary"
-order: 3
+name: Adobe InDesign
+icon: indesign
+tier: basic
+order: 0
 ---

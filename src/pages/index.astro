@@ -21,72 +21,58 @@ const software = (await getCollection('software')).sort((a, b) => {
 });
 ---
 
-<BaseLayout
-  title="Portfolio"
-  description="Graphic design portfolio of Leila Karlene Banta: branding, digital & social media, editorial, presentation design, creative direction, and 3D/architectural visualization."
->
-  <!-- ============ ABOUT INTRO (now the opening section) ============ -->
-  <section class="section no-reveal about-intro grain" id="about-intro">
-    <div class="sheet about-grid">
-      <div>
-        <!-- Both logoImage/typescriptImage are optional CMS fields (Homepage
-             tab in /admin) — until Leila uploads them (or if a reference is
-             set but the file is missing/broken), these render as dashed
-             placeholder boxes instead. -->
-        {logoInfo?.ok ? (
-          <h1 class="about-heading-image">
-            <picture>
-              <source srcset={toTileSrcSet(home!.data.logoImage!, logoInfo.width)} sizes="min(420px, 100vw)" type="image/webp" />
-              <img
-                src={home!.data.logoImage}
-                alt="Leila Karlene Banta"
-                width={logoInfo.width}
-                height={logoInfo.height}
-                fetchpriority="high"
-                decoding="async"
-              />
-            </picture>
-          </h1>
-        ) : (
-          <h1 class="about-heading-placeholder font-mono" aria-label="About me">
-            [ logo placeholder — about [me] ]
-          </h1>
-        )}
-        {typescriptInfo?.ok ? (
-          <div class="about-sub-image">
-            <picture>
-              <source srcset={toTileSrcSet(home!.data.typescriptImage!, typescriptInfo.width)} sizes="min(420px, 100vw)" type="image/webp" />
-              <img
-                src={home!.data.typescriptImage}
-                alt=""
-                width={typescriptInfo.width}
-                height={typescriptInfo.height}
-                decoding="async"
-              />
-            </picture>
-          </div>
-        ) : (
-          <div class="about-sub-placeholder font-mono" aria-label="Software, information">
-            [ typescript placeholder — software / information ]
-          </div>
-        )}
-      </div>
-      <div class="about-copy">
-        <p class="font-body intro-line">{home?.data.introLine}</p>
-        <ul class="software-list">
-          {software.map((tool) => (
-            <li class="software-item" tabindex="0" aria-label={tool.data.name}>
-              <span class="software-icon-wrap">
-                <SoftwareIcon icon={tool.data.icon} class="software-icon" />
-              </span>
-              <span class="software-name font-mono" aria-hidden="true">{tool.data.name}</span>
-            </li>
-          ))}
-        </ul>
-        <a href="/about/" class="more-link font-mono">more about leila →</a>
-      </div>
+<section class="section no-reveal about-intro grain" id="about-intro">
+  <div class="sheet about-grid">
+    <div>
+      {typescriptInfo?.ok ? (
+        <div class="about-sub-image">
+          <picture>
+            <source
+              srcset={toTileSrcSet(home!.data.typescriptImage!, typescriptInfo.width)}
+              sizes="min(420px, 100vw)"
+              type="image/webp"
+            />
+            <img
+              src={home!.data.typescriptImage}
+              alt="Software, information"
+              width={typescriptInfo.width}
+              height={typescriptInfo.height}
+              decoding="async"
+            />
+          </picture>
+        </div>
+      ) : (
+        <div
+          class="about-sub-placeholder font-mono"
+          aria-label="Software, information"
+        >
+          [ typescript placeholder — software / information ]
+        </div>
+      )}
     </div>
-  </section>
+
+    <div class="about-copy">
+      <p class="font-body intro-line">{home?.data.introLine}</p>
+
+      <ul class="software-list">
+        {software.map((tool) => (
+          <li class="software-item" tabindex="0" aria-label={tool.data.name}>
+            <span class="software-icon-wrap">
+              <SoftwareIcon icon={tool.data.icon} class="software-icon" />
+            </span>
+            <span class="software-name font-mono" aria-hidden="true">
+              {tool.data.name}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <a href="/about/" class="more-link font-mono">
+        more about leila →
+      </a>
+    </div>
+  </div>
+</section>
 
   <!-- ============ WORK: FILTERABLE GRID ============ -->
   <section class="section tight-top work-section grain" id="work">

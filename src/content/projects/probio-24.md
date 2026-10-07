@@ -31,7 +31,7 @@ gallery:
   - image: /images/curated/probio/PROBIO 24_SOCIAL MEDIA AD.png
     size: full
   - image: /images/curated/probio/PROBIO 24_PACKAGING ART + DIELINES.png
-    size: standard
+    size: full
 order: -20
 ---
 

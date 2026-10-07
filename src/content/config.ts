@@ -85,9 +85,9 @@ const home = defineCollection({
   loader: glob({ pattern: 'home.md', base: './src/content/pages' }),
   schema: z.object({
     introLine: z.string(),
-    // Both optional: the homepage renders a dashed placeholder box in
-    // their place (see index.astro) until Leila uploads the real logo
-    // mark and hand-lettered "typescript" wordmark through the CMS.
+    // Optional brand logo for the shared header/favicon and wordmark for
+    // the homepage intro; index.astro retains a placeholder for a missing
+    // or invalid wordmark image.
     logoImage: z.string().optional(),
     typescriptImage: z.string().optional(),
   }),

@@ -1,12 +1,20 @@
 ---
 import { nav } from '../data/site';
+
+interface Props {
+  logoSrc?: string;
+}
+
+const { logoSrc } = Astro.props;
 ---
 
 <header class="site-header">
   <a href="/" class="brand-link">
-    <!-- PLACEHOLDER: Leila is making a logo mark for this spot — swap for
-         a real <img> once that file exists. See docs/DECISIONS_NEEDED.md. -->
-    <span class="logo-placeholder font-mono" aria-hidden="true">[ logo ]</span>
+    {logoSrc ? (
+      <img class="logo-image" src={logoSrc} alt="" width="28" height="28" />
+    ) : (
+      <span class="logo-placeholder font-mono" aria-hidden="true">[ logo ]</span>
+    )}
     <span class="wordmark font-mono">
       <span class="wordmark-full">leila karlene banta</span>
       <span class="wordmark-short">leila banta</span>
@@ -68,6 +76,14 @@ import { nav } from '../data/site';
     flex-shrink: 0;
   }
 
+  .logo-image {
+    display: block;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
   .wordmark {
     font-size: var(--fs-caption);
     text-transform: lowercase;
@@ -121,7 +137,8 @@ import { nav } from '../data/site';
       padding-inline: 14px;
     }
     .brand-link { gap: 6px; }
-    .logo-placeholder { width: 22px; height: 22px; }
+    .logo-placeholder,
+    .logo-image { width: 22px; height: 22px; }
     nav ul {
       gap: 7px;
     }

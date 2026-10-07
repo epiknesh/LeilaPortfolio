@@ -7,12 +7,8 @@ import { toTileSrcSet, getPublicImageSize } from '../lib/image-size';
 
 const home = await getEntry('home', 'home');
 const siteInfo = await getEntry('siteInfo', 'site');
-// Both logoImage/typescriptImage are optional — if set, also confirm the
-// file actually exists before trying to render it, so a broken reference
-// (deleted/renamed file) falls back to the same "not uploaded yet"
-// placeholder instead of a broken <img>, rather than needing a third
-// visual state just for that case.
-const logoInfo = home?.data.logoImage ? await getPublicImageSize(home.data.logoImage) : null;
+// Confirm the optional wordmark exists before rendering it, so a broken
+// reference falls back to the same placeholder as an empty field.
 const typescriptInfo = home?.data.typescriptImage ? await getPublicImageSize(home.data.typescriptImage) : null;
 const tierOrder = { primary: 0, secondary: 1, basic: 2 };
 const software = (await getCollection('software')).sort((a, b) => {
@@ -110,10 +106,8 @@ const software = (await getCollection('software')).sort((a, b) => {
     gap: clamp(24px, 6vw, 80px);
     align-items: start;
   }
-  /* Placeholders for two real assets Leila is producing (a logo and a
-     typescript/wordmark of her name) — see the HTML comment above these
-     in the markup. Sized roughly to where the final images will sit so
-     the layout doesn't jump once they're swapped in. */
+  /* The wordmark placeholder stays sized to the final image so the
+     layout doesn't jump while the CMS field is empty or invalid. */
   .about-heading-placeholder,
   .about-sub-placeholder {
     display: flex;

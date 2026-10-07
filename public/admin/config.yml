@@ -142,12 +142,12 @@ collections:
             name: logoImage
             widget: image
             required: false
-            hint: "Replaces the '[ logo placeholder — about [me] ]' box at the top of the homepage intro once uploaded."
+            hint: "Used as the global site logo in the header and as the site favicon."
           - label: "Typescript / Wordmark"
             name: typescriptImage
             widget: image
             required: false
-            hint: "Replaces the '[ typescript placeholder ]' box below the logo once uploaded."
+            hint: "Displayed in the left column of the homepage About Intro; a placeholder appears if no valid image is uploaded."
 
   - name: about
     label: "About Page"

@@ -30,7 +30,7 @@ hero: /images/curated/myst-fragrance/MYST IG POST LAYOUT.png
 gallery:
   - image: /images/curated/myst-fragrance/MYST PFP.jpg
     size: portrait
-  - image: /images/curated/myst-fragrance/09 FINAL LOGOTYPE + COLOR PALETTE.jpg
+  - image: /images/curated/myst-fragrance/09 FINAL LOGOTYPE COLOR PALETTE.jpg
     size: wide
   - image: /images/curated/myst-fragrance/12 MODULAR SYSTEM.jpg
     size: full

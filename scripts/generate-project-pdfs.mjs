@@ -77,16 +77,22 @@ const MIME_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/
 // fall back to http:// either. Inlining as a data URI sidesteps the
 // restriction entirely: the image bytes travel with the HTML itself, no
 // separate resource load happens at all.
-function resolvePublicAsset(publicRelativePath) {
+function resolvePublicAsset(publicRelativePath, variant = 'full') {
   const cleanedPath = publicRelativePath.replace(/^\/+/, '');
   let diskPath = join(PUBLIC_DIR, cleanedPath);
-  // Prefer the compressed .webp sibling if `npm run compress-images` (or a
-  // full `npm run build`, which includes it) has been run recently — the
-  // raw source PNGs can be several MB each, which would otherwise make a
-  // 10+-image project sheet balloon to 50+MB once every image is inlined
-  // as base64. Falls back to the original if no .webp exists yet.
+  // Sheets display heroes at up to 320px high and gallery tiles at 140px,
+  // so use existing smaller variants when available. This keeps image
+  // quality appropriate to the layout without embedding full-size images.
   const webpPath = diskPath.replace(/\.(png|jpe?g)$/i, '.webp');
-  if (webpPath !== diskPath && existsSync(webpPath)) diskPath = webpPath;
+  if (webpPath !== diskPath) {
+    const variantPath = variant === 'thumbnail'
+      ? webpPath.replace(/\.webp$/, '-thumb.webp')
+      : variant === 'hero'
+        ? webpPath.replace(/\.webp$/, '-1200.webp')
+        : webpPath;
+    if (existsSync(variantPath)) diskPath = variantPath;
+    else if (existsSync(webpPath)) diskPath = webpPath;
+  }
 
   // Returns null instead of throwing on a missing/unreadable file — a
   // single bad image reference on one project shouldn't stop every other
@@ -107,9 +113,9 @@ function resolvePublicAsset(publicRelativePath) {
 }
 
 function buildHtml(project, categoryTitles) {
-  const heroAbsUrl = project.hero ? resolvePublicAsset(project.hero) : null;
+  const heroAbsUrl = project.hero ? resolvePublicAsset(project.hero, 'hero') : null;
   const galleryUrls = (project.gallery ?? [])
-    .map((g) => resolvePublicAsset(g.image))
+    .map((g) => resolvePublicAsset(g.image, 'thumbnail'))
     .filter((url) => url !== null);
 
   return `<!doctype html>

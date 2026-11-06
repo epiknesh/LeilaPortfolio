@@ -64,7 +64,7 @@ const { logoSrc } = Astro.props;
     const cleanup = () => {
       animations.forEach((a) => a.cancel());
       root.remove();
-      html.classList.remove('intro-active');
+      html.classList.remove('intro-active', 'intro-ready');
     };
 
     const finish = (fade: boolean) => {
@@ -200,13 +200,32 @@ const { logoSrc } = Astro.props;
       last.finished.then(() => finish(false)).catch(() => {});
     };
 
+    // BaseLayout's inline <style> paints a solid cover from the first frame.
+    // Hand over to this overlay only once its own styles are actually
+    // applied (they can arrive after the page's — always in dev mode, and on
+    // slow connections), so there is never a frame where neither covers.
+    const stylesApplied = () => getComputedStyle(root).position === 'fixed';
+    const whenStyled = () =>
+      new Promise<void>((resolve) => {
+        const began = performance.now();
+        const check = () => {
+          if (stylesApplied() || performance.now() - began > 2000) return resolve();
+          requestAnimationFrame(check);
+        };
+        check();
+      });
+
     // Wait (briefly) for the logo; it is the same file the header already
     // loads, so this is normally instant. If it can't be ready, skip the
     // intro rather than hold the site back.
-    Promise.race([
-      fill.decode(),
-      new Promise((_, reject) => window.setTimeout(() => reject(new Error('logo timeout')), LOGO_WAIT_MS)),
-    ])
+    whenStyled()
+      .then(() => {
+        html.classList.add('intro-ready');
+        return Promise.race([
+          fill.decode(),
+          new Promise((_, reject) => window.setTimeout(() => reject(new Error('logo timeout')), LOGO_WAIT_MS)),
+        ]);
+      })
       .then(start)
       .catch(() => finish(false));
   }

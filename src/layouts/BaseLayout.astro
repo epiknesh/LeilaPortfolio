@@ -39,10 +39,34 @@ const faviconDataUri = logoPath && logoInfo?.ok ? await getPublicFaviconDataUri(
             var atHome = location.pathname === '/' || location.pathname === '/index.html';
             var play = !reduce && params !== '0' && (params === '1' || (atHome && !seen));
             sessionStorage.setItem('intro-seen', '1');
-            if (play) document.documentElement.classList.add('intro-active');
+            if (play) {
+              var root = document.documentElement;
+              root.classList.add('intro-active');
+              // Last-resort release if the intro script never runs (blocked
+              // or failed to load): the cover must never outlive the intro.
+              setTimeout(function () {
+                root.classList.remove('intro-active', 'intro-ready');
+              }, 7000);
+            }
           } catch (e) {}
         })();
       </script>
+      <style is:inline>
+        /* Critical, inline (so it applies on the very first paint, before any
+           stylesheet or script has loaded): a solid cover in the intro's
+           backdrop colour, so the page can never show through before the
+           intro's own styles arrive. The intro removes it (adds
+           .intro-ready) once its own overlay is styled and covering. The
+           colour matches the backdrop incl. its film grain (~#EDEDED). */
+        html.intro-active { overflow: hidden; }
+        html.intro-active:not(.intro-ready)::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          z-index: 9998;
+          background: #EDEDED;
+        }
+      </style>
     )}
     {faviconDataUri ? (
       <link rel="icon" type="image/png" href={faviconDataUri} />

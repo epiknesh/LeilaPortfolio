@@ -1,0 +1,343 @@
+---
+// First-visit intro: the CMS logo (the strawberry stamp) is outlined, filled
+// with ink, "pressed", and then its silhouette opens as a window onto the
+// site. Purely decorative — the page underneath loads normally the whole
+// time, nothing waits on this, and any click/tap/key/scroll skips it.
+//
+// Whether it plays is decided by a tiny inline script in BaseLayout's <head>
+// (adds html.intro-active before first paint: homepage entry only, once per
+// browser session, never with prefers-reduced-motion; ?intro=1 replays it,
+// ?intro=0 suppresses it). Without that class this whole block is display:none.
+interface Props {
+  logoSrc: string;
+}
+
+const { logoSrc } = Astro.props;
+---
+
+<div id="intro" class="intro" aria-hidden="true" style={`--intro-logo: url("${logoSrc}");`}>
+  <div class="intro-bg grain"></div>
+
+  <div class="intro-stage">
+    <div class="intro-shadow"></div>
+    <img class="intro-outline" src={logoSrc} alt="" decoding="async" />
+    <img class="intro-fill" src={logoSrc} alt="" decoding="async" />
+  </div>
+  <p class="intro-caption font-mono">leila karlene banta</p>
+
+  <!-- Outline = the logo's silhouette grown by 1.5px minus the silhouette,
+       flooded with ink. Built from the logo's own alpha, so it follows
+       whatever logo is set in the CMS (and keeps its hand-printed, ragged
+       edge). #181614 mirrors --ink: SVG filter flood colors can't read CSS
+       variables. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="intro-outline" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="1.5" result="grown"></feMorphology>
+      <feComposite in="grown" in2="SourceAlpha" operator="out" result="ring"></feComposite>
+      <feFlood flood-color="#181614" result="ink"></feFlood>
+      <feComposite in="ink" in2="ring" operator="in"></feComposite>
+    </filter>
+  </svg>
+</div>
+
+<script>
+  // Timeline (ms). Everything is a Web Animation with a fixed delay, so the
+  // whole intro is one deterministic clock that can be skipped or cancelled.
+  const TOTAL = 2300;
+  const OPEN = 1450; // the strawberry becomes a window here
+  const FAILSAFE_MS = 5000;
+  const LOGO_WAIT_MS = 1500;
+
+  function runIntro(root: HTMLElement) {
+    const html = document.documentElement;
+    const bg = root.querySelector<HTMLElement>('.intro-bg')!;
+    const stage = root.querySelector<HTMLElement>('.intro-stage')!;
+    const shadow = root.querySelector<HTMLElement>('.intro-shadow')!;
+    const outline = root.querySelector<HTMLElement>('.intro-outline')!;
+    const fill = root.querySelector<HTMLImageElement>('.intro-fill')!;
+    const caption = root.querySelector<HTMLElement>('.intro-caption')!;
+
+    const animations: Animation[] = [];
+    let finished = false;
+    const skipEvents = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const;
+
+    const cleanup = () => {
+      animations.forEach((a) => a.cancel());
+      root.remove();
+      html.classList.remove('intro-active');
+    };
+
+    const finish = (fade: boolean) => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(failsafe);
+      skipEvents.forEach((e) => window.removeEventListener(e, onSkip));
+      if (!fade) return cleanup();
+      root.classList.add('is-leaving');
+      window.setTimeout(cleanup, 260);
+    };
+    const onSkip = () => finish(true);
+    // Never trap a visitor behind the overlay, whatever goes wrong.
+    const failsafe = window.setTimeout(() => finish(true), FAILSAFE_MS);
+    skipEvents.forEach((e) => window.addEventListener(e, onSkip, { passive: true }));
+
+    const start = () => {
+      if (finished) return;
+      const size = stage.getBoundingClientRect().width;
+      const diagonal = Math.hypot(window.innerWidth, window.innerHeight);
+      // The logo's largest circle that stays opaque around its centre is
+      // ~0.146 of its width, so the silhouette must grow to ~3.5x the screen
+      // diagonal before the whole viewport sits inside it.
+      const reach = Math.round(diagonal * 3.8);
+      const canWindow =
+        CSS.supports('mask-composite', 'exclude') || CSS.supports('-webkit-mask-composite', 'xor');
+
+      const add = (el: HTMLElement, keyframes: Keyframe[], delay: number, duration: number, easing = 'linear') =>
+        animations.push(el.animate(keyframes, { delay, duration, easing, fill: 'both' }));
+
+      const EASE_OUT = 'cubic-bezier(.22,.61,.36,1)';
+      const EASE_INOUT = 'cubic-bezier(.45,.05,.25,1)';
+
+      const at = (ms: number) => ms / TOTAL;
+
+      // 1. outline sweeps in along the berry's diagonal, then gives way to the ink
+      add(
+        outline,
+        [
+          { opacity: 0, offset: 0 },
+          { opacity: 1, offset: at(160) },
+          { opacity: 1, offset: at(1100) },
+          { opacity: 0, offset: at(1300) },
+          { opacity: 0, offset: 1 },
+        ],
+        0,
+        TOTAL
+      );
+      add(
+        outline,
+        [
+          { maskPosition: '100% 100%', webkitMaskPosition: '100% 100%' },
+          { maskPosition: '0% 0%', webkitMaskPosition: '0% 0%' },
+        ],
+        40,
+        760,
+        EASE_INOUT
+      );
+
+      // 2. ink rises inside it (the real grunge texture, revealed by a mask)
+      add(
+        fill,
+        [
+          { maskPosition: '0% 0%', webkitMaskPosition: '0% 0%' },
+          { maskPosition: '0% 100%', webkitMaskPosition: '0% 100%' },
+        ],
+        400,
+        820,
+        EASE_INOUT
+      );
+
+      // 3. a red, misregistered copy peeks out behind it, then slides into register
+      add(
+        shadow,
+        [
+          { opacity: 0, transform: 'translate(-11px, 9px)', offset: 0 },
+          { opacity: 1, transform: 'translate(-11px, 9px)', offset: 0.3 },
+          { opacity: 1, transform: 'translate(0, 0)', offset: 1 },
+        ],
+        480,
+        820,
+        EASE_OUT
+      );
+
+      // 4. stamp press, then the ink dissolves as the window opens
+      add(
+        stage,
+        [
+          { transform: 'scale(.94)', opacity: 1, offset: 0, easing: EASE_OUT },
+          { transform: 'scale(1)', opacity: 1, offset: at(1200), easing: EASE_OUT },
+          { transform: 'scale(1.05)', opacity: 1, offset: at(1310), easing: EASE_OUT },
+          { transform: 'scale(1)', opacity: 1, offset: at(OPEN), easing: 'ease-in' },
+          { transform: 'scale(1.1)', opacity: 0, offset: at(OPEN + 330) },
+          { transform: 'scale(1.1)', opacity: 0, offset: 1 },
+        ],
+        0,
+        TOTAL
+      );
+      add(
+        caption,
+        [
+          { opacity: 0, offset: 0 },
+          { opacity: 0, offset: at(450) },
+          { opacity: 1, offset: at(780) },
+          { opacity: 1, offset: at(1250) },
+          { opacity: 0, offset: at(1480) },
+          { opacity: 0, offset: 1 },
+        ],
+        0,
+        TOTAL
+      );
+
+      // 5. the strawberry-shaped hole opens in the backdrop and accelerates outward
+      if (canWindow) {
+        const hole = (px: number) => `100% 100%, ${px}px ${px}px`;
+        add(
+          bg,
+          [
+            { maskSize: hole(0), webkitMaskSize: hole(0), offset: 0, easing: 'linear' },
+            { maskSize: hole(0), webkitMaskSize: hole(0), offset: at(OPEN) - 0.0001, easing: 'linear' },
+            { maskSize: hole(size), webkitMaskSize: hole(size), offset: at(OPEN), easing: 'cubic-bezier(.62,0,.92,.45)' },
+            { maskSize: hole(reach), webkitMaskSize: hole(reach), offset: 1 },
+          ],
+          0,
+          TOTAL
+        );
+      } else {
+        // No mask-composite: simple fade-through instead of the window.
+        add(bg, [{ opacity: 1 }, { opacity: 1, offset: at(OPEN) }, { opacity: 0 }], 0, TOTAL);
+      }
+
+      const last = animations[animations.length - 1];
+      last.finished.then(() => finish(false)).catch(() => {});
+    };
+
+    // Wait (briefly) for the logo; it is the same file the header already
+    // loads, so this is normally instant. If it can't be ready, skip the
+    // intro rather than hold the site back.
+    Promise.race([
+      fill.decode(),
+      new Promise((_, reject) => window.setTimeout(() => reject(new Error('logo timeout')), LOGO_WAIT_MS)),
+    ])
+      .then(start)
+      .catch(() => finish(false));
+  }
+
+  const root = document.getElementById('intro');
+  if (root && document.documentElement.classList.contains('intro-active')) {
+    try {
+      runIntro(root);
+    } catch {
+      root.remove();
+      document.documentElement.classList.remove('intro-active');
+    }
+  }
+</script>
+
+<style is:global>
+  .intro {
+    display: none;
+  }
+  html.intro-active .intro {
+    display: block;
+  }
+  html.intro-active {
+    overflow: hidden;
+  }
+
+  .intro {
+    --intro-size: clamp(220px, 46vmin, 420px);
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    overflow: hidden;
+    transition: opacity 240ms var(--ease-standard);
+  }
+  .intro.is-leaving {
+    opacity: 0;
+  }
+
+  /* Backdrop = the site's own background, with a strawberry-shaped hole
+     (the logo's alpha) that the script grows. Two mask layers combined with
+     "exclude": a solid layer minus the logo-shaped layer = opaque everywhere
+     except inside the strawberry. The logo layer starts at 0px (no hole). */
+  .intro-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    -webkit-mask-image: linear-gradient(#000 0 0), var(--intro-logo);
+    mask-image: linear-gradient(#000 0 0), var(--intro-logo);
+    -webkit-mask-size: 100% 100%, 0px 0px;
+    mask-size: 100% 100%, 0px 0px;
+    -webkit-mask-position: center, center;
+    mask-position: center, center;
+    -webkit-mask-repeat: no-repeat, no-repeat;
+    mask-repeat: no-repeat, no-repeat;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  .intro-stage {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--intro-size);
+    height: var(--intro-size);
+    margin: calc(var(--intro-size) / -2) 0 0 calc(var(--intro-size) / -2);
+    will-change: transform, opacity;
+  }
+  .intro-stage > * {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Outline: only the ragged edge of the silhouette, revealed by a diagonal
+     sweep (mask position animates between the gradient's two ends). */
+  .intro-outline {
+    opacity: 0;
+    filter: url(#intro-outline);
+    -webkit-mask-image: linear-gradient(135deg, #000 0 38%, transparent 62% 100%);
+    mask-image: linear-gradient(135deg, #000 0 38%, transparent 62% 100%);
+    -webkit-mask-size: 320% 320%;
+    mask-size: 320% 320%;
+    -webkit-mask-position: 100% 100%;
+    mask-position: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /* Ink: the real logo (with its grunge texture) revealed from the bottom up
+     through a soft-edged mask that slides down over it. */
+  .intro-fill {
+    /* The mask is 2.6x the logo's height and slides down over it: its soft
+       edge starts just below the logo and ends just above it, so the rise
+       spends the whole animation on screen (a 3x mask with a narrow band
+       made the edge cross the logo in about a quarter of the time). */
+    -webkit-mask-image: linear-gradient(20deg, #000 0 40%, transparent 60% 100%);
+    mask-image: linear-gradient(20deg, #000 0 40%, transparent 60% 100%);
+    -webkit-mask-size: 100% 260%;
+    mask-size: 100% 260%;
+    -webkit-mask-position: 0% 0%;
+    mask-position: 0% 0%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /* Red misregistered "print plate" behind the ink. */
+  .intro-shadow {
+    opacity: 0;
+    background: var(--red);
+    -webkit-mask: var(--intro-logo) center / contain no-repeat;
+    mask: var(--intro-logo) center / contain no-repeat;
+  }
+
+  .intro-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% + var(--intro-size) / 2 + 18px);
+    text-align: center;
+    font-size: var(--fs-caption);
+    letter-spacing: 0.16em;
+    text-transform: lowercase;
+    color: var(--text-dim);
+    opacity: 0;
+  }
+
+  /* .grain sets position:relative for its ::before; the backdrop must stay
+     absolutely positioned. */
+  .intro-bg.grain {
+    position: absolute;
+  }
+</style>

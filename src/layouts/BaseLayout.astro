@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import IntroSplash from '../components/IntroSplash.astro';
 import { getEntry } from 'astro:content';
 import { getPublicFaviconDataUri, getPublicImageSize, toOptimizedPublicImagePath } from '../lib/image-size';
 
@@ -24,6 +25,25 @@ const faviconDataUri = logoPath && logoInfo?.ok ? await getPublicFaviconDataUri(
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {logoSrc && (
+      <script is:inline>
+        // Decides, before first paint, whether the logo intro plays (see
+        // IntroSplash.astro): only when the site is opened at the homepage,
+        // once per browser tab session, never with reduced motion.
+        // ?intro=1 replays it, ?intro=0 suppresses it.
+        (function () {
+          try {
+            var params = new URLSearchParams(location.search).get('intro');
+            var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var seen = sessionStorage.getItem('intro-seen') === '1';
+            var atHome = location.pathname === '/' || location.pathname === '/index.html';
+            var play = !reduce && params !== '0' && (params === '1' || (atHome && !seen));
+            sessionStorage.setItem('intro-seen', '1');
+            if (play) document.documentElement.classList.add('intro-active');
+          } catch (e) {}
+        })();
+      </script>
+    )}
     {faviconDataUri ? (
       <link rel="icon" type="image/png" href={faviconDataUri} />
     ) : (
@@ -57,6 +77,7 @@ const faviconDataUri = logoPath && logoInfo?.ok ? await getPublicFaviconDataUri(
     <ClientRouter />
   </head>
   <body>
+    {logoSrc && <IntroSplash logoSrc={logoSrc} />}
     <a href="#main" class="skip-link">Skip to content</a>
     <SiteHeader logoSrc={logoSrc} transition:persist />
     <main id="main">

@@ -1,6 +1,7 @@
 ---
 categories:
   - information-presentation
+  - 3d-architectural
 title: 'KalyeKultura: The Jeepney Culture & Urban Arts Complex'
 subtitle: Architectural Presentation Materials
 projectType: Academic Project

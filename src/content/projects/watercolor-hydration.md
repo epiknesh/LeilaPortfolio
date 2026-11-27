@@ -1,5 +1,7 @@
 ---
-categories: []
+categories:
+  - branding-identity
+  - digital-social
 title: Watercolor Hydration
 subtitle: Branding, Packaging, Digital & Print Collaterals
 projectType: Case Study

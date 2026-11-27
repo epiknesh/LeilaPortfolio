@@ -27,13 +27,13 @@ cardImage: /images/curated/watercolor-hydration/SOCMED 1.png
 hero: /images/curated/watercolor-hydration/SOCMED 1.png
 gallery:
   - image: /images/curated/watercolor-hydration/WATERCOLOR HYDRATION_COVER.png
-    size: standard
+    size: full
   - image: /images/curated/watercolor-hydration/WATERCOLOR HYDRATION_FINAL LOGO MARK.png
-    size: standard
+    size: full
   - image: /images/curated/watercolor-hydration/WATERCOLOR HYDRATION_LOGO MARK APPLICATIONS.png
-    size: standard
+    size: full
   - image: /images/curated/watercolor-hydration/WATERCOLOR HYDRATION_PACKAGING CONCEPT.png
-    size: standard
+    size: full
   - image: /images/curated/watercolor-hydration/SOCMED 2.png
     size: portrait
   - image: /images/curated/watercolor-hydration/SOCMED 1.png
